@@ -1,7 +1,7 @@
 package database
 
 import (
-	// "log"
+	//"log"
 	"github.com/pkg/errors"
 
 	tickers "github.com/YaleOpenLab/openx/chains/exchangetickers"

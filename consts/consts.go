@@ -26,7 +26,7 @@ var EscrowPwd = "blah"                    // the password used for locking the s
 
 // ports + number consts
 var Tlsport = 443                                           // default port for ssl
-var DefaultRpcPort = 8080                                   // the default port on which the rpc server of the platform starts. Defaults to HTTPS
+var DefaultRpcPort = 8081                                   // the default port on which the rpc server of the platform starts. Defaults to HTTPS
 var LockInterval = int64(1 * 60 * 60 * 24 * 3)              // time a recipient is given to unlock the project and redeem investment, right now at 3 days
 var PaybackInterval = time.Duration(1 * 60 * 60 * 24 * 30)  // second * minute * hour * day * number, 30 days right now
 var OneWeekInSecond = time.Duration(604800 * time.Second)   // one week in seconds

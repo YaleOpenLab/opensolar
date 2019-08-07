@@ -1,12 +1,11 @@
 package database
 
 import (
-	//"log"
 	"encoding/json"
 	"github.com/pkg/errors"
 
 	edb "github.com/Varunram/essentials/database"
-	consts "github.com/YaleOpenLab/openx/consts"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	openx "github.com/YaleOpenLab/openx/database"
 )
 

@@ -81,13 +81,13 @@ type Entity struct {
 }
 
 func (a *Entity) Save() error {
-	return edb.Save(consts.DbDir+consts.DbName, database.ContractorBucket, a, a.U.Index)
+	return edb.Save(consts.DbDir+consts.DbName, ContractorBucket, a, a.U.Index)
 }
 
 // RetrieveAllEntitiesWithoutRole gets all the entities in the opensolar platform
 func RetrieveAllEntitiesWithoutRole() ([]Entity, error) {
 	var users []Entity
-	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, database.ContractorBucket)
+	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ContractorBucket)
 	if err != nil {
 		return users, errors.Wrap(err, "error while retrieving all keys")
 	}
@@ -108,7 +108,7 @@ func RetrieveAllEntitiesWithoutRole() ([]Entity, error) {
 func RetrieveAllEntities(role string) ([]Entity, error) {
 	var entities []Entity
 
-	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, database.ContractorBucket)
+	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ContractorBucket)
 	if err != nil {
 		return entities, errors.Wrap(err, "error while retrieving all keys")
 	}
@@ -133,7 +133,7 @@ func RetrieveAllEntities(role string) ([]Entity, error) {
 // RetrieveEntityHelper is a helper associated with the RetrieveEntity function
 func RetrieveEntityHelper(key int) (Entity, error) {
 	var entity Entity
-	x, err := edb.Retrieve(consts.DbDir+consts.DbName, database.ContractorBucket, key)
+	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ContractorBucket, key)
 	if err != nil {
 		return entity, errors.Wrap(err, "error while retrieving key from bucket")
 	}

@@ -1,6 +1,8 @@
 package database
 
 import (
+	"log"
+
 	edb "github.com/Varunram/essentials/database"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	"github.com/boltdb/bolt"
@@ -13,8 +15,13 @@ var ContractorBucket = []byte("Contractors")
 
 // CreateHomeDir creates a home directory
 func CreateHomeDir() {
-	edb.CreateDirs(consts.HomeDir, consts.DbDir, consts.OpenSolarIssuerDir)
-	db, _ := edb.CreateDB(consts.DbDir+consts.DbName, ProjectsBucket, InvestorBucket, RecipientBucket, ContractorBucket)
+	// run this if you're running your won openx instance
+	edb.CreateDirs(consts.HomeDir, consts.DbDir)
+	log.Println("creating db at: ", consts.DbDir+consts.DbName)
+	db, err := edb.CreateDB(consts.DbDir+consts.DbName, ProjectsBucket, InvestorBucket, RecipientBucket, ContractorBucket)
+	if err != nil {
+		log.Fatal(err)
+	}
 	db.Close()
 }
 
