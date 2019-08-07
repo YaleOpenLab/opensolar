@@ -6,7 +6,7 @@ The OpenSolar Project and platform aims to use blockchain and IoT based smart co
 
 The payment platform defaults to using the Stellar blockchain, and our pilot projects are done in public schools in Puerto Rico. Projects can choose to be hosted on different chains as well.
 
-![Graphical Abstract](../../docs/figures/Abstract.png)
+![Graphical Abstract](docs/figures/Abstract.png)
 
 # Introduction
 
@@ -32,11 +32,11 @@ Other relevant contract layers include risk mitigation processes to deal with pa
 
 #### STACK LAYOUT
 The full open source stack needs to cover all layers, from the energy and IoT hardware through the blockchain and into the front-end and user experience.
-![StackLayers](../../docs/figures/FullStack.png)
+![StackLayers](docs/figures/FullStack.png)
 
 ### PAYMENT ARCHITECTURE USING STELLAR
 The diagram below explains the general payment logic between investors, recipients and other project entities. The payment architecture of this is built on the Stellar blockchain which enables fiat and stablecoin interactions, and digital assets (explained below) that act as proof of payment or debt and can be fungible. The integration of the IoT devices (eg. the powermeter) is what drives payments once the project is fully deployed.
-![Payment Architecture](../../docs/figures/PaymentArchitecture.png)
+![Payment Architecture](docs/figures/PaymentArchitecture.png)
 
 #### Digital Assets on Stellar
 Stellar has some design tradeoffs compared to Ethereum, especially with regard to the concept of "state" in Ethereum.
@@ -82,7 +82,7 @@ There are various users and entities defined in the code (and more on the way), 
 
  Each solar system deployment is defined as a "Project" and a given project has specific stages with activities that have to be completed before moving on to the next stage. The various stages and their definition can be found [here](stages.go)
 
-![Project Stages](../../docs/figures/ProjectStages.png)
+![Project Stages](docs/figures/ProjectStages.png)
 
 A rough path taken by a specific project would be:
 1. Originator(s) approaches recipient with an idea for using a space owned by the recipient to start a new project.
@@ -100,4 +100,4 @@ A rough path taken by a specific project would be:
 
 ### CODE & REPOSITORY ARCHITECTURE
 The diagram below explains how scripts and folders in the repository are linked.
-![Scripts and Repo Architecture](../../docs/figures/RepoArchitecture.png)
+![Scripts and Repo Architecture](docs/figures/RepoArchitecture.png)
