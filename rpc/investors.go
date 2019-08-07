@@ -10,10 +10,11 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	openx "github.com/YaleOpenLab/openx/rpc"
+
+	core "github.com/YaleOpenLab/opensolar/core"
 	database "github.com/YaleOpenLab/openx/database"
 	notif "github.com/YaleOpenLab/openx/notif"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
-	openx "github.com/YaleOpenLab/openx/rpc"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 
@@ -32,8 +33,8 @@ func setupInvestorRPCs() {
 }
 
 // InvValidateHelper is a helper that is used to validate an ivnestor on the platform
-func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (opensolar.Investor, error) {
-	var prepInvestor opensolar.Investor
+func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Investor, error) {
+	var prepInvestor core.Investor
 	var err error
 	// need to pass the pwhash param here
 	if r.URL.Query() == nil {
@@ -52,7 +53,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string
 		return prepInvestor, errors.New("pwhash length not 128, quitting")
 	}
 
-	prepInvestor, err = opensolar.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
 	if err != nil {
 		log.Println("did not validate investor", err)
 		return prepInvestor, err
@@ -104,7 +105,7 @@ func registerInvestor() {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
 			}
-			var a opensolar.Investor
+			var a core.Investor
 			a.U = &user
 			err = a.Save()
 			if err != nil {
@@ -115,7 +116,7 @@ func registerInvestor() {
 			return
 		}
 
-		user, err := opensolar.NewInvestor(username, pwhash, seedpwd, name)
+		user, err := core.NewInvestor(username, pwhash, seedpwd, name)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -145,7 +146,7 @@ func validateInvestor() {
 func getAllInvestors() {
 	http.HandleFunc("/investor/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
-		investors, err := opensolar.RetrieveAllInvestors()
+		investors, err := core.RetrieveAllInvestors()
 		if err != nil {
 			log.Println("did not retrieve all investors", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -204,7 +205,7 @@ func invest() {
 			return
 		}
 
-		err = opensolar.Invest(projIndex, investor.U.Index, amount, investorSeed)
+		err = core.Invest(projIndex, investor.U.Index, amount, investorSeed)
 		if err != nil {
 			log.Println("did not invest in order", err)
 			erpc.ResponseHandler(w, erpc.StatusNotFound)
@@ -236,7 +237,7 @@ func voteTowardsProject() {
 			return
 		}
 
-		err = opensolar.VoteTowardsProposedProject(investor.U.Index, votes, projIndex)
+		err = core.VoteTowardsProposedProject(investor.U.Index, votes, projIndex)
 		if err != nil {
 			log.Println("did not vote towards proposed project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)

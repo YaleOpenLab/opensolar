@@ -3,6 +3,7 @@ package notif
 import (
 	email "github.com/Varunram/essentials/email"
 	utils "github.com/Varunram/essentials/utils"
+
 	consts "github.com/YaleOpenLab/openx/consts"
 )
 

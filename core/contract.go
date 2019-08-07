@@ -11,9 +11,11 @@ import (
 	escrow "github.com/YaleOpenLab/openx/chains/xlm/escrow"
 	issuer "github.com/YaleOpenLab/openx/chains/xlm/issuer"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	consts "github.com/YaleOpenLab/openx/consts"
-	notif "github.com/YaleOpenLab/openx/notif"
-	oracle "github.com/YaleOpenLab/openx/oracle"
+	openxconsts "github.com/YaleOpenLab/openx/consts"
+
+	consts "github.com/YaleOpenLab/opensolar/consts"
+	notif "github.com/YaleOpenLab/opensolar/notif"
+	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
 // platform is designed to be monolithic so we can have everything in one place
@@ -153,7 +155,7 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 			if err != nil {
 				return project, errors.Wrap(err, "error while initializing issuer")
 			}
-			err = issuer.FundIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd, consts.PlatformSeed)
+			err = issuer.FundIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd, openxconsts.PlatformSeed)
 			if err != nil {
 				return project, errors.Wrap(err, "error while funding issuer")
 			}
@@ -413,14 +415,14 @@ func sendRecipientAssets(projIndex int) error {
 		return errors.Wrap(err, "couldn't decrypt seed")
 	}
 
-	escrowPubkey, err := escrow.InitEscrow(project.Index, consts.EscrowPwd, recipient.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed)
+	escrowPubkey, err := escrow.InitEscrow(project.Index, consts.EscrowPwd, recipient.U.StellarWallet.PublicKey, recpSeed, openxconsts.PlatformSeed)
 	if err != nil {
 		return errors.Wrap(err, "error while initializing issuer")
 	}
 
 	log.Println("successfully setup escrow")
 	project.EscrowPubkey = escrowPubkey
-	err = escrow.TransferFundsToEscrow(project.TotalValue, project.Index, project.EscrowPubkey, consts.PlatformSeed)
+	err = escrow.TransferFundsToEscrow(project.TotalValue, project.Index, project.EscrowPubkey, openxconsts.PlatformSeed)
 	if err != nil {
 		log.Println(err)
 		return errors.Wrap(err, "could not transfer funds to the escrow, quitting!")
@@ -547,7 +549,7 @@ func DistributePayments(recipientSeed string, escrowPubkey string, projIndex int
 		// send x to this pubkey
 		txAmount := percentage * amountGivenBack
 		// here we send funds from the 2of2 multisig. Platform signs by default
-		err = escrow.SendFundsFromEscrow(project.EscrowPubkey, pubkey, recipientSeed, consts.PlatformSeed, txAmount, "returns")
+		err = escrow.SendFundsFromEscrow(project.EscrowPubkey, pubkey, recipientSeed, openxconsts.PlatformSeed, txAmount, "returns")
 		if err != nil {
 			log.Println(err) // if there is an error with one payback, doesn't mean we should stop and wait for the others
 			continue
@@ -693,13 +695,13 @@ func CoverFirstLoss(projIndex int, entityIndex int, amount float64) error {
 
 	var txhash string
 	// we have the escrow's pubkey, transfer funds to the escrow
-	if !consts.Mainnet {
-		_, txhash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, project.EscrowPubkey, amount, seed, "first loss guarantee")
+	if !openxconsts.Mainnet {
+		_, txhash, err = assets.SendAsset(openxconsts.StablecoinCode, openxconsts.StablecoinPublicKey, project.EscrowPubkey, amount, seed, "first loss guarantee")
 		if err != nil {
 			return errors.Wrap(err, "could not transfer asset to escrow, quitting")
 		}
 	} else {
-		_, txhash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, project.EscrowPubkey, amount, seed, "first loss guarantee")
+		_, txhash, err = assets.SendAsset(openxconsts.AnchorUSDCode, openxconsts.AnchorUSDAddress, project.EscrowPubkey, amount, seed, "first loss guarantee")
 		if err != nil {
 			return errors.Wrap(err, "could not transfer asset to escrow, quitting")
 		}

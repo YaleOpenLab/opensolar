@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	port := 8002
+	port := 8001
 	insecure := true
 
 	log.Println("Starting opensolar")

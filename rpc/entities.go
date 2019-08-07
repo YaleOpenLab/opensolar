@@ -8,7 +8,7 @@ import (
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	// database "github.com/YaleOpenLab/openx/database"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	core "github.com/YaleOpenLab/opensolar/core"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 
@@ -20,22 +20,20 @@ func setupEntityRPCs() {
 	addCollateral()
 	createOpensolarProject()
 	proposeOpensolarProject()
-	// createOpzonesCBond()
-	// createOpzonesLuCoop()
 }
 
 // EntityValidateHelper is a helper that helps validate an entity
-func EntityValidateHelper(w http.ResponseWriter, r *http.Request) (opensolar.Entity, error) {
+func EntityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, error) {
 	// first validate the investor or anyone would be able to set device ids
 	erpc.CheckGet(w, r)
-	var prepInvestor opensolar.Entity
+	var prepInvestor core.Entity
 	// need to pass the pwhash param here
 	if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
 		len(r.URL.Query()["pwhash"][0]) != 128 {
 		return prepInvestor, errors.New("Invalid params passed")
 	}
 
-	prepEntity, err := opensolar.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
 	if err != nil {
 		return prepEntity, errors.Wrap(err, "Error while validating entity")
 	}
@@ -68,7 +66,7 @@ func getStage0Contracts() {
 			return
 		}
 
-		x, err := opensolar.RetrieveOriginatorProjects(opensolar.Stage0.Number, prepEntity.U.Index)
+		x, err := core.RetrieveOriginatorProjects(core.Stage0.Number, prepEntity.U.Index)
 		if err != nil {
 			log.Println("Error while retrieving originator project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -89,7 +87,7 @@ func getStage1Contracts() {
 			return
 		}
 
-		x, err := opensolar.RetrieveOriginatorProjects(opensolar.Stage1.Number, prepEntity.U.Index)
+		x, err := core.RetrieveOriginatorProjects(core.Stage1.Number, prepEntity.U.Index)
 		if err != nil {
 			log.Println("Error while retrieving originator projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -110,7 +108,7 @@ func getStage2Contracts() {
 			return
 		}
 
-		x, err := opensolar.RetrieveContractorProjects(opensolar.Stage2.Number, prepEntity.U.Index)
+		x, err := core.RetrieveContractorProjects(core.Stage2.Number, prepEntity.U.Index)
 		if err != nil {
 			log.Println("Error while retrieving contractor projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -187,7 +185,7 @@ func createOpensolarProject() {
 			return
 		}
 
-		allProjects, err := opensolar.RetrieveAllProjects()
+		allProjects, err := core.RetrieveAllProjects()
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
@@ -195,7 +193,7 @@ func createOpensolarProject() {
 
 		// parse the parameters whhich are db intensive first and error out
 		// so we don't make  too many db calls
-		var x opensolar.Project
+		var x core.Project
 		x.TotalValue, err = utils.ToFloat(r.URL.Query()["TotalValue"][0])
 		if err != nil {
 			log.Println("param passed not float, quitting!")
@@ -228,7 +226,7 @@ func createOpensolarProject() {
 			return
 		}
 
-		_, err = opensolar.RetrieveRecipient(x.RecipientIndex)
+		_, err = core.RetrieveRecipient(x.RecipientIndex)
 		if err != nil {
 			log.Println("could not retrieve recipient, quitting!")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -304,7 +302,7 @@ func proposeOpensolarProject() {
 			return
 		}
 
-		x, err := opensolar.RetrieveProject(projIndex)
+		x, err := core.RetrieveProject(projIndex)
 		if err != nil {
 			log.Println("couldn't retrieve project with index")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)

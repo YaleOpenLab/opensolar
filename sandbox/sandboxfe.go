@@ -11,238 +11,239 @@ import (
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	consts "github.com/YaleOpenLab/openx/consts"
 	// database "github.com/YaleOpenLab/openx/database"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+
+	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 func createAllStaticEntities() error {
 	// PR static entities
 	var err error
-	_, err = opensolar.NewOriginator("dci@test.com", "password", "x", "MIT DCI", "MIT Building E14-15", "The MIT Media Lab's Digital Currency Initiative")
+	_, err = core.NewOriginator("dci@test.com", "password", "x", "MIT DCI", "MIT Building E14-15", "The MIT Media Lab's Digital Currency Initiative")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewContractor("martinwainstein@test.com", "password", "x", "Martin Wainstein", "254 Elm Street, New Haven, CT", "Martin Wainstein from the Yale OpenLab")
+	_, err = core.NewContractor("martinwainstein@test.com", "password", "x", "Martin Wainstein", "254 Elm Street, New Haven, CT", "Martin Wainstein from the Yale OpenLab")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("gs@test.com", "password", "x", "Genmoji Solar", "Genmoji, San Juan, Puerto Rico", "Genmoji Solar")
+	_, err = core.NewDeveloper("gs@test.com", "password", "x", "Genmoji Solar", "Genmoji, San Juan, Puerto Rico", "Genmoji Solar")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("nbly@test.com", "password", "x", "Neighborly Securities", "San Francisco, CA", "Broker Dealer")
+	_, err = core.NewDeveloper("nbly@test.com", "password", "x", "Neighborly Securities", "San Francisco, CA", "Broker Dealer")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("mitml@test.com", "password", "x", "MIT Media Lab", "MIT Building E14-15", "The MIT Media Lab is an interdisciplinary lab with innovators from all around the globe")
+	_, err = core.NewGuarantor("mitml@test.com", "password", "x", "MIT Media Lab", "MIT Building E14-15", "The MIT Media Lab is an interdisciplinary lab with innovators from all around the globe")
 	if err != nil {
 		return err
 	}
 
 	// 1MW project (5)
-	_, err = opensolar.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
+	_, err = core.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("solardev@test.com", "password", "x", "First Solar", "Solar Rd, San Diego, California", "Main contractor for full solar development")
+	_, err = core.NewDeveloper("solardev@test.com", "password", "x", "First Solar", "Solar Rd, San Diego, California", "Main contractor for full solar development")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("LancasterSolar@test.com", "password", "x", "Town of Lancaste NH", "Lancaster, New Hampshire", "Host")
+	_, err = core.NewDeveloper("LancasterSolar@test.com", "password", "x", "Town of Lancaste NH", "Lancaster, New Hampshire", "Host")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("LancasterRFP@test.com", "password", "x", "Lancaster Solar Engineer Solutions", "25 Lancaster Rd, New Hampshire", "Independent RFP Engineer")
+	_, err = core.NewDeveloper("LancasterRFP@test.com", "password", "x", "Lancaster Solar Engineer Solutions", "25 Lancaster Rd, New Hampshire", "Independent RFP Engineer")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("SimpleServiceProvider@test.com", "password", "x", "Simple Service Provider", "Simple Service Provider", "Simple Service Provider")
+	_, err = core.NewDeveloper("SimpleServiceProvider@test.com", "password", "x", "Simple Service Provider", "Simple Service Provider", "Simple Service Provider")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("VendorX@test.com", "password", "x", "Solar Racking Systems Inc", "34 Crack St, Boston", "Retail Vendor")
+	_, err = core.NewDeveloper("VendorX@test.com", "password", "x", "Solar Racking Systems Inc", "34 Crack St, Boston", "Retail Vendor")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("NEpool@test.com", "password", "x", "New England Pool Registered Auditor", "56 Hamden Ave, Stamford, CT", "REC Auditors for New England")
+	_, err = core.NewDeveloper("NEpool@test.com", "password", "x", "New England Pool Registered Auditor", "56 Hamden Ave, Stamford, CT", "REC Auditors for New England")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("AllianzCS@test.com", "password", "x", "Allianz Climate Solutions", "34 5th, New York, NY", "Insurance Agent")
+	_, err = core.NewGuarantor("AllianzCS@test.com", "password", "x", "Allianz Climate Solutions", "34 5th, New York, NY", "Insurance Agent")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("UIavangrid@test.com", "password", "x", "Avangrid Networks", "100 Marsh Hill Rd, New Haven, CT", "Utility")
+	_, err = core.NewDeveloper("UIavangrid@test.com", "password", "x", "Avangrid Networks", "100 Marsh Hill Rd, New Haven, CT", "Utility")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("GreenBank@test.com", "password", "x", "NH Green Bank", "67 Washington Rd, New Hampshire", "Impact-first escrow provider")
+	_, err = core.NewGuarantor("GreenBank@test.com", "password", "x", "NH Green Bank", "67 Washington Rd, New Hampshire", "Impact-first escrow provider")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewOriginator("ben@test.com", "password", "x", "Ben Southworth", "Lancaster, NH", "Originator of the Lancaster oz fund community")
+	_, err = core.NewOriginator("ben@test.com", "password", "x", "Ben Southworth", "Lancaster, NH", "Originator of the Lancaster oz fund community")
 	if err != nil {
 		return err
 	}
 
 	// 10kW project (16)
-	_, err = opensolar.NewDeveloper("YaleArchitecture@test.com", "password", "x", "Yale School of Architecture", "45 York St, New Haven, CT", "System and layout designer")
+	_, err = core.NewDeveloper("YaleArchitecture@test.com", "password", "x", "Yale School of Architecture", "45 York St, New Haven, CT", "System and layout designer")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("CTSolar@test.com", "password", "x", "Connecticut Solar", "45 Sun Street, Stamford, CT", "Solar system installer")
+	_, err = core.NewDeveloper("CTSolar@test.com", "password", "x", "Connecticut Solar", "45 Sun Street, Stamford, CT", "Solar system installer")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("ColumbusHouse@test.com", "password", "x", "Columbus House", "21 Hagrid Ave, New Haven, CT", "Project Host")
+	_, err = core.NewDeveloper("ColumbusHouse@test.com", "password", "x", "Columbus House", "21 Hagrid Ave, New Haven, CT", "Project Host")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("RGreenFund@test.com", "password", "x", "RaiseGreen Blend Fund", "21 orange st, New Haven, CT", "Impact-first blended capital provider")
+	_, err = core.NewGuarantor("RGreenFund@test.com", "password", "x", "RaiseGreen Blend Fund", "21 orange st, New Haven, CT", "Impact-first blended capital provider")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("Avangrid@test.com", "password", "x", "Avangrid RECs", "100 Marsh Hill Rd, New Haven, CT", "Certifier of RECs and provider of REC meter")
+	_, err = core.NewDeveloper("Avangrid@test.com", "password", "x", "Avangrid RECs", "100 Marsh Hill Rd, New Haven, CT", "Certifier of RECs and provider of REC meter")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewOriginator("RaiseGreen@test.com", "password", "x", "Raise Green", "21 orange st, New Haven, CT", "Project originator")
+	_, err = core.NewOriginator("RaiseGreen@test.com", "password", "x", "Raise Green", "21 orange st, New Haven, CT", "Project originator")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
+	_, err = core.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("testguarantor@test.com", "password", "x", "testguarantor", "testguarantor", "testguarantor")
+	_, err = core.NewGuarantor("testguarantor@test.com", "password", "x", "testguarantor", "testguarantor", "testguarantor")
 	if err != nil {
 		return err
 	}
 
 	// 10MW project (24)
-	_, err = opensolar.NewInvestor("emcoll@test.com", "password", "x", "Emerson Collective")
+	_, err = core.NewInvestor("emcoll@test.com", "password", "x", "Emerson Collective")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewInvestor("prqozfund@test.com", "password", "x", "Puerto Rico QOZ Fund")
+	_, err = core.NewInvestor("prqozfund@test.com", "password", "x", "Puerto Rico QOZ Fund")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("prgov@test.com", "password", "x", "PR Government")
+	_, err = core.NewRecipient("prgov@test.com", "password", "x", "PR Government")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("prschools@test.com", "password", "x", "Puerto Rico Solar Schools Limited")
+	_, err = core.NewRecipient("prschools@test.com", "password", "x", "Puerto Rico Solar Schools Limited")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("prdoe@test.com", "password", "x", "Puerto Rico Department of Education")
+	_, err = core.NewRecipient("prdoe@test.com", "password", "x", "Puerto Rico Department of Education")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewOriginator("MartinWainstein1@test.com", "password", "x", "Martin Wainstein", "254 Elm Street, New Haven, CT", "Martin Wainstein from the Yale OpenLab")
+	_, err = core.NewOriginator("MartinWainstein1@test.com", "password", "x", "Martin Wainstein", "254 Elm Street, New Haven, CT", "Martin Wainstein from the Yale OpenLab")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("hst@test.com", "password", "x", "HST Solar", "25 Hewlett St, San Francisco, CA", "Preliminary finance and engineering assessment")
+	_, err = core.NewDeveloper("hst@test.com", "password", "x", "HST Solar", "25 Hewlett St, San Francisco, CA", "Preliminary finance and engineering assessment")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("FemaRoofs@test.com", "password", "x", "FEMA Puerto Rico", "“45 Old Town Rd, Puerto Rico", "Civil engineering assessment of school roofs")
+	_, err = core.NewDeveloper("FemaRoofs@test.com", "password", "x", "FEMA Puerto Rico", "“45 Old Town Rd, Puerto Rico", "Civil engineering assessment of school roofs")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
+	_, err = core.NewContractor("testcont@test.com", "password", "x", "testcont", "testcont", "testcont")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewGuarantor("testguarantor@test.com", "password", "x", "testguarantor", "testguarantor", "testguarantor")
+	_, err = core.NewGuarantor("testguarantor@test.com", "password", "x", "testguarantor", "testguarantor", "testguarantor")
 	if err != nil {
 		return err
 	}
 
 	// 100 kw project (34)
-	_, err = opensolar.NewInvestor("jjackson@test.com", "password", "x", "Jerome Jackson")
+	_, err = core.NewInvestor("jjackson@test.com", "password", "x", "Jerome Jackson")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewInvestor("esare@test.com", "password", "x", "Eliah Sare")
+	_, err = core.NewInvestor("esare@test.com", "password", "x", "Eliah Sare")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewInvestor("yaleuf@test.com", "password", "x", "Yale University Fund")
+	_, err = core.NewInvestor("yaleuf@test.com", "password", "x", "Yale University Fund")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("villageec@test.com", "password", "x", "Village Energy Collective")
+	_, err = core.NewRecipient("villageec@test.com", "password", "x", "Village Energy Collective")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("sunshinegschool@test.com", "password", "x", "Sunshine Garden School")
+	_, err = core.NewRecipient("sunshinegschool@test.com", "password", "x", "Sunshine Garden School")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("ubaduth@test.com", "password", "x", "Ubadu Town Hall")
+	_, err = core.NewRecipient("ubaduth@test.com", "password", "x", "Ubadu Town Hall")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("dwbrf@test.com", "password", "x", " Doctors without borders, Rwanda chapter")
+	_, err = core.NewRecipient("dwbrf@test.com", "password", "x", " Doctors without borders, Rwanda chapter")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewRecipient("largerof@test.com", "password", "x", "Large Residential offtakers")
+	_, err = core.NewRecipient("largerof@test.com", "password", "x", "Large Residential offtakers")
 	if err != nil {
 		return err
 	}
 
 	// insert small residential offtakers as well
-	_, err = opensolar.NewOriginator("embeba@test.com", "password", "x", "School Principa", "Village, Rwanda", "Project originator")
+	_, err = core.NewOriginator("embeba@test.com", "password", "x", "School Principa", "Village, Rwanda", "Project originator")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("solarpartners@test.com", "password", "x", "Solar Partners", "KG 10, House 25 Gasabo district, kamatamuUrugwiro, Kacyiru, Kigali", "MiniGrid game developer")
+	_, err = core.NewDeveloper("solarpartners@test.com", "password", "x", "Solar Partners", "KG 10, House 25 Gasabo district, kamatamuUrugwiro, Kacyiru, Kigali", "MiniGrid game developer")
 	if err != nil {
 		return err
 	}
 
-	_, err = opensolar.NewDeveloper("hst2@test.com", "password", "x", "HST Solar", "25 Hewlett St, San Francisco, CA", "Preliminary finance and engineering assessment")
+	_, err = core.NewDeveloper("hst2@test.com", "password", "x", "HST Solar", "25 Hewlett St, San Francisco, CA", "Preliminary finance and engineering assessment")
 	if err != nil {
 		return err
 	}
@@ -252,7 +253,7 @@ func createAllStaticEntities() error {
 
 func populateStaticData1kw() error {
 
-	project, err := opensolar.RetrieveProject(4)
+	project, err := core.RetrieveProject(4)
 	if err != nil {
 		return err
 	}
@@ -283,7 +284,7 @@ func populateStaticData1kw() error {
 }
 
 func populateStaticData1mw() error {
-	project, err := opensolar.RetrieveProject(5)
+	project, err := core.RetrieveProject(5)
 	if err != nil {
 		log.Println("bug?")
 		return err
@@ -325,7 +326,7 @@ func populateStaticData1mw() error {
 }
 
 func populateStaticData10kw() error {
-	project, err := opensolar.RetrieveProject(6)
+	project, err := core.RetrieveProject(6)
 	if err != nil {
 		return err
 	}
@@ -355,7 +356,7 @@ func populateStaticData10kw() error {
 
 func populateStaticData10MW() error {
 	// create the required entities that we need over here
-	project, err := opensolar.RetrieveProject(7)
+	project, err := core.RetrieveProject(7)
 	if err != nil {
 		return err
 	}
@@ -393,7 +394,7 @@ func populateStaticData10MW() error {
 
 func populateStaticData100KW() error {
 
-	project, err := opensolar.RetrieveProject(8)
+	project, err := core.RetrieveProject(8)
 	if err != nil {
 		return err
 	}
@@ -427,12 +428,12 @@ func populateStaticData100KW() error {
 	return nil
 }
 
-func bootstrapInvestor(invName, invDescription string) (opensolar.Investor, string, error) {
+func bootstrapInvestor(invName, invDescription string) (core.Investor, string, error) {
 	// setup investor account
 	log.Println(consts.StablecoinSeed, consts.StablecoinPublicKey, consts.StablecoinCode)
 	passwd := "password"
 	seedpwd := "x"
-	investor1, err := opensolar.NewInvestor(invName, passwd, seedpwd, invDescription)
+	investor1, err := core.NewInvestor(invName, passwd, seedpwd, invDescription)
 	if err != nil {
 		return investor1, "", err
 	}
@@ -457,11 +458,11 @@ func bootstrapInvestor(invName, invDescription string) (opensolar.Investor, stri
 	return investor1, invSeed, nil
 }
 
-func bootstrapRecipient(recpName, recpDescription string) (opensolar.Recipient, string, error) {
+func bootstrapRecipient(recpName, recpDescription string) (core.Recipient, string, error) {
 	// setup recipient account
 	passwd := "password"
 	seedpwd := "x"
-	recipient, err := opensolar.NewRecipient(recpName, passwd, seedpwd, recpDescription)
+	recipient, err := core.NewRecipient(recpName, passwd, seedpwd, recpDescription)
 	if err != nil {
 		return recipient, "", err
 	}
@@ -479,7 +480,7 @@ func bootstrapRecipient(recpName, recpDescription string) (opensolar.Recipient, 
 
 func oneInvestor(projIndex int, invName string, invDescription string, recpName string,
 	recpDescription string) error {
-	project, err := opensolar.RetrieveProject(projIndex)
+	project, err := core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -510,19 +511,19 @@ func oneInvestor(projIndex int, invName string, invDescription string, recpName 
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor1.U.Index, project.TotalValue, invSeed)
+	err = core.Invest(projIndex, investor1.U.Index, project.TotalValue, invSeed)
 	if err != nil {
 		return err
 	}
 
 	time.Sleep(5 * time.Second)
-	err = opensolar.UnlockProject(recipient1.U.Username, recipient1.U.Pwhash, projIndex, seedpwd)
+	err = core.UnlockProject(recipient1.U.Username, recipient1.U.Pwhash, projIndex, seedpwd)
 	if err != nil {
 		return err
 	}
 
 	time.Sleep(100 * time.Second)
-	project, err = opensolar.RetrieveProject(projIndex)
+	project, err = core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -538,7 +539,7 @@ func threeInvestor(projIndex int, invName1 string, invDescription1 string, invNa
 	invName3 string, invDescription3 string, invAmount1 float64, invAmount2 float64, invAmount3 float64,
 	recpName string, recpDescription string) error {
 
-	project, err := opensolar.RetrieveProject(projIndex)
+	project, err := core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -579,23 +580,23 @@ func threeInvestor(projIndex int, invName1 string, invDescription1 string, invNa
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor1.U.Index, invAmount1, invSeed1)
+	err = core.Invest(projIndex, investor1.U.Index, invAmount1, invSeed1)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor2.U.Index, invAmount2, invSeed2)
+	err = core.Invest(projIndex, investor2.U.Index, invAmount2, invSeed2)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor3.U.Index, invAmount3, invSeed3)
+	err = core.Invest(projIndex, investor3.U.Index, invAmount3, invSeed3)
 	if err != nil {
 		return err
 	}
 
 	// update local project with changes from storage
-	project, err = opensolar.RetrieveProject(projIndex)
+	project, err = core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -614,7 +615,7 @@ func sixInvestor(projIndex int, invName1 string, invDescription1 string, invName
 	invName6 string, invDescription6 string, invAmount1 float64, invAmount2 float64, invAmount3 float64, invAmount4 float64,
 	invAmount5 float64, invAmount6 float64, recpName string, recpDescription string) error {
 
-	project, err := opensolar.RetrieveProject(projIndex)
+	project, err := core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -669,44 +670,44 @@ func sixInvestor(projIndex int, invName1 string, invDescription1 string, invName
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor1.U.Index, invAmount1, invSeed1)
+	err = core.Invest(projIndex, investor1.U.Index, invAmount1, invSeed1)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor2.U.Index, invAmount2, invSeed2)
+	err = core.Invest(projIndex, investor2.U.Index, invAmount2, invSeed2)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor3.U.Index, invAmount3, invSeed3)
+	err = core.Invest(projIndex, investor3.U.Index, invAmount3, invSeed3)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor4.U.Index, invAmount4, invSeed4)
+	err = core.Invest(projIndex, investor4.U.Index, invAmount4, invSeed4)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor5.U.Index, invAmount5, invSeed5)
+	err = core.Invest(projIndex, investor5.U.Index, invAmount5, invSeed5)
 	if err != nil {
 		return err
 	}
 
-	err = opensolar.Invest(projIndex, investor6.U.Index, invAmount6, invSeed6)
+	err = core.Invest(projIndex, investor6.U.Index, invAmount6, invSeed6)
 	if err != nil {
 		return err
 	}
 
 	time.Sleep(5 * time.Second)
-	err = opensolar.UnlockProject(recipient1.U.Username, recipient1.U.Pwhash, projIndex, seedpwd)
+	err = core.UnlockProject(recipient1.U.Username, recipient1.U.Pwhash, projIndex, seedpwd)
 	if err != nil {
 		return err
 	}
 
 	time.Sleep(100 * time.Second)
-	project, err = opensolar.RetrieveProject(projIndex)
+	project, err = core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
@@ -737,12 +738,12 @@ func populateDynamicData1mw() error {
 		return err
 	}
 
-	recipient2, err := opensolar.NewRecipient("Lancastert@test.com", "password", "x", "Town of Lancaster NH")
+	recipient2, err := core.NewRecipient("Lancastert@test.com", "password", "x", "Town of Lancaster NH")
 	if err != nil {
 		return err
 	}
 
-	project, err := opensolar.RetrieveProject(5)
+	project, err := core.RetrieveProject(5)
 	if err != nil {
 		return err
 	}
@@ -766,12 +767,12 @@ func populateDynamicData10kw() error {
 		return err
 	}
 
-	recipient2, err := opensolar.NewRecipient("ColumbusHouse@test.com", "password", "x", "Columbus House Foundation")
+	recipient2, err := core.NewRecipient("ColumbusHouse@test.com", "password", "x", "Columbus House Foundation")
 	if err != nil {
 		return err
 	}
 
-	project, err := opensolar.RetrieveProject(6)
+	project, err := core.RetrieveProject(6)
 	if err != nil {
 		return err
 	}

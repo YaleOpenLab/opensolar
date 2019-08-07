@@ -10,9 +10,9 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
 	openx "github.com/YaleOpenLab/openx/rpc"
-	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
+
+	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 // setupRecipientRPCs sets up all RPCs related to the recipient. Most are similar
@@ -40,9 +40,9 @@ func setupRecipientRPCs() {
 }
 
 // RecpValidateHelper is a helper that helps validates recipients in routes
-func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (opensolar.Recipient, error) {
+func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Recipient, error) {
 	// first validate the recipient or anyone would be able to set device ids
-	var prepRecipient opensolar.Recipient
+	var prepRecipient core.Recipient
 	var err error
 	// need to pass the pwhash param here
 	if r.URL.Query() == nil {
@@ -61,7 +61,7 @@ func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...strin
 		return prepRecipient, errors.New("pwhash length not 128, quitting")
 	}
 
-	prepRecipient, err = opensolar.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepRecipient, err = core.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
 	if err != nil {
 		log.Println("did not validate recipient", err)
 		return prepRecipient, err
@@ -75,7 +75,7 @@ func getAllRecipients() {
 	http.HandleFunc("/recipient/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipients, err := opensolar.RetrieveAllRecipients()
+		recipients, err := core.RetrieveAllRecipients()
 		if err != nil {
 			log.Println("did not retrieve all recipients", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -127,7 +127,7 @@ func registerRecipient() {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
 			}
-			var a opensolar.Recipient
+			var a core.Recipient
 			a.U = &user
 			err = a.Save()
 			if err != nil {
@@ -138,7 +138,7 @@ func registerRecipient() {
 			return
 		}
 
-		user, err := opensolar.NewRecipient(username, pwhash, seedpwd, name)
+		user, err := core.NewRecipient(username, pwhash, seedpwd, name)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -199,7 +199,7 @@ func payback() {
 		}
 
 		log.Println(recpIndex, projIndex, assetName, amount, recipientSeed)
-		err = opensolar.Payback(recpIndex, projIndex, assetName, amount, recipientSeed)
+		err = core.Payback(recpIndex, projIndex, assetName, amount, recipientSeed)
 		if err != nil {
 			log.Println("did not payback", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -292,14 +292,14 @@ func chooseBlindAuction() {
 			return
 		}
 
-		allContracts, err := opensolar.RetrieveRecipientProjects(opensolar.Stage2.Number, recipient.U.Index)
+		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
 		if err != nil {
 			log.Println("did not validate recipient projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
 
-		bestContract, err := opensolar.SelectContractBlind(allContracts)
+		bestContract, err := core.SelectContractBlind(allContracts)
 		if err != nil {
 			log.Println("did not select contract", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -330,7 +330,7 @@ func chooseVickreyAuction() {
 			return
 		}
 
-		allContracts, err := opensolar.RetrieveRecipientProjects(opensolar.Stage2.Number, recipient.U.Index)
+		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
 		if err != nil {
 			log.Println("did not retrieve recipient projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -339,7 +339,7 @@ func chooseVickreyAuction() {
 
 		// the only differing part in the three auction routes. Would be nice if there were
 		// some way to avoid repetition like this
-		bestContract, err := opensolar.SelectContractVickrey(allContracts)
+		bestContract, err := core.SelectContractVickrey(allContracts)
 		if err != nil {
 			log.Println("did not select contract", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -369,7 +369,7 @@ func chooseTimeAuction() {
 			return
 		}
 
-		allContracts, err := opensolar.RetrieveRecipientProjects(opensolar.Stage2.Number, recipient.U.Index)
+		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
 		if err != nil {
 			log.Println("did not retrieve recipient projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -378,7 +378,7 @@ func chooseTimeAuction() {
 
 		// the only differing part in the three auction routes. Would be nice if there were
 		// some way to avoid repetition like this
-		bestContract, err := opensolar.SelectContractTime(allContracts)
+		bestContract, err := core.SelectContractTime(allContracts)
 		if err != nil {
 			log.Println("did not select contract", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -416,7 +416,7 @@ func unlockOpenSolar() {
 			return
 		}
 
-		err = opensolar.UnlockProject(recipient.U.Username, recipient.U.Pwhash, projIndex, seedpwd)
+		err = core.UnlockProject(recipient.U.Username, recipient.U.Pwhash, projIndex, seedpwd)
 		if err != nil {
 			log.Println("did not unlock project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -469,7 +469,7 @@ func finalizeProject() {
 			return
 		}
 
-		project, err := opensolar.RetrieveProject(projIndex)
+		project, err := core.RetrieveProject(projIndex)
 		if err != nil {
 			log.Println("did not retrieve project", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -505,7 +505,7 @@ func originateProject() {
 			return
 		}
 
-		err = opensolar.RecipientAuthorize(projIndex, recipient.U.Index)
+		err = core.RecipientAuthorize(projIndex, recipient.U.Index)
 		if err != nil {
 			log.Println("did not authorize project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)

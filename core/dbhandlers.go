@@ -7,11 +7,8 @@ import (
 
 	edb "github.com/Varunram/essentials/database"
 	consts "github.com/YaleOpenLab/openx/consts"
-	database "github.com/YaleOpenLab/openx/database"
+	openx "github.com/YaleOpenLab/openx/database"
 )
-
-var InvestorBucket = []byte("Investors")
-var RecipientBucket = []byte("Recipients")
 
 // NewOriginator creates a new originator
 func NewOriginator(uname string, pwd string, seedpwd string, Name string,
@@ -40,7 +37,7 @@ func NewContractor(uname string, pwd string, seedpwd string, Name string, Addres
 
 // Save or Insert inserts a specific Project into the database
 func (a *Project) Save() error {
-	return edb.Save(consts.DbDir+consts.DbName, database.ProjectsBucket, a, a.Index)
+	return edb.Save(consts.DbDir+consts.DbName, ProjectsBucket, a, a.Index)
 }
 
 // Save inserts a passed Investor object into the database
@@ -56,7 +53,7 @@ func (a *Recipient) Save() error {
 // RetrieveInvestor retrieves a particular investor indexed by key from the database
 func RetrieveInvestor(key int) (Investor, error) {
 	var inv Investor
-	user, err := database.RetrieveUser(key)
+	user, err := openx.RetrieveUser(key)
 	if err != nil {
 		return inv, err
 	}
@@ -78,7 +75,7 @@ func RetrieveInvestor(key int) (Investor, error) {
 // RetrieveRecipient retrieves a specific recipient from the database
 func RetrieveRecipient(key int) (Recipient, error) {
 	var recp Recipient
-	user, err := database.RetrieveUser(key)
+	user, err := openx.RetrieveUser(key)
 	if err != nil {
 		return recp, err
 	}
@@ -183,7 +180,7 @@ func TopReputationRecipients() ([]Recipient, error) {
 // This is separate from the publicKey/seed pair (which are stored encrypted in the database); since we can help users change their password, but we can't help them retrieve their seed.
 func ValidateInvestor(name string, pwhash string) (Investor, error) {
 	var rec Investor
-	user, err := database.ValidateUser(name, pwhash)
+	user, err := openx.ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "failed to validate user")
 	}
@@ -193,7 +190,7 @@ func ValidateInvestor(name string, pwhash string) (Investor, error) {
 // ValidateRecipient validates a particular recipient
 func ValidateRecipient(name string, pwhash string) (Recipient, error) {
 	var rec Recipient
-	user, err := database.ValidateUser(name, pwhash)
+	user, err := openx.ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "Error while validating user")
 	}
@@ -203,7 +200,7 @@ func ValidateRecipient(name string, pwhash string) (Recipient, error) {
 // RetrieveProject retrieves the project with the specified index from the database
 func RetrieveProject(key int) (Project, error) {
 	var inv Project
-	x, err := edb.Retrieve(consts.DbDir+consts.DbName, database.ProjectsBucket, key)
+	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ProjectsBucket, key)
 	if err != nil {
 		return inv, errors.Wrap(err, "error while retrieving key from bucket")
 	}
@@ -215,7 +212,7 @@ func RetrieveProject(key int) (Project, error) {
 // RetrieveAllProjects retrieves all projects from the database
 func RetrieveAllProjects() ([]Project, error) {
 	var projects []Project
-	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, database.ProjectsBucket)
+	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ProjectsBucket)
 	if err != nil {
 		return projects, errors.Wrap(err, "error while retrieving all keys")
 	}

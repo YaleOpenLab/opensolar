@@ -6,7 +6,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 func setupStagesHandlers() {
@@ -23,9 +23,9 @@ func returnAllStages() {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		var arr []opensolar.Stage
-		arr = append(arr, opensolar.Stage0, opensolar.Stage1, opensolar.Stage2, opensolar.Stage3, opensolar.Stage4,
-			opensolar.Stage5, opensolar.Stage6, opensolar.Stage7, opensolar.Stage8, opensolar.Stage9)
+		var arr []core.Stage
+		arr = append(arr, core.Stage0, core.Stage1, core.Stage2, core.Stage3, core.Stage4,
+			core.Stage5, core.Stage6, core.Stage7, core.Stage8, core.Stage9)
 
 		erpc.MarshalSend(w, arr)
 	})
@@ -50,29 +50,29 @@ func returnSpecificStage() {
 			return
 		}
 
-		var x opensolar.Stage
+		var x core.Stage
 		switch index {
 		case 1:
-			x = opensolar.Stage1
+			x = core.Stage1
 		case 2:
-			x = opensolar.Stage2
+			x = core.Stage2
 		case 3:
-			x = opensolar.Stage3
+			x = core.Stage3
 		case 4:
-			x = opensolar.Stage4
+			x = core.Stage4
 		case 5:
-			x = opensolar.Stage5
+			x = core.Stage5
 		case 6:
-			x = opensolar.Stage6
+			x = core.Stage6
 		case 7:
-			x = opensolar.Stage7
+			x = core.Stage7
 		case 8:
-			x = opensolar.Stage8
+			x = core.Stage8
 		case 9:
-			x = opensolar.Stage9
+			x = core.Stage9
 		default:
 			// default is stage0, so we don't have a case defined for it above
-			x = opensolar.Stage0
+			x = core.Stage0
 		}
 
 		erpc.MarshalSend(w, x)
@@ -97,7 +97,7 @@ func promoteStage() {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
-		err = opensolar.StageXtoY(index)
+		err = core.StageXtoY(index)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)

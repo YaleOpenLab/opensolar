@@ -7,9 +7,9 @@ import (
 
 	edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	consts "github.com/YaleOpenLab/openx/consts"
 	database "github.com/YaleOpenLab/openx/database"
 	notif "github.com/YaleOpenLab/openx/notif"
 )

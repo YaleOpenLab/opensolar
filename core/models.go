@@ -1,19 +1,22 @@
 package database
 
 import (
+	"github.com/pkg/errors"
 	"log"
 	"time"
 
 	utils "github.com/Varunram/essentials/utils"
+
 	stablecoin "github.com/YaleOpenLab/openx/chains/stablecoin"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	issuer "github.com/YaleOpenLab/openx/chains/xlm/issuer"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	consts "github.com/YaleOpenLab/openx/consts"
-	notif "github.com/YaleOpenLab/openx/notif"
-	oracle "github.com/YaleOpenLab/openx/oracle"
-	"github.com/pkg/errors"
+	openxconsts "github.com/YaleOpenLab/openx/consts"
+
+	consts "github.com/YaleOpenLab/opensolar/consts"
+	notif "github.com/YaleOpenLab/opensolar/notif"
+	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
 // MunibondInvest invests in a specific munibond
@@ -226,13 +229,13 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	}
 
 	var stablecoinHash string
-	if !consts.Mainnet {
-		_, stablecoinHash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
+	if !openxconsts.Mainnet {
+		_, stablecoinHash, err = assets.SendAsset(openxconsts.StablecoinCode, openxconsts.StablecoinPublicKey, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
 		if err != nil {
 			return -1, errors.Wrap(err, "Error while sending STABLEUSD back")
 		}
 	} else {
-		_, stablecoinHash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
+		_, stablecoinHash, err = assets.SendAsset(openxconsts.AnchorUSDCode, openxconsts.AnchorUSDAddress, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
 		if err != nil {
 			return -1, errors.Wrap(err, "Error while sending STABLEUSD back")
 		}
@@ -276,20 +279,20 @@ func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, 
 	// so we can't burn them
 	var oldPlatformBalance float64
 	var err error
-	oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
+	oldPlatformBalance, err = xlm.GetAssetBalance(openxconsts.PlatformPublicKey, openxconsts.StablecoinCode)
 	if err != nil {
 		// platform does not have stablecoin, shouldn't arrive here ideally
 		oldPlatformBalance = 0
 	}
 
 	var txhash string
-	if !consts.Mainnet {
-		_, txhash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, consts.PlatformPublicKey, invAmount, invSeed, memo)
+	if !openxconsts.Mainnet {
+		_, txhash, err = assets.SendAsset(openxconsts.StablecoinCode, openxconsts.StablecoinPublicKey, openxconsts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
 		}
 	} else {
-		_, txhash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, consts.PlatformPublicKey, invAmount, invSeed, memo)
+		_, txhash, err = assets.SendAsset(openxconsts.AnchorUSDCode, openxconsts.AnchorUSDAddress, openxconsts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
 		}
@@ -299,13 +302,13 @@ func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, 
 	time.Sleep(5 * time.Second) // wait for a block
 
 	var newPlatformBalance float64
-	if !consts.Mainnet {
-		newPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
+	if !openxconsts.Mainnet {
+		newPlatformBalance, err = xlm.GetAssetBalance(openxconsts.PlatformPublicKey, openxconsts.StablecoinCode)
 		if err != nil {
 			return txhash, errors.Wrap(err, "error while getting asset balance")
 		}
 	} else {
-		newPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
+		newPlatformBalance, err = xlm.GetAssetBalance(openxconsts.PlatformPublicKey, openxconsts.AnchorUSDCode)
 		if err != nil {
 			return txhash, errors.Wrap(err, "error while getting asset balance")
 		}

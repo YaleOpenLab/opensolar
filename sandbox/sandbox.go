@@ -12,7 +12,7 @@ import (
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	consts "github.com/YaleOpenLab/openx/consts"
 	// database "github.com/YaleOpenLab/openx/database"
-	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	core "github.com/YaleOpenLab/opensolar/core"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
@@ -27,14 +27,14 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 		return errors.Wrap(err, "error while reading values from config file")
 	}
 
-	project, err := opensolar.RetrieveProject(projIndex)
+	project, err := core.RetrieveProject(projIndex)
 	if err != nil {
 		return err
 	}
 
 	termsHelper := viper.Get("Terms").(map[string]interface{})
 	if projIndex == 8 {
-		terms := make([]opensolar.TermsHelper, 9)
+		terms := make([]core.TermsHelper, 9)
 		i := 0
 		for _, elem := range termsHelper {
 			// elem inside here is a map of "variable": values.
@@ -50,7 +50,7 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 
 		project.Terms = terms
 	} else {
-		terms := make([]opensolar.TermsHelper, 6)
+		terms := make([]core.TermsHelper, 6)
 		i := 0
 		for _, elem := range termsHelper {
 			// elem inside here is a map of "variable": values.
@@ -67,7 +67,7 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 		project.Terms = terms
 	}
 
-	var executiveSummary opensolar.ExecutiveSummaryHelper
+	var executiveSummary core.ExecutiveSummaryHelper
 
 	execSummaryReader := viper.Get("ExecutiveSummary.Investment").(map[string]interface{})
 	execSummaryWriter := make(map[string]string)
@@ -99,14 +99,14 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 
 	project.ExecutiveSummary = executiveSummary
 
-	var bullets opensolar.BulletHelper
+	var bullets core.BulletHelper
 	bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
 	bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
 	bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
 
 	project.Bullets = bullets
 
-	var architecture opensolar.ArchitectureHelper
+	var architecture core.ArchitectureHelper
 
 	architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
 	architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
@@ -169,8 +169,8 @@ func parseYaml(fileName string, feJson string) error {
 		return errors.Wrap(err, "error while reading values from config file")
 	}
 
-	var project opensolar.Project
-	terms := make([]opensolar.TermsHelper, 6)
+	var project core.Project
+	terms := make([]core.TermsHelper, 6)
 	termsHelper := viper.Get("Terms").(map[string]interface{})
 
 	i := 0
@@ -187,7 +187,7 @@ func parseYaml(fileName string, feJson string) error {
 	}
 
 	project.Terms = terms
-	var executiveSummary opensolar.ExecutiveSummaryHelper
+	var executiveSummary core.ExecutiveSummaryHelper
 
 	execSummaryReader := viper.Get("ExecutiveSummary.Investment").(map[string]interface{})
 	execSummaryWriter := make(map[string]string)
@@ -219,14 +219,14 @@ func parseYaml(fileName string, feJson string) error {
 
 	project.ExecutiveSummary = executiveSummary
 
-	var bullets opensolar.BulletHelper
+	var bullets core.BulletHelper
 	bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
 	bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
 	bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
 
 	project.Bullets = bullets
 
-	var architecture opensolar.ArchitectureHelper
+	var architecture core.ArchitectureHelper
 
 	architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
 	architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
@@ -389,7 +389,7 @@ func parseJsonText(fileName string) (map[string]interface{}, error) {
 
 // seed additional data for a few specific investors that are useful for showing in demos
 func populateAdditionalData() error {
-	openlab, err := opensolar.RetrieveInvestor(46)
+	openlab, err := core.RetrieveInvestor(46)
 	if err != nil {
 		return err
 	}
@@ -410,7 +410,7 @@ func populateAdditionalData() error {
 	}
 
 	// insert data for one specific recipient
-	pasto, err := opensolar.RetrieveRecipient(47)
+	pasto, err := core.RetrieveRecipient(47)
 	if err != nil {
 		return err
 	}
@@ -429,7 +429,7 @@ func populateAdditionalData() error {
 	if err != nil {
 		return err
 	}
-	dci, err := opensolar.RetrieveEntity(1)
+	dci, err := core.RetrieveEntity(1)
 	if err != nil {
 		return err
 	}
@@ -448,13 +448,13 @@ func populateAdditionalData() error {
 	}
 
 	// we now need to register the dci as an investor as well
-	var inv opensolar.Investor
+	var inv core.Investor
 	inv.U = dci.U
 	err = inv.Save()
 	if err != nil {
 		return err
 	}
-	var recp opensolar.Recipient
+	var recp core.Recipient
 	recp.U = dci.U
 	err = recp.Save()
 	if err != nil {
@@ -485,7 +485,7 @@ func populateAdditionalData() error {
 	}
 	log.Println("TX HASH for dci getting stableUSD: ", txhash)
 
-	recp, err = opensolar.RetrieveRecipient(47)
+	recp, err = core.RetrieveRecipient(47)
 	if err != nil {
 		return err
 	}
@@ -585,7 +585,7 @@ func populateAdditionalData() error {
 		log.Fatal(err)
 	}
 
-	project, err := opensolar.RetrieveProject(8)
+	project, err := core.RetrieveProject(8)
 	if err != nil {
 		log.Fatal(err)
 	}
