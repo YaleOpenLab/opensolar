@@ -1,0 +1,286 @@
+{
+  "id": 8,
+  "terms": {
+    "description": "Proceeds from this project covered the development of the 10 kW grid-tied solar array, vehicle company cost and O&M. "
+  },
+  "opportunity": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "OPPORTUNITY"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "Description"
+    }, {
+      "type": "text",
+      "value": "This community of Cyangugu has no access to electricity yet shows a growing local economy. This microgrid project, developed in collaboration with Rwandan Green Fund (FONERWA), Yale and MIT, aims to serve 250 homes, including its only school, ‘Sunshine Garden,' the town infirmary led by a team of doctors without borders, and the town hall. The school principal has taken the role of originator and convened the community in 5 occasions. The agreed form of development is through a community-owned cooperative Village Energy Collective' which is in early stages of incorporation and listing on the Rwanda Stock Exchange. The Rwandan Green Fund has agreed to place 20% of the total investment in a first-loss escrow, they are expected to formally sign when the project achieves stage 2. The current raise has a cap of $5000 to cover due diligence, pre-feasibility engineering, legal costs and technical request for proposal from solar developers. Early investors will have a premium on the stock value ratio. Potential risks of the project not advancing past stage 3 include tariff disagreements between offtakers, and a dispute on a land strip where one array will be located. "
+    }]
+  }, {
+    "width": 6,
+    "content": [{
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-opportunity-1.jpg",
+      "height": 319
+    }]
+  }, {
+    "width": 6,
+    "content": [{
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-opportunity-2.jpg",
+      "height": 319
+    }]
+  }],
+  "context": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "Context"
+    }]
+  }, {
+    "width": 8,
+    "content": [{
+      "type": "header",
+      "value": "Leapfrogging coal plants with community solar microgrids"
+    }, {
+      "type": "text",
+      "value": "The main electricity grid in the province does not serve all surrounding towns, particularly those in the elevated hills. Rwanda's economy has grown at double digits in the past three years along with its demand for electricity. The government has approached energy access through the deployment of decentralised solar microgrids in villages to more rapidly offer electricity to rural communities."
+    }, {
+      "type": "text",
+      "value": "This village is a historic settlement that developed around a small coal mine, depleted in 1997, and turned into an agriculture and artisan community. It's primary production is goat cheese and powdered pigments used in paint blends, coming from the decommissioned mine. Artists actively use these pigments for iconic colorful art pieces sold in Kigali's markets."
+    }]
+  }, {
+    "width": 4,
+    "content": [{
+      "type": "image",
+      "value": "https://s3.amazonaws.com/cz-public-images/openx/Map.png",
+      "height": 248
+    }]
+  }],
+  "engineering": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "Architecture / Project Design"
+    }]
+  }, {
+    "width": 5,
+    "content": [{
+      "type": "header",
+      "value": "Map Layout"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-architecture.png",
+      "height": 538
+    }]
+  }, {
+    "width": 3,
+    "content": [{
+      "type": "header",
+      "value": "Solar Output"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-solargen.png",
+      "height": 538
+    }]
+  }, {
+    "width": 4,
+    "content": [{
+      "type": "header",
+      "value": "Design Description"
+    }, {
+      "type": "text",
+      "value": "The current proposed layout involves a 25 kW array on the school roof, 25 kW between the town hall and the infirmary, and two other 25kW arrays flanking the residential sector of the village. Each array will hold an inverter, IoT powermeter, and transactive hub so that supply and demand can be balanced between the four nodes. Only a 25 kWh battery bank will be connected to the infirmary's inverter but with a direct connection to the schools hyper critical loads like food and medicine refrigeration units."
+    }]
+  }],
+  "architecture": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "ENGINEERING / SOLAR PROPERTIES"
+    }]
+  }, {
+    "width": 7,
+    "content": [{
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-engineering.png",
+      "height": 437
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "Each house in the village will have a micro-meter with digital ID, connected to one of the two residential 25 kW arrays. Each powermeter has a load cap and assigned wallet. Residential offtakers can load funds through their mobile sms-based banking.  The town has a radio frequency antenna installed by telecomm, so powermeters will connect through a mesh zigbee network, routing information to a receiver antenna with internet connectivity. The project will be designed and supervised by the Yale IoT lab and will receive a donated community networking service to perform remote governance decisions, messaging and file sharing."
+    }]
+  }],
+  "community": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "Community Engagement"
+    }]
+  }, {
+    "width": 3,
+    "content": [{
+      "type": "header",
+      "value": "Consultation"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-community-1.jpg",
+      "height": 162
+    }, {
+      "type": "text",
+      "value": "The school principal, convened 5 meetings with over 60 participants to discuss the project development. Members of the community gathered to discuss the project, with unanimous approval and significant interest for its ownership model. The town was interested in the transactive capacity of the system, since they can divert energy to the cheese manufacturing plant during the month of October and November. Residential off takers were concerned about meeting tariff demands, but were alleviated to know that they can opt for a pay-per-use model connected to their digital wallets."
+    }]
+  }, {
+    "width": 3,
+    "content": [{
+      "type": "header",
+      "value": "Participation"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-community-2.jpg",
+      "height": 162
+    }, {
+      "type": "text",
+      "value": "The school and the town hall have agreed to hold recurring workshops over the next 12 months to do capacity building around solar microgrid management. The engineering department of the University have agreed to do solar and electronic workshops for the town's electrician in order to boost their self-reliance in case of technical failures."
+    }]
+  }, {
+    "width": 3,
+    "content": [{
+      "type": "header",
+      "value": "Outreach"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-community-3.jpg",
+      "height": 162
+    }, {
+      "type": "text",
+      "value": "Village Energy Collective will be part of the subnational cooperation network on climate action. This project will be a flagship development in the network, that spans Rwanda, Kenya Uganda and Burundi, and receives zero interest loans from the Climate Fund."
+    }]
+  }, {
+    "width": 3,
+    "content": [{
+      "type": "header",
+      "value": "Governance"
+    }, {
+      "type": "image",
+      "value": "https://images.openx.solar/demo/rwanda-community-4.jpg",
+      "height": 162
+    }, {
+      "type": "text",
+      "value": "The school and the town hall have agreed to host meetings and workshops to perform collective decisions in regards to the microgrid. The mobile banking system and powermeters holds voting capacity, so workshops will also include the blockchain-based coop voting mechanism."
+    }]
+  }, {
+    "width": 8,
+    "content": [{
+      "type": "link",
+      "link": "#",
+      "value": "Link to community impact report >"
+    }]
+  }],
+  "business": [{
+    "width": 12,
+    "content": [{
+      "type": "title",
+      "value": "Business Numbers & Payment Scheme"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "How this equity investment opportunity works"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "The current raise will cover pre-feasibility costs, with a 1.3 ratio on equity value. Stage 2 and 3 investments will have 1.2 and 1.1 respectively. The main raise in stage 4 is expected to be around $230'000. Crowd investors will purchase common equity, non-voting. Dividend payments to crowdfunded equity investors occurs after distributing a transparent cash waterfall to capital accounts (e.g. senior debt, Stage 1 crowdfunders, Stage 2 crowdfunders, etc.) on a quarterly basis."
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "Capital Expenditure"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "The expected capital cost will be defined once all tenders are defined in stage 3. Solar developers are allocated an ability to manage 80% management of capital costs."
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "Project Revenue"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "The project derives revenue from three tiers of offtake agreements. The school and town hall has agreed a fixed PPA of $0.17/kWh, the infirmary at $0.15/kWh, and residential offtakers have a variable agreement of $0.12/kWh, escalating at 2.5% per year for inflation. Only residential offtakers have not committed signatures for these agreements and can enter or leave contracts similar to adding minutes to a prepaid phone."
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "Project Expenses"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "The project will have an allocated O&M (Operation & Management) expense of 15% of total project cost."
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "header",
+      "value": "Net Income"
+    }]
+  }, {
+    "width": 12,
+    "content": [{
+      "type": "text",
+      "value": "Payments made by offtakers accrue to amortize the infrastructure cost raised by crowdfunded equity , upon which the community will have reduced tariffs to cover O&M."
+    }]
+  }],
+  "stages": {
+    "graph": {
+      "imageUrl": "https://via.placeholder.com/50x50",
+      "stages": [{
+        "index": 0,
+        "date": "May 2018"
+      }, {
+        "index": 1,
+        "date": "Jul 2018"
+      }, {
+        "index": 2,
+        "date": "Oct 2018"
+      }, {
+        "index": 3,
+        "date": "Dec 2018"
+      }, {
+        "index": 4,
+        "date": "Jan 2019"
+      }, {
+        "index": 5,
+        "date": "Feb 2019"
+      }, {
+        "index": 6,
+        "date": "Mar 2019"
+      }, {
+        "index": 7,
+        "date": "Apr 2019"
+      }, {
+        "index": 8,
+        "date": "May 2019"
+      }],
+      "stageDescription": "The project is in stage 1, where the project idea is still in discussion but main parties have been defined and verbal agreements have been achieved. Pre feasibility assessments are being done in order to have an RFP to receive formal quotes from developers. This stage has high investment risk since formal contracts and final quotes have not been defined."
+    },
+    "url": "#"
+  }
+}

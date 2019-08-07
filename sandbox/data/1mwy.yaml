@@ -1,0 +1,108 @@
+# Have all the frontend sandbox params here and avoid cluttering the frontend
+Index:                     5
+Name:                      "Lancaster Mutual Solar"
+State:                     "NH"
+Country:                   "US"
+TotalValue:                2000000.0
+PanelSize:                 "1MW"
+PanelTechnicalDescription: ""
+Inverter:                  ""
+ChargeRegulator:           ""
+ControlPanel:              ""
+CommBox:                   ""
+ACTransfer:                ""
+SolarCombiner:             ""
+Batteries:                 "210 kWh 1x Tesla Powerpack"
+IoTHub:                    ""
+Rating:                    "AAA"
+Metadata:                  "Neighborhood 1MW solar array on the field next to Lancaster Elementary High School. The project was originated by the head of the community organization, Ben Southworth, who is also active in the parent teacher association (PTA). The city of Lancaster has agreed to give a 20 year lease of the land to the project if the school gets to own the solar array after the lease expires. The school is located in an opportunity zone"
+EstimatedAcquisition:      20
+BalLeft:                   -1.1
+InterestRate:              0.05
+Tax:                       "Tax free Opportunity Zone"
+DateInitiated:             ""
+DateFunded:                ""
+AuctionType:               "blind"
+InvestmentType:            "munibond"
+PaybackPeriod:             4
+Stage:                     4
+SeedInvestmentFactor:      1.1
+SeedInvestmentCap:         500.0
+ProposedInvestmentCap:     15000.0
+SelfFund:                  0.0
+SecurityIssuer:            "Lancaster Mutual Fund"
+BrokerDealer:              "Neighborly Securities"
+EngineeringLayoutType:     "complex"
+MapLink:                   "https://goo.gl/maps/sv8D8kjPHAv"
+Terms:
+  Terms1:
+    Variable:              "Security Type"
+    Value:                 "Equity Notes"
+    RelevantParty:         "Lancaster Mutual Solar"
+    Note:                  "Co-owned by the town of Lancaster"
+    Status:                "Issued"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms2:
+    Variable:              "PPA Avg. Tariff"
+    Value:                 "0.18 ct/KWh"
+    RelevantParty:         "Multiple Parties"
+    Note:                  "Local schools ans business offtaking"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms3:
+    Variable:              "Return (TEY)"
+    Value:                 "4.8%"
+    RelevantParty:         "Broker Dealer"
+    Note:                  "Tax equivalent yield, with capital gains"
+    Status:                "Approv"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms4:
+    Variable:              "Maturity"
+    Value:                 "2026"
+    RelevantParty:         "Broker Dealer"
+    Note:                  "By convertible notes"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms5:
+    Variable:              "Guarantee"
+    Value:                 "50000"
+    RelevantParty:         "NH Green Bank"
+    Note:                  "First-loss escrow upon breach"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms6:
+    Variable:              "Insurance"
+    Value:                 "Premium"
+    RelevantParty:         "Allstate"
+    Note:                  "Force Majeur"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+ExecutiveSummary:
+  Investment:
+    Capex:                 "2000000"
+    Hardware Ratio:        "62"
+    First-Loss-Escrow:     "50000"
+    Maturity(Fixed):       "2029"
+  Financials:
+    Return (TEY):          "4.8"
+    Insurance:             "Premium"
+    Tariff (Variable):     "0.18 ct/kWh"
+    REC Value:             "$154"
+  ProjectSize:
+    PV Solar:              "1 MW"
+    Storage:               "210kWh"
+    Array Style:           "Land & Roof"
+    Inverter Capacity:     "1.25 MW"
+  SustainabilityMetrics:
+   Carbon Drawdown:        "0.1 t/kWh"
+   Community Value:        "6/7"
+   LCA:                    "7/7"
+Bullets:
+  Bullet1:                 "Eligible for Opportunity Zone Investments"
+  Bullet2:                 "Community owned mutual funds as bond issuer"
+  Bullet3:                 "1 MW grid with full offtake agreements"
+Architecture:
+  SolarArray:              "1000 kW"
+  DailyAvgGeneration:      "4000 kWh"
+  System:                  "Battery + Grid"
+  InverterSize:            "1.25MW"

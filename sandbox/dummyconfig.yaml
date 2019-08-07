@@ -1,0 +1,4 @@
+# rename this to config.yaml before starting
+email: myemail@domain.extension
+password: topsecretpassword
+platformemail: platform@openx.com

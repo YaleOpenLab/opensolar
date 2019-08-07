@@ -1,0 +1,130 @@
+# Have all the frontend sandbox params here and avoid cluttering the frontend
+Index:                     8
+Name:                      "Village Energy Collective, Rural Microgrid"
+City:			                 "Cyangugu"
+State:                     "Rusizi District, Western Province"
+Country:                   "Rwanda"
+TotalValue:                230000.0
+PanelSize:                 "100kW"
+PanelTechnicalDescription: ""
+Inverter:                  ""
+ChargeRegulator:           ""
+ControlPanel:              ""
+CommBox:                   ""
+ACTransfer:                ""
+SolarCombiner:             ""
+Batteries:                 ""
+IoTHub:                    ""
+Rating:                    "Premium"
+Metadata:                  "This community in Rwanda has no access to electricity yet shows a growing local economy. This microgrid project, developed a collaboration with the Rwandan Green Fund (FONERWA), Yale and MIT, aims to serve 250 homes with solar electricity and electric appliances (e.g. lamps, phone chargers, radio, and battery), as well as a school, the town infirmary led by a team of doctors without borders, and the town hall. This is a community-led cooperative with international backing. 20% first loss funds secured through Rwandan Green Fund. Currently doing engineering due diligence for development quotes."
+EstimatedAcquisition:      0
+BalLeft:                   0.0
+InterestRate:              0.023
+Tax:                       "0.3 Tax Credit"
+DateInitiated:             "03/25/2019"
+DateFunded:                ""
+AuctionType:               "blind"
+InvestmentType:            "munibond" # munibond in order for the platform in order to work without problems
+PaybackPeriod:             4
+Stage:                     1
+SeedInvestmentFactor:      1.3
+SeedInvestmentCap:         100000.0
+ProposedInvestmentCap:     230000.0
+SelfFund:                  0.0
+SecurityIssuer:            "Village Energy Collective"
+BrokerDealer:              ""
+EngineeringLayoutType:     "basic"
+MapLink:                   "https://goo.gl/maps/x8Cpr1C37V6ckHNLA"
+Terms:
+  Terms1:
+    Variable:              "Security Type"
+    Value:                 "Non-voting common stock"
+    RelevantParty:         "Village Energy Collective"
+    Note:                  "Special Purpose Vehicle"
+    Status:                "Engagement"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms2:
+    Variable:              "Offtaker1"
+    Value:                 "0.17 ct/KWh"
+    RelevantParty:         "Sunshine Garden School"
+    Note:                  "Fixed PPA determined by offtaker"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms3:
+    Variable:              "Offtaker2"
+    Value:                 "0.17 ct/KWh"
+    RelevantParty:         "Town Hall"
+    Note:                  "Fixed PPA determined by offtaker"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms4:
+    Variable:              "Offtaker3"
+    Value:                 "0.15 ct/KWh"
+    RelevantParty:         "Infirmary"
+    Note:                  "Fixed PPA determined by offtaker"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms5:
+    Variable:              "Offtaker4"
+    Value:                 "0.12 ct/KWh, escalating 2.5% per year"
+    RelevantParty:         "Residential Offtakers"
+    Note:                  "Fixed PPA determined by offtaker"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms6:
+    Variable:              "Return"
+    Value:                 "130%"
+    RelevantParty:         "Equity Value"
+    Note:                  "Growth in value. No tax incentives"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms7:
+    Variable:              "Ownership Flip"
+    Value:                 "2039"
+    RelevantParty:         "Project Managers"
+    Note:                  "Crowd investors sell stock"
+    Status:                "Flipped"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms8:
+    Variable:              "Guarantee"
+    Value:                 "$46,000"
+    RelevantParty:         "Rwanda Green Fund"
+    Note:                  "Rwanda Green Bank covers 20% of first-loss"
+    Status:                "Guarantor Secured"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms9:
+    Variable:              "Insurance"
+    Value:                 "Basic"
+    RelevantParty:         "Swiss Reinsurance"
+    Note:                  "Force Majeur"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+ExecutiveSummary:
+  Investment:
+    Capex :                "230000"
+    Hardware :             "$3 Non Voting"
+    Raise Type :           "Reg CF"
+    Certification :        "N/A"
+  Financials:
+    Equity Value:          "130%"
+    Insurance:             "Basic"
+    Tariff(Fixed):         "0.12 ct/kWh"
+    Maturity(Fixed):       "2019"
+  ProjectSize:
+    PV Solar:              "100 kW"
+    Storage:               "25kw"
+    Critical:              "100"
+    Inverter Capacity:     "3 x 30kW"
+  SustainabilityMetrics:
+   Carbon Drawdown:        "0.1 t/kWh"
+   Community Value:        "7/7"
+   LCA:                    "N/A"
+Bullets:
+  Bullet1:                 "Village Energy Collective, Off-grid Rural Microgrid, Rwanda (Theoretical)"
+  Bullet2:                 "Siginificantly alleviates financial pressure due to low power cost, and new investment opportunities to democratize and own the green infrastructure of tomorrow"
+  Bullet3:                 "Grid-tied with REC offtaking"
+Architecture:
+  SolarArray:              "50 x 200W"
+  DailyAvgGeneration:      "20000 Wh"
+  System:                  "off-grid"
+  InverterSize:            "3 x 30 kW"

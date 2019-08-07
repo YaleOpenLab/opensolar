@@ -1,0 +1,108 @@
+# Have all the frontend sandbox params here and avoid cluttering the frontend
+Index:                     4
+Name:                      "Pasto Public School - POC 1 kW"
+State:                     "Puerto Rico"
+Country:                   "US"
+TotalValue:                10000.0
+PanelSize:                 "1kW"
+PanelTechnicalDescription: "10x 100W Komaes"
+Inverter:                  "Schneider Conext SW 230V 2024"
+ChargeRegulator:           "Schneider MPPT60"
+ControlPanel:              "Schneider XW SCP"
+CommBox:                   "Schneider Conext Insight"
+ACTransfer:                "Eaton Manual throw switches between grid and solar+grid setups"
+SolarCombiner:             "MidNite"
+Batteries:                 "Advance Autoparts Deep cycle 600A"
+IoTHub:                    "Yale Open Powermeter w/ RaspberryPi3"
+Rating:                    "N/A"
+Metadata:                  "This project is a pilot initiative from MIT MediaLab's DCI & the Yale Openlab at Tsai CITY, as to integrate the opensolar platforms with IoT data and blockchain based payment systems to help finance community energy in Puerto Rico"
+EstimatedAcquisition:      5
+BalLeft:                   10000.0
+InterestRate:              0.029
+Tax:                       "Insert tax scheme here"
+DateInitiated:             "01/23/2018"
+DateFunded:                "06/19/2018"
+AuctionType:               "private"
+InvestmentType:            "munibond"
+PaybackPeriod:             4
+Stage:                     7
+SeedInvestmentFactor:      1.1
+SeedInvestmentCap:         500.0
+ProposedInvestmentCap:     15000.0
+SelfFund:                  0.0
+SecurityIssuer:            "Neighborly Securities"
+BrokerDealer:              "Neighborly Securities"
+MapLink:                   "https://goo.gl/maps/kprW9Uxqgr52"
+EngineeringLayoutType:     "basic"
+Terms:
+  Terms1:
+    Variable:              "Security Type"
+    Value:                 "Municipal Bond"
+    RelevantParty:         "PR DofEd"
+    Note:                  "Promoted by PR governor's office"
+    Status:                "Demo"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms2:
+    Variable:              "PPA Tariff"
+    Value:                 "0.24 ct/KWh"
+    RelevantParty:         "oracle X / PREPA"
+    Note:                  "Variable anchored to local tariff"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms3:
+    Variable:              "Return (TEY)"
+    Value:                 "3.1%"
+    RelevantParty:         "Broker Dealer"
+    Note:                  "Variable tied to tariff"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms4:
+    Variable:              "Maturity"
+    Value:                 "+/- 2025"
+    RelevantParty:         "Broker Dealer"
+    Note:                  "Tax adjusted Yield"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms5:
+    Variable:              "Guarantee"
+    Value:                 "50%"
+    RelevantParty:         "Foundation X"
+    Note:                  "First-loss upon breach"
+    Status:                "Started"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms6:
+    Variable:              "Insurance"
+    Value:                 "Premium"
+    RelevantParty:         "Allianz CS"
+    Note:                  "Hurricane Coverage"
+    Status:                "Started"
+    SupportDoc:            "https://openlab.yale.edu"
+ExecutiveSummary:
+  Investment:
+    Capex:                 "5000"
+    Hardware:              "60"
+    First-Loss-Escrow:     "30%"
+    Certification Costs:   "N/A"
+  Financials:
+    Return(TEY):           "3.1"
+    Insurance:             "Premium"
+    Tariff (Variable):     "0.24 ct/kWh"
+    Maturity (Variable):   "2028"
+  ProjectSize:
+    PV Solar:              "1 kW"
+    Storage:               "200 Wh"
+    Critical:              "2"
+    Inverter Capacity:     "2.5 kW"
+  SustainabilityMetrics:
+    Carbon Drawdown:       "0.1 t/kWh"
+    Community Value:       "5/7"
+    LCA:                   "N/A"
+Bullets:
+  Bullet1:                 "Research project on smart financing"
+  Bullet2:                 "Critical loads to the Admin Building"
+  Bullet3:                 "Grid-tied and storage"
+Architecture:
+  SolarArray:              "10x 100 W"
+  DailyAvgGeneration:      "4000 kWh"
+  System:                  "600A Deep Cycle"
+  InverterSize:            "2024W 230V"

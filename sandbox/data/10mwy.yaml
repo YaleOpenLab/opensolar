@@ -1,0 +1,108 @@
+# Have all the frontend sandbox params here and avoid cluttering the frontend
+Index:                     7
+Name:                      "Puerto Rico Solar School Bond 1"
+State:                     "Puerto Rico"
+Country:                   "US"
+TotalValue:                19000000.0
+PanelSize:                 "10MW"
+PanelTechnicalDescription: ""
+Inverter:                  ""
+ChargeRegulator:           ""
+ControlPanel:              ""
+CommBox:                   ""
+ACTransfer:                ""
+SolarCombiner:             ""
+Batteries:                 "900Ah"
+IoTHub:                    ""
+Rating:                    "AA+"
+Metadata:                  "Transformation of 300 Puerto Rican public schools into solar powered emergency shelters. Each school will have around 30kW solar and 2kWh battery bank to cover critical loads including refrigeration of food and medicine, and an emergency telecommunication system with first responders. Backed by the Office of the Governor. 10 MW aggregate solar capacity. Nodes for community microgrids"
+EstimatedAcquisition:      8
+BalLeft:                   -1.1
+InterestRate:              0.029
+Tax:                       ""
+DateInitiated:             "01/23/2019"
+DateFunded:                ""
+AuctionType:               "private"
+InvestmentType:            "munibond"
+PaybackPeriod:             4
+Stage:                     2
+SeedInvestmentFactor:      1.1
+SeedInvestmentCap:         500.0
+ProposedInvestmentCap:     15000.0
+SelfFund:                  0.0
+SecurityIssuer:            "Neighborly Securities"
+BrokerDealer:              "Neighborly Securities"
+EngineeringLayoutType:     "simple"
+MapLink:                   "https://goo.gl/maps/kprW9Uxqgr52"
+Terms:
+  Terms1:
+    Variable:              "Security Type"
+    Value:                 "Municipal Bond"
+    RelevantParty:         "PR DofEd"
+    Note:                  "Not yet issued. See informal Agreements"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms2:
+    Variable:              "PPA Tariff"
+    Value:                 "0.24 ct/KWh"
+    RelevantParty:         "Oracle X / PREPA"
+    Note:                  "Not signed. Expected as variable tariff"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms3:
+    Variable:              "Return (TEY)"
+    Value:                 "3.5%"
+    RelevantParty:         "See Broker Dealer"
+    Note:                  "Tax equivalent yield with capital gains"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms4:
+    Variable:              "Maturity"
+    Value:                 "+/- 2025"
+    RelevantParty:         "Broker Dealer"
+    Note:                  "Variable tied to tariff"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms5:
+    Variable:              "Guarantee"
+    Value:                 "15%"
+    RelevantParty:         "FEMA"
+    Note:                  "First-loss upon breach"
+    Status:                "Started"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms6:
+    Variable:              "Insurance"
+    Value:                 "Premium"
+    RelevantParty:         "Allianz CS"
+    Note:                  "Hurricane Coverage"
+    Status:                "Started"
+    SupportDoc:            "https://openlab.yale.edu"
+ExecutiveSummary:
+  Investment:
+    Capex:                 "19000000"
+    Hardware Ratio:        "70"
+    First-Loss-Escrow:     "15%"
+    Maturity:              "2028"
+  Financials:
+    Expected Return (Non TEY): "2.5%"
+    Insurance:             "Basic Force Majeur"
+    Tariff (Variable):     "0.24 ct/kWh"
+    REC Value:             "$234/MWh"
+  ProjectSize:
+    PV Solar:              "300 x 30kW"
+    Storage:               "350 x 2.5 kWh"
+    Critical:              "20"
+    Inverter Capacity:     "300 x 35 kW"
+  SustainabilityMetrics:
+   Carbon Drawdown:        "0.1t/kWh"
+   Community Value:        "6/7"
+   LCA:                    "N/A"
+Bullets:
+  Bullet1:                 "Backed by the Governor's office"
+  Bullet2:                 "Critical Loads covered (telecom and refrigeration)"
+  Bullet3:                 "Certification of social impact"
+Architecture:
+  SolarArray:              "300 x 30kW"
+  DailyAvgGeneration:      "400 MWh"
+  System:                  "350 Tesla Powerwells"
+  InverterSize:            "300 x 35 kW"

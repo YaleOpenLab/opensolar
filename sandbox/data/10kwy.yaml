@@ -1,0 +1,108 @@
+# Have all the frontend sandbox params here and avoid cluttering the frontend
+Index:                     6
+Name:                      "New Haven Shelter Solar 2"
+State:                     CT"
+Country:                   "US"
+TotalValue:                30000.0
+PanelSize:                 "10kW"
+PanelTechnicalDescription: ""
+Inverter:                  ""
+ChargeRegulator:           ""
+ControlPanel:              ""
+CommBox:                   ""
+ACTransfer:                ""
+SolarCombiner:             ""
+Batteries:                 ""
+IoTHub:                    ""
+Rating:                    "Premium"
+Metadata:                  "Residential solar array for a homeless shelter. The project was originated by a member of the board of the homeless shelter who gets the shelter to purchase all the electricity at a discounted rate. The shelter chooses to lease the roof for free over the lifetime of the project. The originator knows the solar developer who set up the project company"
+EstimatedAcquisition:      0
+BalLeft:                   0.0
+InterestRate:              0.05
+Tax:                       "0.3 Tax Credit"
+DateInitiated:             ""
+DateFunded:                ""
+AuctionType:               "blind"
+InvestmentType:            "munibond"
+PaybackPeriod:             4
+Stage:                     8
+SeedInvestmentFactor:      1.1
+SeedInvestmentCap:         500.0
+ProposedInvestmentCap:     15000.0
+SelfFund:                  0.0
+SecurityIssuer:            ""
+BrokerDealer:              ""
+EngineeringLayoutType:     "basic"
+MapLink:                   "https://goo.gl/maps/jNR4VGJQkin"
+Terms:
+  Terms1:
+    Variable:              "Security Type"
+    Value:                 "Reg CF"
+    RelevantParty:         "NH Community Solar"
+    Note:                  "Special Purpose Vehicle"
+    Status:                "Flipped"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms2:
+    Variable:              "PPA Tariff"
+    Value:                 "0.12 ct/KWh"
+    RelevantParty:         "NH Homeless Shelter"
+    Note:                  "Fixed PPA determined by offtaker"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms3:
+    Variable:              "Return"
+    Value:                 "130%"
+    RelevantParty:         "Equity Value"
+    Note:                  "Growth in value. No tax incentives"
+    Status:                "Open"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms4:
+    Variable:              "Ownership Flip"
+    Value:                 "2019"
+    RelevantParty:         "Convertible Note"
+    Note:                  "Crowd investors sell stock"
+    Status:                "Flipped"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms5:
+    Variable:              "Guarantee"
+    Value:                 "N/A"
+    RelevantParty:         "N/A"
+    Note:                  "No guarantees of breach"
+    Status:                "None"
+    SupportDoc:            "https://openlab.yale.edu"
+  Terms6:
+    Variable:              "Insurance"
+    Value:                 "Basic"
+    RelevantParty:         "CT Insurers"
+    Note:                  "Force Majeur"
+    Status:                "Signed"
+    SupportDoc:            "https://openlab.yale.edu"
+ExecutiveSummary:
+  Investment:
+    Capex :                "30000"
+    Hardware :             "$3 Non Voting"
+    Raise Type :           "Reg CF"
+    Certification :        "N/A"
+  Financials:
+    Equity Value:          "130%"
+    Insurance:             "Basic"
+    Tariff(Fixed):         "0.12 ct/kWh"
+    Maturity(Fixed):       "2019"
+  ProjectSize:
+    PV Solar:              "10 kW"
+    Storage:               "N/A Grid Tied"
+    Critical:              "100"
+    Inverter Capacity:     "15 kW"
+  SustainabilityMetrics:
+   Carbon Drawdown:        "0.1 t/kWh"
+   Community Value:        "7/7"
+   LCA:                    ""
+Bullets:
+  Bullet1:                 "Community owned solar in homeless shelter"
+  Bullet2:                 "Siginificantly alleviates financial pressure due to high CT power cost"
+  Bullet3:                 "Grid-tied with REC offtaking"
+Architecture:
+  SolarArray:              "50 x 200W"
+  DailyAvgGeneration:      "20000 Wh"
+  System:                  "Grid Tied"
+  InverterSize:            "15 kW"
