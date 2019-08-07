@@ -1,4 +1,4 @@
-package opensolar
+package database
 
 import (
 	"log"

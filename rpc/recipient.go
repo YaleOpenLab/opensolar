@@ -7,6 +7,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	openx "github.com/YaleOpenLab/openx/rpc"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
@@ -105,7 +106,7 @@ func registerRecipient() {
 		_, err := database.CheckUsernameCollision(username)
 		if err != nil {
 			// user already exists on the platform, need to retrieve the user
-			user, err := CheckReqdParams(w, r) // check whether this person is a user and has params
+			user, err := openx.CheckReqdParams(w, r) // check whether this person is a user and has params
 			if err != nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return

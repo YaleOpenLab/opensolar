@@ -1,0 +1,22 @@
+# rename this file to config.yaml and fill with appropriate values before starting the teller
+# the public key of the platform which must be public (audits, verification, etc)
+platformPublicKey: "GDULAIM6N6SIW7MWS3NDJPY3UIFOHSM4766WQ6O6EKFDBC7PF53VKYLY"
+# the seed pwd of the recipient
+seedpwd: x
+username: martin
+# store the raw password here, need this for authentication. will be hashed when passed
+password: p
+# the url of the platform (not of horizon)
+apiurl: "http://localhost:8080"
+# the project index part of which this teller has been installed
+projIndex: 1
+# This received asset must be the debt asset code of the particular order
+assetName: ""
+# The clientID of the IoT hub as defined by Stellar
+sclientid: "c0fe38566a254a3a80b2a42081b46843"
+# The clientSecret of the IoT hub as defined by Stellar
+sclientsecret: "46d10252a4954007af5e2f8941aeeb37"
+# The username used to logon to swytch
+susername: "pr-collab%40swytch.io"
+# The password used to logon to swytch
+spassword: "S%4091380ee5cfad455a919db9985f913f69"

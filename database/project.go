@@ -1,9 +1,10 @@
-package opensolar
+package database
 
 import (
-	platform "github.com/YaleOpenLab/openx/platforms"
-)
+	"log"
 
+  openx "github.com/YaleOpenLab/openx/platforms"
+)
 // A Project is the investment structure that will be invested in by people. In the case
 // of the opensolar platform, this is referred to as a solar system.
 
@@ -43,7 +44,7 @@ type Project struct {
 	// Define technical parameters
 	AuctionType           string  // the type of the auction in question. Default is blind auction unless explicitly mentioned
 	InvestmentType        string  // the type of investment - equity crowdfunding, municipal bond, normal crowdfunding, etc defined in models
-	PaybackPeriod         int     // the frequency in number of weeks that the recipient has to pay the platform.
+	PaybackPeriod         int     // the frequency in number of weeks that the recipient has to pay the platform
 	Stage                 int     // the stage at which the contract is at, float due to potential support of 0.5 state changes in the future
 	InvestorAssetCode     string  // the code of the asset given to investors on investment in the project
 	DebtAssetCode         string  // the code of the asset given to recipients on receiving a project
@@ -253,15 +254,83 @@ type ContractAuction struct {
 	WinningContract Project
 }
 
+const (
+	InvestorWeight         = 0.1 // the percentage weight of the project's total reputation assigned to the investor
+	OriginatorWeight       = 0.1 // the percentage weight of the project's total reputation assigned to the originator
+	ContractorWeight       = 0.3 // the percentage weight of the project's total reputation assigned to the contractor
+	DeveloperWeight        = 0.2 // the percentage weight of the project's total reputation assigned to the developer
+	RecipientWeight        = 0.3 // the percentage weight of the project's total reputation assigned to the recipient
+	NormalThreshold        = 1   // NormalThreshold is the normal payback interval of 1 payback period. Regular notifications are sent regardless of whether the user has paid back towards the project.
+	AlertThreshold         = 2   // AlertThreshold is the threshold above which the user gets a nice email requesting a quick payback whenever possible
+	SternAlertThreshold    = 4   // SternAlertThreshold is the threshold above when the user gets a warning that services will be disconnected if the user doesn't payback soon.
+	DisconnectionThreshold = 6   // DisconnectionThreshold is the threshold above which the user gets a notification telling that services have been disconnected.
+)
+
 type SolarProjectArray []Project
 
 // InitializePlatform imports handlers from the main platform struct that are necessary for starting the platform
 func InitializePlatform() error {
-	return platform.InitializePlatform()
+	return openx.InitializePlatform()
 }
 
 // RefillPlatform checks whether the publicKey passed has any xlm and if its balance
 // is less than 21 XLM, it proceeds to ask the friendbot for more test xlm
 func RefillPlatform(publicKey string) error {
-	return platform.RefillPlatform(publicKey)
+	return openx.RefillPlatform(publicKey)
+}
+
+// SetStage sets the stage of a project
+func (a *Project) SetStage(number int) error {
+	switch number {
+	case 3:
+		a.Reputation = a.TotalValue // upgrade reputation since totalValue might have changed from the originated contract
+		err := a.Save()
+		if err != nil {
+			log.Println("Error while saving project", err)
+			return err
+		}
+		err = RepOriginatedProject(a.OriginatorIndex, a.Index) // modify originator reputation now that the final price is fixed
+		if err != nil {
+			log.Println("Error while increasing reputation", err)
+			return err
+		}
+	case 5:
+		contractor, err := RetrieveEntity(a.ContractorIndex)
+		if err != nil {
+			log.Println("error while retrieving entity from db, quitting")
+			return err
+		}
+		err = contractor.U.ChangeReputation(a.TotalValue * ContractorWeight) // modify contractor Reputation now that a project has been installed
+		if err != nil {
+			log.Println("Couldn't increase contractor reputation", err)
+			return err
+		}
+
+		for _, i := range a.InvestorIndices {
+			elem, err := RetrieveInvestor(i)
+			if err != nil {
+				log.Println("Error while retrieving investor", err)
+				return err
+			}
+			err = elem.U.ChangeReputation(a.TotalValue * InvestorWeight)
+			if err != nil {
+				log.Println("Couldn't change investor reputation", err)
+				return err
+			}
+		}
+	case 6:
+		recp, err := RetrieveRecipient(a.RecipientIndex)
+		if err != nil {
+			return err
+		}
+		err = recp.U.ChangeReputation(a.TotalValue * RecipientWeight) // modify recipient reputation now that the system had begun power generation
+		if err != nil {
+			log.Println("Error while changing recipient reputation", err)
+			return err
+		}
+	default:
+		log.Println("default")
+	}
+	a.Stage = number
+	return a.Save()
 }
