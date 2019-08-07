@@ -8,7 +8,7 @@ import (
 )
 
 func setupUserRpcs() {
-  updateUser()
+	updateUser()
 }
 
 func updateUser() {

@@ -13,8 +13,8 @@ import (
 	openx "github.com/YaleOpenLab/openx/rpc"
 
 	core "github.com/YaleOpenLab/opensolar/core"
-	database "github.com/YaleOpenLab/openx/database"
 	notif "github.com/YaleOpenLab/opensolar/notif"
+	database "github.com/YaleOpenLab/openx/database"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 

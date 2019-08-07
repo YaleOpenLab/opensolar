@@ -1,11 +1,11 @@
 package loader
 
 import (
-	"os"
 	"log"
+	"os"
 
-	core "github.com/YaleOpenLab/opensolar/core"
 	consts "github.com/YaleOpenLab/opensolar/consts"
+	core "github.com/YaleOpenLab/opensolar/core"
 	//database "github.com/YaleOpenLab/openx/database"
 )
 

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	consts "github.com/YaleOpenLab/openx/consts"
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 

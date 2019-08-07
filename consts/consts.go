@@ -5,6 +5,21 @@ import (
 	"time"
 )
 
+// Start repeated params, use only for testing
+var PlatformPublicKey = ""
+var PlatformSeed = ""
+var PlatformEmail = ""
+var PlatformEmailPass = ""
+var StablecoinCode = ""
+var StablecoinPublicKey = ""
+var AnchorUSDCode = ""
+var AnchorUSDAddress = ""
+var AnchorUSDTrustLimit = 10000
+var AnchorAPI = ""
+var Mainnet = false
+
+// End repeated params
+
 var OpenxURL = "http://localhost:8080"
 
 // directories

@@ -8,10 +8,10 @@ import (
 	edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
-	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
 // Entity defines a common structure for contractors, developers and originators. Will be split

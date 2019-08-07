@@ -12,7 +12,7 @@ import (
 
 	ipfs "github.com/Varunram/essentials/ipfs"
 	utils "github.com/Varunram/essentials/utils"
-	consts "github.com/YaleOpenLab/openx/consts"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 	//	rpc "github.com/YaleOpenLab/openx/rpc"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"

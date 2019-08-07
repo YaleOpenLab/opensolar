@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	// "github.com/pkg/errors"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 
-	consts "github.com/YaleOpenLab/opensolar/consts"
-	openxconsts "github.com/YaleOpenLab/openx/consts"
-	loader "github.com/YaleOpenLab/opensolar/loader"
-	rpc "github.com/YaleOpenLab/openx/rpc"
 	erpc "github.com/Varunram/essentials/rpc"
+	consts "github.com/YaleOpenLab/opensolar/consts"
+	loader "github.com/YaleOpenLab/opensolar/loader"
+	openxconsts "github.com/YaleOpenLab/openx/consts"
+	rpc "github.com/YaleOpenLab/openx/rpc"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/spf13/viper"
 )
 
 var opts struct {
@@ -32,6 +33,47 @@ func ParseConfig(args []string) (bool, int, error) {
 	return opts.Insecure, port, nil
 }
 
+func checkViperParams(params ...string) error {
+	for _, param := range params {
+		if !viper.IsSet(param) {
+			return errors.New("required param: " + param + " not found")
+		}
+	}
+	return nil
+}
+
+func ParseConsts() error {
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Println("Error while reading platform email from config file")
+		return err
+	}
+
+	err = checkViperParams("PlatformPublicKey", "PlatformSeed", "PlatformEmail",
+		"PlatformEmailPass", "StablecoinCode", "StablecoinPublicKey", "AnchorUSDCode",
+		"AnchorUSDAddress", "AnchorUSDTrustLimit", "AnchorAPI", "Mainnet")
+	if err != nil {
+		return err
+	}
+
+	consts.PlatformPublicKey = viper.GetString("PlatformPublicKey")
+	consts.PlatformSeed = viper.GetString("PlatformSeed")
+	consts.PlatformEmail = viper.GetString("PlatformEmail")
+	consts.PlatformEmailPass = viper.GetString("PlatformEmailPass")
+	consts.StablecoinCode = viper.GetString("StablecoinCode")
+	consts.StablecoinPublicKey = viper.GetString("StablecoinPublicKey")
+	consts.AnchorUSDCode = viper.GetString("AnchorUSDCode")
+	consts.AnchorUSDAddress = viper.GetString("AnchorUSDAddress")
+	consts.AnchorUSDTrustLimit = viper.GetInt("AnchorUSDTrustLimit")
+	consts.AnchorAPI = viper.GetString("AnchorAPI")
+	consts.Mainnet = viper.GetBool("Mainnet")
+
+	return nil
+}
+
 func Mainnet() bool {
 	body := consts.OpenxURL + "/mainnet"
 	data, err := erpc.GetRequest(body)
@@ -49,8 +91,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = ParseConsts()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if Mainnet() {
-		openxconsts.DbDir = openxconsts.HomeDir + "/mainnet/"                           // set mainnet db to open in spearate folder
+		openxconsts.DbDir = openxconsts.HomeDir + "/mainnet/" // set mainnet db to open in spearate folder
 		log.Println("MAINNET INIT")
 		err = loader.Mainnet()
 		if err != nil {

@@ -4,7 +4,7 @@ import (
 	email "github.com/Varunram/essentials/email"
 	utils "github.com/Varunram/essentials/utils"
 
-	consts "github.com/YaleOpenLab/openx/consts"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
 // package notif is used to send out notifications regarding important events that take

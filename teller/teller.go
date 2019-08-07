@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"strings"
 
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	consts "github.com/YaleOpenLab/openx/consts"
 	solar "github.com/YaleOpenLab/opensolar/core"
 	flags "github.com/jessevdk/go-flags"
 )

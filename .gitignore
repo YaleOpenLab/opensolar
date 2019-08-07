@@ -3,3 +3,4 @@ teller/teller
 opensolar
 server.crt
 server.key
+config.yaml
