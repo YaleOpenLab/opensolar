@@ -11,7 +11,7 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
-	notif "github.com/YaleOpenLab/openx/notif"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
 // Entity defines a common structure for contractors, developers and originators. Will be split

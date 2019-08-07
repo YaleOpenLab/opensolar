@@ -10,7 +10,7 @@ import (
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	consts "github.com/YaleOpenLab/openx/consts"
-	solar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	solar "github.com/YaleOpenLab/opensolar/core"
 	flags "github.com/jessevdk/go-flags"
 )
 

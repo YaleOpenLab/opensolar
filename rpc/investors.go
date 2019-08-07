@@ -14,7 +14,7 @@ import (
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	database "github.com/YaleOpenLab/openx/database"
-	notif "github.com/YaleOpenLab/openx/notif"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 

@@ -58,6 +58,7 @@ func StartServer(portx int, insecure bool) {
 	erpc.SetupPingHandler()
 	relayGetRequest()
 	setupProjectRPCs()
+	setupUserRpcs()
 	setupInvestorRPCs()
 	setupRecipientRPCs()
 	setupPublicRoutes()

@@ -7,7 +7,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	platform "github.com/YaleOpenLab/openx/platforms/opensolar"
+	platform "github.com/YaleOpenLab/opensolar/core"
 )
 
 // collect all handlers in one place so that we can assemble them easily

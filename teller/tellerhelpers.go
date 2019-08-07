@@ -10,7 +10,7 @@ import (
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	consts "github.com/YaleOpenLab/openx/consts"
-	notif "github.com/YaleOpenLab/openx/notif"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
 const tellerUrl = "https://localhost"

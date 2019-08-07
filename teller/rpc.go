@@ -9,8 +9,8 @@ import (
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	core "github.com/YaleOpenLab/opensolar/core"
-	solar "github.com/YaleOpenLab/openx/platforms/opensolar"
-	rpc "github.com/YaleOpenLab/openx/rpc"
+	opensolar "github.com/YaleOpenLab/opensolar/core"
+	rpc "github.com/YaleOpenLab/opensolar/rpc"
 	geo "github.com/martinlindhe/google-geolocate"
 )
 
@@ -58,7 +58,7 @@ func GetProjectIndex(assetName string) (int, error) {
 		log.Println("Error while making get request: ", err)
 		return -1, err
 	}
-	var x solar.SolarProjectArray
+	var x opensolar.SolarProjectArray
 	err = json.Unmarshal(data, &x)
 	if err != nil {
 		return -1, err
@@ -185,6 +185,10 @@ func StoreLocation(mapskey string) error {
 	return errors.New("Errored out, didn't receive 200")
 }
 
+type PlatformEmailResponse struct {
+	Email string
+}
+
 // GetPlatformEmail gets the email of the platform
 func GetPlatformEmail() error {
 	data, err := erpc.GetRequest(ApiUrl + "/platformemail?" + "username=" + LocalRecipient.U.Username +
@@ -194,7 +198,7 @@ func GetPlatformEmail() error {
 		return err
 	}
 
-	var x rpc.PlatformEmailResponse
+	var x PlatformEmailResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
 		log.Println(err)
@@ -229,9 +233,9 @@ func SendDeviceShutdownEmail(tx1 string, tx2 string) error {
 }
 
 // GetLocalProjectDetails gets the details of the local project
-func GetLocalProjectDetails(projIndex string) (solar.Project, error) {
+func GetLocalProjectDetails(projIndex string) (opensolar.Project, error) {
 
-	var x solar.Project
+	var x opensolar.Project
 	body := ApiUrl + "/project/get?index=" + projIndex
 	data, err := erpc.GetRequest(body)
 	if err != nil {
