@@ -11,9 +11,9 @@ import (
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
-	openx "github.com/YaleOpenLab/openx/rpc"
 	notif "github.com/YaleOpenLab/openx/notif"
 	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	openx "github.com/YaleOpenLab/openx/rpc"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 

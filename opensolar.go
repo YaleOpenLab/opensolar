@@ -2,9 +2,14 @@ package main
 
 import (
 	"log"
+
+	rpc "github.com/YaleOpenLab/opensolar/rpc"
 )
 
-
 func main() {
-	log.Println("Hello World")
+	port := 8002
+	insecure := true
+
+	log.Println("Starting opensolar")
+	rpc.StartServer(port, insecure)
 }

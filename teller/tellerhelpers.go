@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
+	core "github.com/YaleOpenLab/opensolar/core"
 	consts "github.com/YaleOpenLab/openx/consts"
 	notif "github.com/YaleOpenLab/openx/notif"
-	database "github.com/YaleOpenLab/opensolar/database"
 )
 
 const tellerUrl = "https://localhost"
@@ -24,7 +24,7 @@ type statusResponse struct {
 func MonitorTeller(projIndex int) {
 	// call this function only after a specific order has been accepted by the recipient
 	for {
-		project, err := database.RetrieveProject(projIndex)
+		project, err := core.RetrieveProject(projIndex)
 		if err != nil {
 			log.Println(err)
 			continue

@@ -7,11 +7,11 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	openx "github.com/YaleOpenLab/openx/rpc"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 	database "github.com/YaleOpenLab/openx/database"
 	opensolar "github.com/YaleOpenLab/openx/platforms/opensolar"
+	openx "github.com/YaleOpenLab/openx/rpc"
 	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 

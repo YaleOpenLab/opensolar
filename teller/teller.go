@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"strings"
 
+	core "github.com/YaleOpenLab/opensolar/core"
 	consts "github.com/YaleOpenLab/openx/consts"
-	database "github.com/YaleOpenLab/opensolar/database"
 	solar "github.com/YaleOpenLab/openx/platforms/opensolar"
 	flags "github.com/jessevdk/go-flags"
 )
@@ -45,7 +45,7 @@ var opts struct {
 
 var (
 	// local stroage variables
-	LocalRecipient database.Recipient
+	LocalRecipient core.Recipient
 	LocalProject   solar.Project
 	LocalProjIndex string
 	LocalSeedPwd   string

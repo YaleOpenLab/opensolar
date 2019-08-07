@@ -1,10 +1,10 @@
 package database
 
 import (
-	"log"
-
-  openx "github.com/YaleOpenLab/openx/platforms"
+	// "log"
+	openx "github.com/YaleOpenLab/openx/platforms"
 )
+
 // A Project is the investment structure that will be invested in by people. In the case
 // of the opensolar platform, this is referred to as a solar system.
 
@@ -277,60 +277,4 @@ func InitializePlatform() error {
 // is less than 21 XLM, it proceeds to ask the friendbot for more test xlm
 func RefillPlatform(publicKey string) error {
 	return openx.RefillPlatform(publicKey)
-}
-
-// SetStage sets the stage of a project
-func (a *Project) SetStage(number int) error {
-	switch number {
-	case 3:
-		a.Reputation = a.TotalValue // upgrade reputation since totalValue might have changed from the originated contract
-		err := a.Save()
-		if err != nil {
-			log.Println("Error while saving project", err)
-			return err
-		}
-		err = RepOriginatedProject(a.OriginatorIndex, a.Index) // modify originator reputation now that the final price is fixed
-		if err != nil {
-			log.Println("Error while increasing reputation", err)
-			return err
-		}
-	case 5:
-		contractor, err := RetrieveEntity(a.ContractorIndex)
-		if err != nil {
-			log.Println("error while retrieving entity from db, quitting")
-			return err
-		}
-		err = contractor.U.ChangeReputation(a.TotalValue * ContractorWeight) // modify contractor Reputation now that a project has been installed
-		if err != nil {
-			log.Println("Couldn't increase contractor reputation", err)
-			return err
-		}
-
-		for _, i := range a.InvestorIndices {
-			elem, err := RetrieveInvestor(i)
-			if err != nil {
-				log.Println("Error while retrieving investor", err)
-				return err
-			}
-			err = elem.U.ChangeReputation(a.TotalValue * InvestorWeight)
-			if err != nil {
-				log.Println("Couldn't change investor reputation", err)
-				return err
-			}
-		}
-	case 6:
-		recp, err := RetrieveRecipient(a.RecipientIndex)
-		if err != nil {
-			return err
-		}
-		err = recp.U.ChangeReputation(a.TotalValue * RecipientWeight) // modify recipient reputation now that the system had begun power generation
-		if err != nil {
-			log.Println("Error while changing recipient reputation", err)
-			return err
-		}
-	default:
-		log.Println("default")
-	}
-	a.Stage = number
-	return a.Save()
 }

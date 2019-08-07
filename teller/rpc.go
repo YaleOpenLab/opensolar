@@ -8,7 +8,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	database "github.com/YaleOpenLab/opensolar/database"
+	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/openx/platforms/opensolar"
 	rpc "github.com/YaleOpenLab/openx/rpc"
 	geo "github.com/martinlindhe/google-geolocate"
@@ -77,7 +77,7 @@ func LoginToPlatform(username string, pwhash string) error {
 	if err != nil {
 		return err
 	}
-	var x database.Recipient
+	var x core.Recipient
 	err = json.Unmarshal(data, &x)
 	if err != nil {
 		return err
