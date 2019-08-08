@@ -111,6 +111,7 @@ func main() {
 			log.Fatal(err)
 		}
 	} else {
+		log.Println("TESTNET INIT")
 		err = loader.Testnet()
 		if err != nil {
 			log.Fatal(err)

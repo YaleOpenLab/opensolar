@@ -23,11 +23,11 @@ var Mainnet = false
 var OpenxURL = "http://localhost:8080" // default openx instance to connect to
 
 // directories
-var HomeDir = os.Getenv("HOME") + "/.opensolar"      // home directory where we store everything
-var DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
-var DbName = "opensolar.db"                          // the name of the db that we want to store stuff in
-var OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
-var PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
+var HomeDir = os.Getenv("HOME") + "/.opensolar" // home directory where we store everything
+var DbName = "opensolar.db"                     // the name of the db that we want to store stuff in
+var DbDir = ""                                  // the directory where the database is stored (project info, user info, etc)
+var OpenSolarIssuerDir = ""                     // the directory where we store opensolar projects' issuer seeds
+var PlatformSeedFile = ""                       // where the platform's seed is stored
 
 // prefixes
 var InvestorAssetPrefix = "InvestorAssets_" // the prefix that will be hashed to give an investor AssetID

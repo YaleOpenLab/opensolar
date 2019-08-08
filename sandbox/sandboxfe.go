@@ -430,7 +430,7 @@ func populateStaticData100KW() error {
 
 func bootstrapInvestor(invName, invDescription string) (core.Investor, string, error) {
 	// setup investor account
-	log.Println(consts.StablecoinSeed, consts.StablecoinPublicKey, consts.StablecoinCode)
+	log.Println(StablecoinSeed, consts.StablecoinPublicKey, consts.StablecoinCode)
 	passwd := "password"
 	seedpwd := "x"
 	investor1, err := core.NewInvestor(invName, passwd, seedpwd, invDescription)
@@ -451,7 +451,7 @@ func bootstrapInvestor(invName, invDescription string) (core.Investor, string, e
 	if err != nil {
 		return investor1, "", err
 	}
-	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, investor1.U.StellarWallet.PublicKey, 1000000, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, investor1.U.StellarWallet.PublicKey, 1000000, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
 		return investor1, "", err
 	}

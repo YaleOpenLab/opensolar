@@ -19,6 +19,7 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+var StablecoinSeed = ""
 // parseYamlProject reparses yaml for an existing project
 func parseYamlProject(fileName string, feJson string, projIndex int) error {
 	viper.SetConfigType("yaml")
@@ -480,9 +481,9 @@ func populateAdditionalData() error {
 	}
 	log.Println("TX HASH for dci trusting stableUSD: ", txhash)
 
-	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.StellarWallet.PublicKey, 600, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.StellarWallet.PublicKey, 600, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
-		log.Println("SEED: ", consts.StablecoinSeed)
+		log.Println("SEED: ", StablecoinSeed)
 		return err
 	}
 	log.Println("TX HASH for dci getting stableUSD: ", txhash)
@@ -504,9 +505,9 @@ func populateAdditionalData() error {
 	}
 	log.Println("TX HASH for pasto school trusting stableUSD: ", txhash)
 
-	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.StellarWallet.PublicKey, 600, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.StellarWallet.PublicKey, 600, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
-		log.Println("SEED: ", consts.StablecoinSeed)
+		log.Println("SEED: ", StablecoinSeed)
 		return err
 	}
 	log.Println("TX HASH for pasto school getting stableUSD: ", txhash)
@@ -528,9 +529,9 @@ func populateAdditionalData() error {
 	}
 	log.Println("TX HASH for pasto school sec wallet trusting stableUSD: ", txhash)
 
-	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.SecondaryWallet.PublicKey, 10000, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, txhash, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp.U.SecondaryWallet.PublicKey, 10000, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
-		log.Println("SEED: ", consts.StablecoinSeed)
+		log.Println("SEED: ", StablecoinSeed)
 		return err
 	}
 	log.Println("TX HASH for pasto school sec wallet getting stableUSD: ", txhash)
@@ -544,7 +545,7 @@ func populateAdditionalData() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, investor1.U.StellarWallet.PublicKey, 1000000, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, investor1.U.StellarWallet.PublicKey, 1000000, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -570,7 +571,7 @@ func populateAdditionalData() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp1.U.StellarWallet.PublicKey, 1000000, consts.StablecoinSeed, consts.StablecoinPublicKey)
+	_, _, err = assets.SendAssetFromIssuer(consts.StablecoinCode, recp1.U.StellarWallet.PublicKey, 1000000, StablecoinSeed, consts.StablecoinPublicKey)
 	if err != nil {
 		log.Fatal(err)
 	}

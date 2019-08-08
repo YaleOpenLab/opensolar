@@ -10,7 +10,11 @@ import (
 )
 
 func Mainnet() error {
-	consts.HomeDir = consts.HomeDir + "/mainnet" // change HomeDir for mainnet
+	consts.HomeDir += "/mainnet"
+	consts.DbDir = consts.HomeDir + "/database/"                  
+	consts.OpenSolarIssuerDir = consts.HomeDir + "/projects/"     
+	consts.PlatformSeedFile = consts.HomeDir + "/platformseed.hex"
+
 	if _, err := os.Stat(consts.HomeDir); os.IsNotExist(err) {
 		// nothing exists, create dbs and buckets
 		log.Println("creating mainnet home dir")
@@ -99,9 +103,5 @@ func Mainnet() error {
 			return err
 		}
 	}
-	return nil
-}
-
-func Testnet() error {
 	return nil
 }
