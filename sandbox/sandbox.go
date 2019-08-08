@@ -20,6 +20,7 @@ import (
 )
 
 var StablecoinSeed = ""
+
 // parseYamlProject reparses yaml for an existing project
 func parseYamlProject(fileName string, feJson string, projIndex int) error {
 	viper.SetConfigType("yaml")

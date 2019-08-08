@@ -14,13 +14,14 @@ var StablecoinCode = ""
 var StablecoinPublicKey = ""
 var AnchorUSDCode = ""
 var AnchorUSDAddress = ""
-var AnchorUSDTrustLimit = 10000
+var AnchorUSDTrustLimit = float64(10000)
 var AnchorAPI = ""
 var Mainnet = false
 
 // End repeated params
 
 var OpenxURL = "http://localhost:8080" // default openx instance to connect to
+var TopSecretCode = "OPENSOLARTEST"    // code for requesting stuff from openx
 
 // directories
 var HomeDir = os.Getenv("HOME") + "/.opensolar" // home directory where we store everything

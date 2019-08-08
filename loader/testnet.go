@@ -8,7 +8,7 @@ import (
 	// edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
 	openx "github.com/YaleOpenLab/openx/database"
-	openxconsts "github.com/YaleOpenLab/openx/consts"
+	// openxconsts "github.com/YaleOpenLab/openx/consts"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
@@ -50,7 +50,6 @@ func Testnet() error {
 	consts.DbDir = consts.HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
 	consts.OpenSolarIssuerDir = consts.HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
 	consts.PlatformSeedFile = consts.HomeDir + "/platformseed.hex" // where the platform's seed is stored
-	openxconsts.SetConsts(false)
 
 	if _, err := os.Stat(consts.HomeDir); os.IsNotExist(err) {
 		// no home directory exists, create

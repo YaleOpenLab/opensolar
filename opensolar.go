@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	"log"
@@ -15,6 +16,7 @@ import (
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
 
 	openxconsts "github.com/YaleOpenLab/openx/consts"
+	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 var opts struct {
@@ -48,38 +50,6 @@ func checkViperParams(params ...string) error {
 	return nil
 }
 
-func ParseConsts() error {
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Println("Error while reading platform email from config file")
-		return err
-	}
-
-	err = checkViperParams("PlatformPublicKey", "PlatformSeed", "PlatformEmail",
-		"PlatformEmailPass", "StablecoinCode", "StablecoinPublicKey", "AnchorUSDCode",
-		"AnchorUSDAddress", "AnchorUSDTrustLimit", "AnchorAPI", "Mainnet")
-	if err != nil {
-		return err
-	}
-
-	consts.PlatformPublicKey = viper.GetString("PlatformPublicKey")
-	consts.PlatformSeed = viper.GetString("PlatformSeed")
-	consts.PlatformEmail = viper.GetString("PlatformEmail")
-	consts.PlatformEmailPass = viper.GetString("PlatformEmailPass")
-	consts.StablecoinCode = viper.GetString("StablecoinCode")
-	consts.StablecoinPublicKey = viper.GetString("StablecoinPublicKey")
-	consts.AnchorUSDCode = viper.GetString("AnchorUSDCode")
-	consts.AnchorUSDAddress = viper.GetString("AnchorUSDAddress")
-	consts.AnchorUSDTrustLimit = viper.GetInt("AnchorUSDTrustLimit")
-	consts.AnchorAPI = viper.GetString("AnchorAPI")
-	consts.Mainnet = viper.GetBool("Mainnet")
-
-	return nil
-}
-
 func Mainnet() bool {
 	body := consts.OpenxURL + "/mainnet"
 	data, err := erpc.GetRequest(body)
@@ -90,6 +60,35 @@ func Mainnet() bool {
 	return data[0] == byte(0)
 }
 
+func ParseConsts() error {
+	body := consts.OpenxURL + "/platform/getconsts?code=" + consts.TopSecretCode
+	data, err := erpc.GetRequest(body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var x openxrpc.OpensolarConstReturn
+	err = json.Unmarshal(data, &x)
+	if err != nil {
+		return err
+	}
+
+	consts.PlatformPublicKey = x.PlatformPublicKey
+	consts.PlatformSeed = x.PlatformSeed
+	consts.PlatformEmail = x.PlatformEmail
+	consts.PlatformEmailPass = x.PlatformEmailPass
+	consts.StablecoinCode = x.StablecoinCode
+	consts.StablecoinPublicKey = x.StablecoinPublicKey
+	consts.AnchorUSDCode = x.AnchorUSDCode
+	consts.AnchorUSDAddress = x.AnchorUSDAddress
+	consts.AnchorUSDTrustLimit = x.AnchorUSDTrustLimit
+	consts.AnchorAPI = x.AnchorAPI
+	consts.Mainnet = x.Mainnet
+	openxconsts.DbDir = x.DbDir // for our retrieve methods
+
+	return nil
+}
+
 func main() {
 	var err error
 	insecure, port, err := ParseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
@@ -97,21 +96,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = ParseConsts()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if Mainnet() {
-		openxconsts.DbDir = openxconsts.HomeDir + "/mainnet/"
+		openxconsts.SetConsts(true)
 		// set mainnet db to open in spearate folder, no other way to do it than changing it here
 		log.Println("MAINNET INIT")
+
+		err = ParseConsts()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		err = loader.Mainnet()
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
+		openxconsts.SetConsts(false)
 		log.Println("TESTNET INIT")
+
+		err = ParseConsts()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		err = loader.Testnet()
 		if err != nil {
 			log.Fatal(err)
