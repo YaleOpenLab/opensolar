@@ -10,6 +10,7 @@ import (
 )
 
 func Mainnet() error {
+	consts.HomeDir = consts.HomeDir + "/mainnet" // change HomeDir for mainnet
 	if _, err := os.Stat(consts.HomeDir); os.IsNotExist(err) {
 		// nothing exists, create dbs and buckets
 		log.Println("creating mainnet home dir")

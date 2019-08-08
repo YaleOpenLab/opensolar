@@ -7,6 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
@@ -14,8 +17,6 @@ import (
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 // parseYamlProject reparses yaml for an existing project

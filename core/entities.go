@@ -7,17 +7,18 @@ import (
 
 	edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
-	consts "github.com/YaleOpenLab/opensolar/consts"
-	notif "github.com/YaleOpenLab/opensolar/notif"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	database "github.com/YaleOpenLab/openx/database"
+	openx "github.com/YaleOpenLab/openx/database"
+
+	consts "github.com/YaleOpenLab/opensolar/consts"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
 // Entity defines a common structure for contractors, developers and originators. Will be split
 // into their respective roles once they are defined in a better way.
 type Entity struct {
-	U *database.User
+	U *openx.User
 	// inherit the base user class
 	Contractor bool
 	// the name of the contractor / company that is contracting
@@ -145,7 +146,7 @@ func RetrieveEntityHelper(key int) (Entity, error) {
 // RetrieveEntity retrieves a specific entity from the database
 func RetrieveEntity(key int) (Entity, error) {
 	var entity Entity
-	user, err := database.RetrieveUser(key)
+	user, err := openx.RetrieveUser(key)
 	if err != nil {
 		return entity, err
 	}
@@ -163,7 +164,7 @@ func RetrieveEntity(key int) (Entity, error) {
 func newEntity(uname string, pwd string, seedpwd string, Name string, Address string, Description string, role string) (Entity, error) {
 	var a Entity
 	var err error
-	user, err := database.NewUser(uname, pwd, seedpwd, Name)
+	user, err := openx.NewUser(uname, pwd, seedpwd, Name)
 	if err != nil {
 		return a, errors.Wrap(err, "couldn't retrieve new user from db")
 	}
@@ -234,7 +235,7 @@ func TopReputationEntities(role string) ([]Entity, error) {
 // ValidateEntity validates the entity with the specific name and pwhash and returns true if everything matches the thing on record
 func ValidateEntity(name string, pwhash string) (Entity, error) {
 	var rec Entity
-	user, err := database.ValidateUser(name, pwhash)
+	user, err := openx.ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "couldn't validate user")
 	}
@@ -257,7 +258,7 @@ func AgreeToContractConditions(contractHash string, projIndex string,
 	// 1d71275b43abffefac381c5b906f
 	// 55c3bcff4225353d02f1d3498758
 
-	user, err := database.RetrieveUser(entityIndex)
+	user, err := openx.RetrieveUser(entityIndex)
 	if err != nil {
 		return errors.Wrap(err, "couldn't retrieve user from db")
 	}

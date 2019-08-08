@@ -6,18 +6,21 @@ import (
 	"log"
 	"os"
 
+	flags "github.com/jessevdk/go-flags"
+	"github.com/spf13/viper"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	loader "github.com/YaleOpenLab/opensolar/loader"
+	rpc "github.com/YaleOpenLab/opensolar/rpc"
+
 	openxconsts "github.com/YaleOpenLab/openx/consts"
-	rpc "github.com/YaleOpenLab/openx/rpc"
-	flags "github.com/jessevdk/go-flags"
-	"github.com/spf13/viper"
 )
 
 var opts struct {
-	Insecure bool `short:"i" description:"Start the API using http. Not recommended"`
-	Port     int  `short:"p" description:"The port on which the server runs on. Default: HTTPS/8081"`
+	Insecure bool   `short:"i" description:"Start the API using http. Not recommended"`
+	Port     int    `short:"p" description:"The port on which the server runs on. Default: HTTPS/8081"`
+	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
 }
 
 // ParseConfig parses CLI parameters passed
@@ -29,6 +32,9 @@ func ParseConfig(args []string) (bool, int, error) {
 	port := consts.DefaultRpcPort
 	if opts.Port != 0 {
 		port = opts.Port
+	}
+	if opts.OpenxURL != "" {
+		consts.OpenxURL = opts.OpenxURL
 	}
 	return opts.Insecure, port, nil
 }
@@ -97,7 +103,8 @@ func main() {
 	}
 
 	if Mainnet() {
-		openxconsts.DbDir = openxconsts.HomeDir + "/mainnet/" // set mainnet db to open in spearate folder
+		openxconsts.DbDir = openxconsts.HomeDir + "/mainnet/"
+		// set mainnet db to open in spearate folder, no other way to do it than changing it here
 		log.Println("MAINNET INIT")
 		err = loader.Mainnet()
 		if err != nil {

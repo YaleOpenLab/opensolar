@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	openx "github.com/YaleOpenLab/openx/rpc"
+
+	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 func setupUserRpcs() {
@@ -26,7 +27,7 @@ func updateUser() {
 	http.HandleFunc("/user/update", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		user, err := openx.CheckReqdParams(w, r)
+		user, err := openxrpc.CheckReqdParams(w, r)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return

@@ -12,10 +12,11 @@ import (
 
 	ipfs "github.com/Varunram/essentials/ipfs"
 	utils "github.com/Varunram/essentials/utils"
+	xlm "github.com/YaleOpenLab/openx/chains/xlm"
+	//	rpc "github.com/YaleOpenLab/openx/rpc"
+
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
-	//	rpc "github.com/YaleOpenLab/openx/rpc"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 )
 
 // BlockStamp gets the latest block hash

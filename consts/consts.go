@@ -20,7 +20,7 @@ var Mainnet = false
 
 // End repeated params
 
-var OpenxURL = "http://localhost:8080"
+var OpenxURL = "http://localhost:8080" // default openx instance to connect to
 
 // directories
 var HomeDir = os.Getenv("HOME") + "/.opensolar"      // home directory where we store everything
@@ -28,16 +28,16 @@ var DbDir = HomeDir + "/database/"                   // the directory where the 
 var DbName = "opensolar.db"                          // the name of the db that we want to store stuff in
 var OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
 var PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
-var InvestorAssetPrefix = "InvestorAssets_"          // the prefix that will be hashed to give an investor AssetID
 
 // prefixes
-var BondAssetPrefix = "BondAssets_"       // the prefix that will be hashed to give a bond asset
-var CoopAssetPrefix = "CoopAsset_"        // the prefix that will be hashed to give the cooperative asset
-var DebtAssetPrefix = "DebtAssets_"       // the prefix that will be hashed to give a recipient AssetID
-var SeedAssetPrefix = "SeedAssets_"       // the prefix that will be hashed to give an ivnestor his seed id
-var PaybackAssetPrefix = "PaybackAssets_" // the prefix that will be hashed to give a payback AssetID
-var IssuerSeedPwd = "blah"                // the password for unlocking the encrypted file. This must be modified a compile time and kept secret
-var EscrowPwd = "blah"                    // the password used for locking the seed used by the escrow. This must be modified a compile time and kept secret
+var InvestorAssetPrefix = "InvestorAssets_" // the prefix that will be hashed to give an investor AssetID
+var BondAssetPrefix = "BondAssets_"         // the prefix that will be hashed to give a bond asset
+var CoopAssetPrefix = "CoopAsset_"          // the prefix that will be hashed to give the cooperative asset
+var DebtAssetPrefix = "DebtAssets_"         // the prefix that will be hashed to give a recipient AssetID
+var SeedAssetPrefix = "SeedAssets_"         // the prefix that will be hashed to give an ivnestor his seed id
+var PaybackAssetPrefix = "PaybackAssets_"   // the prefix that will be hashed to give a payback AssetID
+var IssuerSeedPwd = "blah"                  // the password for unlocking the encrypted file. This must be modified a compile time and kept secret
+var EscrowPwd = "blah"                      // the password used for locking the seed used by the escrow. This must be modified a compile time and kept secret
 
 // ports + number consts
 var Tlsport = 443                                           // default port for ssl

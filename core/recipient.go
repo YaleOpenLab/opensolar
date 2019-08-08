@@ -3,12 +3,12 @@ package database
 import (
 	"github.com/pkg/errors"
 
-	database "github.com/YaleOpenLab/openx/database"
+	openx "github.com/YaleOpenLab/openx/database"
 )
 
 // Recipient defines the recipient structure
 type Recipient struct {
-	U *database.User
+	U *openx.User
 	// user related functions are called as an instance directly
 	ReceivedSolarProjects       []string
 	ReceivedSolarProjectIndices []int
@@ -40,7 +40,7 @@ type Recipient struct {
 func NewRecipient(uname string, pwd string, seedpwd string, Name string) (Recipient, error) {
 	var a Recipient
 	var err error
-	user, err := database.NewUser(uname, pwd, seedpwd, Name)
+	user, err := openx.NewUser(uname, pwd, seedpwd, Name)
 	if err != nil {
 		return a, errors.Wrap(err, "failed to retrieve new user")
 	}

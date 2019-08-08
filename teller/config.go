@@ -2,11 +2,12 @@ package main
 
 import (
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"log"
 
 	utils "github.com/Varunram/essentials/utils"
+
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	"github.com/spf13/viper"
 )
 
 // StartTeller starts the teller

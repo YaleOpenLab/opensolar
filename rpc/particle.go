@@ -3,10 +3,11 @@ package rpc
 import (
 	"net/http"
 	//utils "github.com/Varunram/essentials/utils"
-	erpc "github.com/Varunram/essentials/rpc"
-	openx "github.com/YaleOpenLab/openx/rpc"
 	"io"
 	"strings"
+
+	erpc "github.com/Varunram/essentials/rpc"
+	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 // we need to call the endpoitns and display the stuff returned from that endpoint.
@@ -122,7 +123,7 @@ func listAllDevices() {
 		// validate if the person requesting this is a vlaid user on the platform
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -140,7 +141,7 @@ func listProductInfo() {
 	http.HandleFunc("/particle/productinfo", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken", "productInfo")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "productInfo")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -161,7 +162,7 @@ func getDeviceInfo() {
 		// validate if the person requesting this is a vlaid user on the platform
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -182,7 +183,7 @@ func pingDevice() {
 	http.HandleFunc("/particle/deviceping", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -204,7 +205,7 @@ func signalDevice() {
 	http.HandleFunc("/particle/devicesignal", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "signal", "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, "signal", "accessToken")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -237,7 +238,7 @@ func serialNumberInfo() {
 	http.HandleFunc("/particle/getdeviceid", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "serialNumber", "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, "serialNumber", "accessToken")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -257,7 +258,7 @@ func getDiagnosticsLast() {
 	http.HandleFunc("/particle/diag/last", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -277,7 +278,7 @@ func getAllDiagnostics() {
 	http.HandleFunc("/particle/diag/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -296,7 +297,7 @@ func getParticleUserInfo() {
 	http.HandleFunc("/particle/user/info", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -314,7 +315,7 @@ func getAllSims() {
 	http.HandleFunc("/particle/sims", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openx.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return

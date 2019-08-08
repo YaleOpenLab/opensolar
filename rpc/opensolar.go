@@ -7,7 +7,8 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	platform "github.com/YaleOpenLab/opensolar/core"
+
+	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 // collect all handlers in one place so that we can assemble them easily
@@ -24,12 +25,12 @@ func setupProjectRPCs() {
 
 // parseProject is a helper that is used to validate POST data. This returns a project struct
 // on successful parsing of the received form data
-func parseProject(r *http.Request) (platform.Project, error) {
+func parseProject(r *http.Request) (core.Project, error) {
 	// we need to create an instance of the Project
 	// and then map values if they do exist
 	// note that we just prepare the project here and don't invest in it
 	// for that, we need new a new investor struct and a recipient struct
-	var prepProject platform.Project
+	var prepProject core.Project
 	err := r.ParseForm()
 	if err != nil {
 		log.Println("did not parse form", err)
@@ -37,7 +38,7 @@ func parseProject(r *http.Request) (platform.Project, error) {
 	}
 	// if we're inserting this in, we need to get the next index number
 	// so that we can set this without causing some weird bugs
-	allProjects, err := platform.RetrieveAllProjects()
+	allProjects, err := core.RetrieveAllProjects()
 	if err != nil {
 		log.Println("did not retrieve all projects", err)
 		return prepProject, errors.New("error in assigning index")
@@ -73,7 +74,7 @@ func insertProject() {
 	http.HandleFunc("/project/insert", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckPost(w, r)
 		erpc.CheckOrigin(w, r)
-		var prepProject platform.Project
+		var prepProject core.Project
 		prepProject, err := parseProject(r)
 		if err != nil {
 			log.Println("did not parse project", err)
@@ -90,7 +91,7 @@ func insertProject() {
 	})
 }
 
-// getAllProjects gets a list of all the projects that registered on the platform.
+// getAllProjects gets a list of all the projects that registered on the core.
 func getAllProjects() {
 	http.HandleFunc("/project/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -99,7 +100,7 @@ func getAllProjects() {
 		// while making this call, the rpc should not be aware of the db we are using
 		// and stuff. So we need to have another route that would open the existing
 		// db, without asking for one
-		allProjects, err := platform.RetrieveAllProjects()
+		allProjects, err := core.RetrieveAllProjects()
 		if err != nil {
 			log.Println("did not retrieve all projects", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -124,7 +125,7 @@ func getProject() {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
-		contract, err := platform.RetrieveProject(uKey)
+		contract, err := core.RetrieveProject(uKey)
 		if err != nil {
 			log.Println("did not retrieve project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -138,7 +139,7 @@ func getProject() {
 func projectHandler(w http.ResponseWriter, r *http.Request, stage int) {
 	erpc.CheckGet(w, r)
 	erpc.CheckOrigin(w, r)
-	allProjects, err := platform.RetrieveProjectsAtStage(stage)
+	allProjects, err := core.RetrieveProjectsAtStage(stage)
 	if err != nil {
 		log.Println("did not retrieve project at specific stage", err)
 		erpc.ResponseHandler(w, erpc.StatusInternalServerError)

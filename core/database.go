@@ -4,8 +4,9 @@ import (
 	"log"
 
 	edb "github.com/Varunram/essentials/database"
-	consts "github.com/YaleOpenLab/opensolar/consts"
 	"github.com/boltdb/bolt"
+
+	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
 var InvestorBucket = []byte("Investors")
@@ -16,7 +17,7 @@ var ContractorBucket = []byte("Contractors")
 // CreateHomeDir creates a home directory
 func CreateHomeDir() {
 	// run this if you're running your won openx instance
-	edb.CreateDirs(consts.HomeDir, consts.DbDir)
+	edb.CreateDirs(consts.HomeDir, consts.DbDir, consts.OpenSolarIssuerDir)
 	log.Println("creating db at: ", consts.DbDir+consts.DbName)
 	db, err := edb.CreateDB(consts.DbDir+consts.DbName, ProjectsBucket, InvestorBucket, RecipientBucket, ContractorBucket)
 	if err != nil {

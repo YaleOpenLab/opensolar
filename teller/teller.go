@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
+	flags "github.com/jessevdk/go-flags"
 	"log"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/opensolar/core"
-	flags "github.com/jessevdk/go-flags"
 )
 
 // package teller contains the remote client code that would be run on the client's

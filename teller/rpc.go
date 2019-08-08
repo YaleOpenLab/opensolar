@@ -6,12 +6,13 @@ import (
 	"github.com/pkg/errors"
 	"log"
 
+	geo "github.com/martinlindhe/google-geolocate"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	core "github.com/YaleOpenLab/opensolar/core"
 	opensolar "github.com/YaleOpenLab/opensolar/core"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
-	geo "github.com/martinlindhe/google-geolocate"
 )
 
 // GetLocation gets the teller's location
