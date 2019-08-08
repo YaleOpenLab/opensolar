@@ -146,7 +146,7 @@ func RetrieveEntityHelper(key int) (Entity, error) {
 // RetrieveEntity retrieves a specific entity from the database
 func RetrieveEntity(key int) (Entity, error) {
 	var entity Entity
-	user, err := openx.RetrieveUser(key)
+	user, err := RetrieveUser(key)
 	if err != nil {
 		return entity, err
 	}
@@ -164,7 +164,7 @@ func RetrieveEntity(key int) (Entity, error) {
 func newEntity(uname string, pwd string, seedpwd string, Name string, Address string, Description string, role string) (Entity, error) {
 	var a Entity
 	var err error
-	user, err := openx.NewUser(uname, pwd, seedpwd, Name)
+	user, err := NewUser(uname, utils.SHA3hash(pwd), seedpwd, Name)
 	if err != nil {
 		return a, errors.Wrap(err, "couldn't retrieve new user from db")
 	}
@@ -235,7 +235,7 @@ func TopReputationEntities(role string) ([]Entity, error) {
 // ValidateEntity validates the entity with the specific name and pwhash and returns true if everything matches the thing on record
 func ValidateEntity(name string, pwhash string) (Entity, error) {
 	var rec Entity
-	user, err := openx.ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "couldn't validate user")
 	}
@@ -258,7 +258,7 @@ func AgreeToContractConditions(contractHash string, projIndex string,
 	// 1d71275b43abffefac381c5b906f
 	// 55c3bcff4225353d02f1d3498758
 
-	user, err := openx.RetrieveUser(entityIndex)
+	user, err := RetrieveUser(entityIndex)
 	if err != nil {
 		return errors.Wrap(err, "couldn't retrieve user from db")
 	}

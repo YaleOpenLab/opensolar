@@ -14,6 +14,7 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	loader "github.com/YaleOpenLab/opensolar/loader"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
+	core "github.com/YaleOpenLab/opensolar/core"
 
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -91,6 +92,11 @@ func ParseConsts() error {
 
 func main() {
 	var err error
+	test, err := core.NewUser("DISISCOOL", "9a768ace36ff3d1771d5c145a544de3d68343b2e76093cb7b2a8ea89ac7f1a20c852e6fc1d71275b43abffefac381c5b906f55c3bcff4225353d02f1d3498758", "x", "MUAHAH")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Fatal(test)
 	insecure, port, err := ParseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
 	if err != nil {
 		log.Fatal(err)

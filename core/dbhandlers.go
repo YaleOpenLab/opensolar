@@ -5,7 +5,6 @@ import (
 	"github.com/pkg/errors"
 
 	edb "github.com/Varunram/essentials/database"
-	openx "github.com/YaleOpenLab/openx/database"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
@@ -53,7 +52,7 @@ func (a *Recipient) Save() error {
 // RetrieveInvestor retrieves a particular investor indexed by key from the database
 func RetrieveInvestor(key int) (Investor, error) {
 	var inv Investor
-	user, err := openx.RetrieveUser(key)
+	user, err := RetrieveUser(key)
 	if err != nil {
 		return inv, err
 	}
@@ -75,7 +74,7 @@ func RetrieveInvestor(key int) (Investor, error) {
 // RetrieveRecipient retrieves a specific recipient from the database
 func RetrieveRecipient(key int) (Recipient, error) {
 	var recp Recipient
-	user, err := openx.RetrieveUser(key)
+	user, err := RetrieveUser(key)
 	if err != nil {
 		return recp, err
 	}
@@ -180,7 +179,7 @@ func TopReputationRecipients() ([]Recipient, error) {
 // This is separate from the publicKey/seed pair (which are stored encrypted in the database); since we can help users change their password, but we can't help them retrieve their seed.
 func ValidateInvestor(name string, pwhash string) (Investor, error) {
 	var rec Investor
-	user, err := openx.ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "failed to validate user")
 	}
@@ -190,7 +189,7 @@ func ValidateInvestor(name string, pwhash string) (Investor, error) {
 // ValidateRecipient validates a particular recipient
 func ValidateRecipient(name string, pwhash string) (Recipient, error) {
 	var rec Recipient
-	user, err := openx.ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, pwhash)
 	if err != nil {
 		return rec, errors.Wrap(err, "Error while validating user")
 	}

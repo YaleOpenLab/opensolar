@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/pkg/errors"
-
+	utils "github.com/Varunram/essentials/utils"
 	openx "github.com/YaleOpenLab/openx/database"
 )
 
@@ -40,7 +40,7 @@ type Recipient struct {
 func NewRecipient(uname string, pwd string, seedpwd string, Name string) (Recipient, error) {
 	var a Recipient
 	var err error
-	user, err := openx.NewUser(uname, pwd, seedpwd, Name)
+	user, err := NewUser(uname, utils.SHA3hash(pwd), seedpwd, Name)
 	if err != nil {
 		return a, errors.Wrap(err, "failed to retrieve new user")
 	}

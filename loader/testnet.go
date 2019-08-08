@@ -98,7 +98,7 @@ func Testnet() error {
 			if err != nil {
 				return err
 			}
-			x, err := openx.RetrieveUser(inv.U.Index)
+			x, err := core.RetrieveUser(inv.U.Index)
 			if err != nil {
 				return err
 			}
