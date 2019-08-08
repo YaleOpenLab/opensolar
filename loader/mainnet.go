@@ -8,7 +8,6 @@ import (
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	//database "github.com/YaleOpenLab/openx/database"
 )
 
 func Mainnet() error {

@@ -7,9 +7,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	// database "github.com/YaleOpenLab/openx/database"
 	core "github.com/YaleOpenLab/opensolar/core"
-	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 
 func setupEntityRPCs() {

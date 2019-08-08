@@ -4,14 +4,16 @@ import (
 	//"log"
 	"github.com/pkg/errors"
 
+	utils "github.com/Varunram/essentials/utils"
 	tickers "github.com/YaleOpenLab/openx/chains/exchangetickers"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	openx "github.com/YaleOpenLab/openx/database"
-	utils "github.com/Varunram/essentials/utils"
 )
 
 // Investor defines the investor structure
 type Investor struct {
+	U *openx.User
+	// the user struct shared with openx
 	VotingBalance float64 // this will be equal to the amount of stablecoins that the investor possesses,
 	// should update this every once in a while to ensure voting consistency.
 	// These are votes to show opinions about bids done by contractors on the specific projects that investors invested in.
@@ -21,7 +23,6 @@ type Investor struct {
 	InvestedSolarProjects        []string
 	InvestedSolarProjectsIndices []int
 	// array of asset codes this user has invested in
-	U           *openx.User
 	WeightedROI string
 	// the weightedROI for all the projects under the investor's umbrella
 	AllTimeReturns []float64

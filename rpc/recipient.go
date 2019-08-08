@@ -9,7 +9,6 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	openx "github.com/YaleOpenLab/openx/database"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 
 	core "github.com/YaleOpenLab/opensolar/core"
@@ -103,8 +102,7 @@ func registerRecipient() {
 		seedpwd := r.URL.Query()["seedpwd"][0]
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
-		_, err := openx.CheckUsernameCollision(username)
-		if err != nil {
+		if core.CheckUsernameCollision(username) {
 			// user already exists on the platform, need to retrieve the user
 			user, err := openxrpc.CheckReqdParams(w, r) // check whether this person is a user and has params
 			if err != nil {

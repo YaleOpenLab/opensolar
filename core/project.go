@@ -2,7 +2,7 @@ package core
 
 import (
 	// "log"
-	openx "github.com/YaleOpenLab/openx/platforms"
+	platforms "github.com/YaleOpenLab/openx/platforms"
 )
 
 // A Project is the investment structure that will be invested in by people. In the case
@@ -270,11 +270,11 @@ type SolarProjectArray []Project
 
 // InitializePlatform imports handlers from the main platform struct that are necessary for starting the platform
 func InitializePlatform() error {
-	return openx.InitializePlatform()
+	return platforms.InitializePlatform()
 }
 
 // RefillPlatform checks whether the publicKey passed has any xlm and if its balance
 // is less than 21 XLM, it proceeds to ask the friendbot for more test xlm
 func RefillPlatform(publicKey string) error {
-	return openx.RefillPlatform(publicKey)
+	return platforms.RefillPlatform(publicKey)
 }
