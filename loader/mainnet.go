@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	openxconsts "github.com/YaleOpenLab/openx/consts"
+
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	//database "github.com/YaleOpenLab/openx/database"
@@ -11,9 +13,10 @@ import (
 
 func Mainnet() error {
 	consts.HomeDir += "/mainnet"
-	consts.DbDir = consts.HomeDir + "/database/"                  
-	consts.OpenSolarIssuerDir = consts.HomeDir + "/projects/"     
+	consts.DbDir = consts.HomeDir + "/database/"
+	consts.OpenSolarIssuerDir = consts.HomeDir + "/projects/"
 	consts.PlatformSeedFile = consts.HomeDir + "/platformseed.hex"
+	openxconsts.SetConsts(true)
 
 	if _, err := os.Stat(consts.HomeDir); os.IsNotExist(err) {
 		// nothing exists, create dbs and buckets
