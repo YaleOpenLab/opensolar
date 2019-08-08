@@ -1,4 +1,4 @@
-package database
+package core
 
 import (
 	"github.com/pkg/errors"

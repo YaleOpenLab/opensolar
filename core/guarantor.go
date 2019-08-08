@@ -1,4 +1,4 @@
-package database
+package core
 
 // this should contain the future guarantor related functions once we define them concretely
 
