@@ -7,7 +7,6 @@ import (
 
 	// edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
-	openx "github.com/YaleOpenLab/openx/database"
 	// openxconsts "github.com/YaleOpenLab/openx/consts"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
@@ -94,15 +93,12 @@ func Testnet() error {
 			if err != nil {
 				return err
 			}
-			err = openx.AddInspector(inv.U.Index)
-			if err != nil {
-				return err
-			}
 			x, err := core.RetrieveUser(inv.U.Index)
 			if err != nil {
 				return err
 			}
 			inv.U = &(x)
+			inv.U.Inspector = true
 			err = inv.Save()
 			if err != nil {
 				return err

@@ -10,7 +10,6 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	// database "github.com/YaleOpenLab/openx/database"
 
 	core "github.com/YaleOpenLab/opensolar/core"
 )

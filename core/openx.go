@@ -1,8 +1,8 @@
 package core
 
 import (
-	"log"
 	"encoding/json"
+	"log"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -33,7 +33,7 @@ func RetrieveUser(key int) (openx.User, error) {
 
 func ValidateUser(name string, pwhash string) (openx.User, error) {
 	var user openx.User
- 	body := consts.OpenxURL + "/platform/user/validate?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash
+	body := consts.OpenxURL + "/platform/user/validate?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash
 	data, err := erpc.GetRequest(body)
 	if err != nil {
 		return user, err
@@ -47,7 +47,7 @@ func ValidateUser(name string, pwhash string) (openx.User, error) {
 
 func NewUser(name string, pwhash string, seedpwd string, realname string) (openx.User, error) {
 	var user openx.User
- 	body := consts.OpenxURL + "/platform/user/new?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash +
+	body := consts.OpenxURL + "/platform/user/new?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash +
 		"&seedpwd=" + seedpwd + "&realname=" + realname
 
 	log.Println(body)
@@ -60,4 +60,16 @@ func NewUser(name string, pwhash string, seedpwd string, realname string) (openx
 		return user, err
 	}
 	return user, nil
+}
+
+func CheckUsernameCollision(name string) bool {
+	body := consts.OpenxURL + "/platform/user/collision?code=" + consts.TopSecretCode + "&name=" + name
+	log.Println(body)
+	data, err := erpc.GetRequest(body)
+	if err != nil {
+		return true
+	}
+
+	log.Println("DATA: ", data)
+	return data[0] == byte(1) // 0 means no collision, 1 means a collison was found
 }
