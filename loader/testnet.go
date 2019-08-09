@@ -56,70 +56,24 @@ func Testnet() error {
 		core.CreateHomeDir()
 		// populate database with dummy data
 		log.Println("populating db with test data for testnet")
-		var recp core.Recipient
-		// simulate only if the bool is set to true. Simulates investment for three projects based on the presentation
-		// at the Spring Members' Week Demo 2019
-		allRecs, err := core.RetrieveAllRecipients()
-		if err != nil {
-			return err
-		}
-		if len(allRecs) == 0 {
-			// there is no recipient right now, so create a dummy recipient
-			var err error
-			recp, err = core.NewRecipient("martin", "p", "x", "Martin")
-			if err != nil {
-				return err
-			}
-			recp.U.Notification = true
-			err = recp.U.AddEmail("varunramganesh@gmail.com")
-			if err != nil {
-				return err
-			}
-		}
 
-		var inv core.Investor
-		allInvs, err := core.RetrieveAllInvestors()
-		if err != nil {
-			return err
-		}
-		if len(allInvs) == 0 {
-			var err error
-			inv, err = core.NewInvestor("john", "p", "x", "John")
-			if err != nil {
-				return err
-			}
-			err = inv.ChangeVotingBalance(100000)
-			// this function saves as well, so there's no need to save again
-			if err != nil {
-				return err
-			}
-			x, err := core.RetrieveUser(inv.U.Index)
-			if err != nil {
-				return err
-			}
-			inv.U = &(x)
-			inv.U.Inspector = true
-			err = inv.Save()
-			if err != nil {
-				return err
-			}
-			err = x.Authorize(inv.U.Index)
-			if err != nil {
-				return err
-			}
-			inv.U.Notification = true
-			err = inv.U.AddEmail("varunramganesh@gmail.com")
-			if err != nil {
-				return err
-			}
-		}
-
-		originator, err := core.NewOriginator("samuel", "p", "x", "Samuel L. Jackson", "ABC Street, London", "I am an originator")
+		// there is no recipient right now, so create a dummy recipient
+		recp, err := core.NewRecipient("martin", "p", "x", "Martin")
 		if err != nil {
 			return err
 		}
 
-		contractor, err := core.NewContractor("sam", "p", "x", "Samuel Jackson", "14 ABC Street London", "This is a competing contractor")
+		_, err = core.NewInvestor("john", "p", "x", "John")
+		if err != nil {
+			return err
+		}
+
+		originator, err := core.NewOriginator("samuel", "p", "x", "SamuelOriginator", "ABC Street, London", "I am an originator")
+		if err != nil {
+			return err
+		}
+
+		contractor, err := core.NewContractor("sam", "p", "x", "SamuelContractor", "14 ABC Street London", "This is a competing contractor")
 		if err != nil {
 			return err
 		}

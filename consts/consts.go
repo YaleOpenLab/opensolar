@@ -21,14 +21,15 @@ var Mainnet = false
 // End repeated params
 
 var OpenxURL = "http://localhost:8080" // default openx instance to connect to
-var TopSecretCode = "OPENSOLARTEST"    // code for requesting stuff from openx
+var TopSecretCode = "OPENSOLARTEST"     // code for requesting stuff from openx
 
 // directories
 var HomeDir = os.Getenv("HOME") + "/.opensolar" // home directory where we store everything
-var DbName = "opensolar.db"                     // the name of the db that we want to store stuff in
-var DbDir = ""                                  // the directory where the database is stored (project info, user info, etc)
-var OpenSolarIssuerDir = ""                     // the directory where we store opensolar projects' issuer seeds
-var PlatformSeedFile = ""                       // where the platform's seed is stored
+
+var DbName = "opensolar.db" // the name of the db that we want to store stuff in
+var DbDir = ""              // the directory where the database is stored (project info, user info, etc)
+var OpenSolarIssuerDir = "" // the directory where we store opensolar projects' issuer seeds
+var PlatformSeedFile = ""   // where the platform's seed is stored
 
 // prefixes
 var InvestorAssetPrefix = "InvestorAssets_" // the prefix that will be hashed to give an investor AssetID
@@ -55,3 +56,10 @@ var TellerHomeDir = HomeDir + "/teller"                        // the home direc
 var TellerMaxLocalStorageSize = 2000                           // in bytes, tweak this later to something like 10M after testing
 var TellerPollInterval = time.Duration(30000 * time.Second)    // frequency with which the teller of a particular system is polled
 var LoginRefreshInterval = time.Duration(5 * 60 * time.Second) // every 5 minutes we refresh the teller to import the changes on the platform
+
+func SetTnConsts() {
+	HomeDir = os.Getenv("HOME") + "/.opensolar/testnet"
+	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
+	OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
+	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
+}

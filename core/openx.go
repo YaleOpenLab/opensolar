@@ -70,6 +70,5 @@ func CheckUsernameCollision(name string) bool {
 		return true
 	}
 
-	log.Println("DATA: ", data)
 	return data[0] == byte(1) // 0 means no collision, 1 means a collison was found
 }

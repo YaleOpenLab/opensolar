@@ -158,12 +158,6 @@ func getAllInvestors() {
 func invest() {
 	http.HandleFunc("/investor/invest", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
-		// need the following params to invest in a project:
-		// 1. Seed pwhash (for the investor)
-		// 2. project index
-		// 3. investment amount
-		// 4. Login username (for the investor)
-		// 5. Login pwhash (for the investor)
 		investor, err := InvValidateHelper(w, r, "seedpwd", "projIndex", "amount")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
