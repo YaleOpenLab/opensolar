@@ -14,7 +14,7 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	loader "github.com/YaleOpenLab/opensolar/loader"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
-	core "github.com/YaleOpenLab/opensolar/core"
+	// core "github.com/YaleOpenLab/opensolar/core"
 
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -92,8 +92,6 @@ func ParseConsts() error {
 
 func main() {
 	var err error
-	test := core.CheckUsernameCollision("Martin")
-	log.Fatal(test)
 	insecure, port, err := ParseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
 	if err != nil {
 		log.Fatal(err)
@@ -102,7 +100,7 @@ func main() {
 	if Mainnet() {
 		openxconsts.SetConsts(true)
 		// set mainnet db to open in spearate folder, no other way to do it than changing it here
-		log.Println("MAINNET INIT")
+		log.Println("initializing mainnet")
 
 		err = ParseConsts()
 		if err != nil {
@@ -115,7 +113,7 @@ func main() {
 		}
 	} else {
 		openxconsts.SetConsts(false)
-		log.Println("TESTNET INIT")
+		log.Println("initializing testnet")
 
 		err = ParseConsts()
 		if err != nil {
@@ -131,6 +129,14 @@ func main() {
 	// rpc.KillCode = "NUKE" // compile time nuclear code
 	// run this only when you need to monitor the tellers. Not required for local testing.
 	// go opensolar.MonitorTeller(1)
+	fmt.Println(`
+		██████╗ ██████╗ ███████╗███╗   ██╗███████╗ ██████╗ ██╗      █████╗ ██████╗
+	 ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██╔═══██╗██║     ██╔══██╗██╔══██╗
+	 ██║   ██║██████╔╝█████╗  ██╔██╗ ██║███████╗██║   ██║██║     ███████║██████╔╝
+	 ██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║╚════██║██║   ██║██║     ██╔══██║██╔══██╗
+	 ╚██████╔╝██║     ███████╗██║ ╚████║███████║╚██████╔╝███████╗██║  ██║██║  ██║
+	  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+		`)
 	fmt.Println(`Starting Opensolar`)
 	rpc.StartServer(port, insecure)
 }
