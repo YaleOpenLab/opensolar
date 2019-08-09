@@ -133,7 +133,7 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 	}
 
 	if !xlm.AccountExists(pubkey) {
-		return project, errors.New("accoutn doesn't exist yet, quitting")
+		return project, errors.New("account doesn't exist yet, quitting")
 	}
 	// check if investment amount is greater than or equal to the project requirements
 	if invAmount > project.TotalValue-project.MoneyRaised {
@@ -159,7 +159,6 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 				return project, errors.Wrap(err, "error while funding issuer")
 			}
 		}
-
 		return project, nil
 	} else if project.Chain == "algorand" {
 		return project, errors.Wrap(err, "algorand investments not supported yet, quitting")
@@ -248,7 +247,7 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 		}
 		return err
 	} else {
-		return errors.New("other chain investment not supported right now")
+		return errors.New("other chain investments not supported right now")
 	}
 }
 

@@ -30,9 +30,11 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 		return errors.Wrap(err, "Unable to retrieve investor from database")
 	}
 
-	err = stablecoin.OfferExchange(investor.U.StellarWallet.PublicKey, invSeed, invAmount)
-	if err != nil {
-		return errors.Wrap(err, "Unable to offer xlm to STABLEUSD excahnge for investor")
+	if !consts.Mainnet {
+		err = stablecoin.OfferExchange(investor.U.StellarWallet.PublicKey, invSeed, invAmount)
+		if err != nil {
+			return errors.Wrap(err, "Unable to offer xlm to STABLEUSD excahnge for investor")
+		}
 	}
 
 	projIndexString, err := utils.ToString(projIndex)
@@ -278,26 +280,35 @@ func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, 
 	// so we can't burn them
 	var oldPlatformBalance float64
 	var err error
-	oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
-	if err != nil {
-		// platform does not have stablecoin, shouldn't arrive here ideally
-		oldPlatformBalance = 0
-	}
-
 	var txhash string
+
 	if !consts.Mainnet {
+		oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
+		if err != nil {
+			log.Println(err)
+			// platform does not have stablecoin, shouldn't arrive here ideally
+			oldPlatformBalance = 0
+		}
+
 		_, txhash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, consts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
 		}
 	} else {
+		oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
+		if err != nil {
+			log.Println(err)
+			// platform does not have stablecoin, shouldn't arrive here ideally
+			oldPlatformBalance = 0
+		}
+
 		_, txhash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, consts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
 		}
 	}
 
-	log.Println("Sent STABLEUSD to platform, confirmation: ", txhash)
+	log.Println("Sent USD to platform, confirmation: ", txhash)
 	time.Sleep(5 * time.Second) // wait for a block
 
 	var newPlatformBalance float64

@@ -98,6 +98,7 @@ func main() {
 	}
 
 	if Mainnet() {
+		consts.Mainnet = true
 		openxconsts.SetConsts(true)
 		// set mainnet db to open in spearate folder, no other way to do it than changing it here
 		log.Println("initializing mainnet")

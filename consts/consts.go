@@ -63,3 +63,10 @@ func SetTnConsts() {
 	OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
 	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
 }
+
+func SetMnConsts() {
+	HomeDir = os.Getenv("HOME") + "/.opensolar/mainnet"
+	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
+	OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
+	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
+}

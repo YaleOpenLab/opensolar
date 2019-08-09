@@ -7,7 +7,10 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 	tickers "github.com/YaleOpenLab/openx/chains/exchangetickers"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
+	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openx "github.com/YaleOpenLab/openx/database"
+
+	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
 // Investor defines the investor structure
@@ -61,21 +64,31 @@ func (a *Investor) ChangeVotingBalance(votes float64) error {
 
 // CanInvest checks whether an investor has the required balance to invest in a project
 func (a *Investor) CanInvest(targetBalance float64) bool {
-	usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
-	if err != nil {
-		usdBalance = 0
-	}
+	if !consts.Mainnet {
+		usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
+		if err != nil {
+			usdBalance = 0
+		}
 
-	xlmBalance, err := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
-	if err != nil {
-		xlmBalance = 0
-	}
+		xlmBalance, err := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
+		if err != nil {
+			xlmBalance = 0
+		}
 
-	// need to fetch the oracle price here for the order
-	oraclePrice := tickers.ExchangeXLMforUSD(xlmBalance)
-	if usdBalance > targetBalance || oraclePrice > targetBalance {
-		// return true since the user has enough USD balance to pay for the order
-		return true
+		// need to fetch the oracle price here for the order
+		oraclePrice := tickers.ExchangeXLMforUSD(xlmBalance)
+		if usdBalance > targetBalance || oraclePrice > targetBalance {
+			// return true since the user has enough USD balance to pay for the order
+			return true
+		}
+		return false
+
+	} else {
+		usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
+		if err != nil {
+			usdBalance = 0
+		}
+
+		return usdBalance > targetBalance
 	}
-	return false
 }
