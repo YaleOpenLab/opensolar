@@ -10,12 +10,7 @@ import (
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
-// we need to call the endpoitns and display the stuff returned from that endpoint.
-// TODO: what do we do with the returned event streams? We could analyse it and provide a live feed
-// of sorts but people who need to verify it have access to the portal anwyay. A more efficient way
-// would be to write those details to a separate file and then parse that to retrieve results.
-
-// function to setup all the particle related endpoints
+// setupParticleHandlers sets up all the particle related endpoints
 func setupParticleHandlers() {
 	listAllDevices()
 	listProductInfo()

@@ -14,10 +14,9 @@ import (
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	notif "github.com/YaleOpenLab/opensolar/notif"
-	// opzones "github.com/YaleOpenLab/openx/platforms/ozones"
 )
 
-// setupInvestorRPCs sets up all RPCs related to the investor
+// setupInvestorRPCs sets up all investor related RPCs
 func setupInvestorRPCs() {
 	registerInvestor()
 	validateInvestor()
@@ -27,15 +26,12 @@ func setupInvestorRPCs() {
 	addLocalAssetInv()
 	invAssetInv()
 	sendEmail()
-	// investInConstructionBond()
-	// investInLivingUnitCoop()
 }
 
-// InvValidateHelper is a helper that is used to validate an ivnestor on the platform
+// InvValidateHelper is a helper used to validate an investor on the platform
 func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Investor, error) {
 	var prepInvestor core.Investor
 	var err error
-	// need to pass the pwhash param here
 	if r.URL.Query() == nil {
 		return prepInvestor, errors.New("url query can't be empty")
 	}
@@ -66,7 +62,6 @@ func registerInvestor() {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		// to register, we need the name, username and pwhash
 		if r.URL.Query()["name"] == nil || r.URL.Query()["username"] == nil ||
 			r.URL.Query()["pwhash"] == nil || r.URL.Query()["seedpwd"] == nil {
 			log.Println("missing basic set of params that can be used ot validate a user")
@@ -87,7 +82,6 @@ func registerInvestor() {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
 			}
-			// username collision, check other fields by fetching user details for the collided user
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
 			if err != nil {
@@ -125,8 +119,7 @@ func registerInvestor() {
 	})
 }
 
-// validateInvestor retrieves the investor after valdiating if such an ivnestor exists
-// by checking the pwhash of the given investor with the stored one
+// validateInvestor validates the username and pwhash of a given investor
 func validateInvestor() {
 	http.HandleFunc("/investor/validate", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -139,8 +132,7 @@ func validateInvestor() {
 	})
 }
 
-// getAllInvestors gets a list of all the investors in the system so that we can
-// display it to some entity that is interested to view such stats
+// getAllInvestors gets a list of all the investors in the database
 func getAllInvestors() {
 	http.HandleFunc("/investor/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -154,7 +146,7 @@ func getAllInvestors() {
 	})
 }
 
-// Invest invests in a specific project of the user's choice
+// Invest invests in a project of the investor's choice
 func invest() {
 	http.HandleFunc("/investor/invest", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -207,7 +199,7 @@ func invest() {
 	})
 }
 
-// voteTowardsProject votes towards a specific propsoed project of the user's choice.
+// voteTowardsProject votes towards a proposed project of the user's choice.
 func voteTowardsProject() {
 	http.HandleFunc("/investor/vote", func(w http.ResponseWriter, r *http.Request) {
 		investor, err := InvValidateHelper(w, r, "votes", "projIndex")
@@ -240,8 +232,7 @@ func voteTowardsProject() {
 }
 
 // addLocalAssetInv adds a local asset that can be traded in a p2p fashion wihtout direct involvement
-// from the platform. The platform can have a UI that will deal with this or this can be
-// made an emualtor only function so that only experienced users use this.
+// from the platform
 func addLocalAssetInv() {
 	http.HandleFunc("/investor/localasset", func(w http.ResponseWriter, r *http.Request) {
 
@@ -332,93 +323,3 @@ func sendEmail() {
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
-
-/*
-// investInConstructionBond invests a specific amount in a bond of the user's choice
-func investInConstructionBond() {
-	http.HandleFunc("/constructionbond/invest", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		var err error
-
-		prepInvestor, err := InvValidateHelper(w, r, "amount", "projIndex", "seedpwd")
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return
-		}
-
-		invAmount, err := utils.ToFloat(r.URL.Query()["amount"][0])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		seedpwd := r.URL.Query()["seedpwd"][0]
-
-		invSeed, err := wallet.DecryptSeed(prepInvestor.U.StellarWallet.EncryptedSeed, seedpwd)
-		if err != nil {
-			log.Println("did not get investor seed from password", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		err = opzones.InvestInConstructionBond(projIndex, prepInvestor.U.Index, invAmount, invSeed)
-		if err != nil {
-			log.Println("did not invest in bond", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		erpc.ResponseHandler(w, erpc.StatusOK)
-	})
-}
-
-// InvestInCoop invests in a coop of the user's choice
-func investInLivingUnitCoop() {
-	http.HandleFunc("/livingunitcoop/invest", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		var err error
-
-		prepInvestor, err := InvValidateHelper(w, r, "amount", "projIndex", "seedpwd")
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return
-		}
-
-		invAmount, err := utils.ToFloat(r.URL.Query()["amount"][0])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		seedpwd := r.URL.Query()["seedpwd"][0]
-
-		invSeed, err := wallet.DecryptSeed(prepInvestor.U.StellarWallet.EncryptedSeed, seedpwd)
-		if err != nil {
-			log.Println("did not get investor seed from password", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		recpSeed := "SA5LO2G3XR37YY7566K2NHWQCK6PFXMF7UE64WGFBCOAPFHEKNSWT6PE"
-		err = opzones.InvestInLivingUnitCoop(projIndex, prepInvestor.U.Index, invAmount, invSeed, recpSeed)
-		if err != nil {
-			log.Println("did not invest in the coop", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		erpc.ResponseHandler(w, erpc.StatusOK)
-	})
-}
-*/

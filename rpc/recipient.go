@@ -14,10 +14,7 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
-// setupRecipientRPCs sets up all RPCs related to the recipient. Most are similar
-// to the investor RPCs, so maybe there's some nice way we can group them together
-// to avoid code duplication
-// not exporting this function because its being used only within the same package
+// setupRecipientRPCs sets up all RPCs related to the recipient
 func setupRecipientRPCs() {
 	registerRecipient()
 	validateRecipient()
@@ -40,10 +37,8 @@ func setupRecipientRPCs() {
 
 // RecpValidateHelper is a helper that helps validates recipients in routes
 func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Recipient, error) {
-	// first validate the recipient or anyone would be able to set device ids
 	var prepRecipient core.Recipient
 	var err error
-	// need to pass the pwhash param here
 	if r.URL.Query() == nil {
 		return prepRecipient, errors.New("url query can't be empty")
 	}
@@ -84,12 +79,12 @@ func getAllRecipients() {
 	})
 }
 
+// registerRecipient creates and stores a new recipient on the platform
 func registerRecipient() {
 	http.HandleFunc("/recipient/register", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		// to register, we need the name, username and pwhash
 		if r.URL.Query()["name"] == nil || r.URL.Query()["username"] == nil || r.URL.Query()["pwd"] == nil || r.URL.Query()["seedpwd"] == nil {
 			log.Println("missing basic set of params that can be used ot validate a user")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -109,7 +104,6 @@ func registerRecipient() {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
 			}
-			// username collision, check other fields by fetching user details for the collided user
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
 			if err != nil {
@@ -161,14 +155,12 @@ func validateRecipient() {
 	})
 }
 
-// payback pays back towards a specific invested order
+// payback pays back towards an  invested order
 func payback() {
-	// func Payback(recpIndex int, projIndex int, assetName string, amount string, recipientSeed string,
-	// 	platformPubkey string) error {
 	http.HandleFunc("/recipient/payback", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		// this is a get request to make things easier for the teller
+
 		prepRecipient, err := RecpValidateHelper(w, r, "assetName", "amount", "seedpwd", "projIndex")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -207,7 +199,7 @@ func payback() {
 	})
 }
 
-// storeDeviceId st ores the recipient's device id from the teller. Called by the teller
+// storeDeviceId stores the recipient's device id from the teller. Called by the teller
 func storeDeviceId() {
 	http.HandleFunc("/recipient/deviceId", func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
@@ -230,13 +222,13 @@ func storeDeviceId() {
 	})
 }
 
-// storeStartTime stores the start time of the remote device installed as part of an invested project.
-// Called by the teller
+// storeStartTime stores the start time of the remote device installed as part of an
+// invested project. Called by the teller
 func storeStartTime() {
 	http.HandleFunc("/recipient/startdevice", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		// first validate the recipient or anyone would be able to set device ids
+
 		prepRecipient, err := RecpValidateHelper(w, r, "start")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -259,7 +251,7 @@ func storeDeviceLocation() {
 	http.HandleFunc("/recipient/storelocation", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		// first validate the recipient or anyone would be able to set device ids
+
 		prepRecipient, err := RecpValidateHelper(w, r, "location")
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -304,7 +296,7 @@ func chooseBlindAuction() {
 			return
 		}
 
-		err = bestContract.SetStage(4) // TODO: change to 3
+		err = bestContract.SetStage(4)
 		if err != nil {
 			log.Println("did not set final project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -335,8 +327,6 @@ func chooseVickreyAuction() {
 			return
 		}
 
-		// the only differing part in the three auction routes. Would be nice if there were
-		// some way to avoid repetition like this
 		bestContract, err := core.SelectContractVickrey(allContracts)
 		if err != nil {
 			log.Println("did not select contract", err)
@@ -344,7 +334,7 @@ func chooseVickreyAuction() {
 			return
 		}
 
-		err = bestContract.SetStage(4) // change to 3 once done
+		err = bestContract.SetStage(4)
 		if err != nil {
 			log.Println("did not set final project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -374,8 +364,6 @@ func chooseTimeAuction() {
 			return
 		}
 
-		// the only differing part in the three auction routes. Would be nice if there were
-		// some way to avoid repetition like this
 		bestContract, err := core.SelectContractTime(allContracts)
 		if err != nil {
 			log.Println("did not select contract", err)
@@ -383,7 +371,7 @@ func chooseTimeAuction() {
 			return
 		}
 
-		err = bestContract.SetStage(4) // TODO: change to 3
+		err = bestContract.SetStage(4)
 		if err != nil {
 			log.Println("did not set final project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -394,7 +382,7 @@ func chooseTimeAuction() {
 	})
 }
 
-// unlock unlocks a speciifc projectwhich has been invested in, signalling that the recipient
+// unlockOpenSolar unlocks a project which has just been invested in, signalling that the recipient
 // has accepted the investment.
 func unlockOpenSolar() {
 	http.HandleFunc("/recipient/unlock/opensolar", func(w http.ResponseWriter, r *http.Request) {
@@ -447,9 +435,7 @@ func addEmail() {
 	})
 }
 
-// finalizeProject finalizes (ie moves from stage 2 to 3) a specific project. usually
-// this shouldn't be called directly since tehre would be auctions for choosign the winning
-// contractor
+// finalizeProject finalizes (ie moves from stage 2 to 3) a specific project
 func finalizeProject() {
 	http.HandleFunc("/recipient/finalize", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -474,7 +460,7 @@ func finalizeProject() {
 			return
 		}
 
-		err = project.SetStage(4) // TODO: in the future once this is defined well enough, this must be set to stage 3
+		err = project.SetStage(4)
 		if err != nil {
 			log.Println("did not set final project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -537,38 +523,6 @@ func calculateTrustLimit() {
 	})
 }
 
-/*
-// unlock unlocks a speciifc projectwhich has been invested in, signalling that the recipient
-// has accepted the investment.
-func unlockCBond() {
-	http.HandleFunc("/recipient/unlock/opzones/cbond", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r, "seedpwd")
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return
-		}
-
-		seedpwd := r.URL.Query()["seedpwd"][0]
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		err = opzones.UnlockProject(recipient.U.Username, recipient.U.Pwhash, projIndex, seedpwd, "constructionbond")
-		if err != nil {
-			log.Println("did not unlock project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		erpc.ResponseHandler(w, erpc.StatusOK)
-	})
-}
-*/
 // storeStateHash stores the start time of the remote device installed as part of an invested project.
 // Called by the teller
 func storeStateHash() {

@@ -11,11 +11,7 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
-// collect all handlers in one place so that we can assemble them easily
-// there are some repeating RPCs that we would like to avoid and maybe there's some
-// nice way to group them together
-
-// setupProjectRPCs sets up all the RPC calls related to projects that might be used
+// setupProjectRPCs sets up all project related RPC calls
 func setupProjectRPCs() {
 	insertProject()
 	getProject()
@@ -26,18 +22,13 @@ func setupProjectRPCs() {
 // parseProject is a helper that is used to validate POST data. This returns a project struct
 // on successful parsing of the received form data
 func parseProject(r *http.Request) (core.Project, error) {
-	// we need to create an instance of the Project
-	// and then map values if they do exist
-	// note that we just prepare the project here and don't invest in it
-	// for that, we need new a new investor struct and a recipient struct
 	var prepProject core.Project
 	err := r.ParseForm()
 	if err != nil {
 		log.Println("did not parse form", err)
 		return prepProject, err
 	}
-	// if we're inserting this in, we need to get the next index number
-	// so that we can set this without causing some weird bugs
+
 	allProjects, err := core.RetrieveAllProjects()
 	if err != nil {
 		log.Println("did not retrieve all projects", err)
@@ -67,13 +58,10 @@ func parseProject(r *http.Request) (core.Project, error) {
 
 // insertProject inserts a project into the database.
 func insertProject() {
-	// this should be a post method since you want to accept an project and then insert
-	// that into the database
-	// this route does not define an originator and would mostly not be useful, should
-	// look into a way where we can define originators in the route as well
 	http.HandleFunc("/project/insert", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckPost(w, r)
 		erpc.CheckOrigin(w, r)
+
 		var prepProject core.Project
 		prepProject, err := parseProject(r)
 		if err != nil {
@@ -91,15 +79,12 @@ func insertProject() {
 	})
 }
 
-// getAllProjects gets a list of all the projects that registered on the core.
+// getAllProjects gets a list of all the projects in the database
 func getAllProjects() {
 	http.HandleFunc("/project/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		// make a call to the db to get all projects
-		// while making this call, the rpc should not be aware of the db we are using
-		// and stuff. So we need to have another route that would open the existing
-		// db, without asking for one
+
 		allProjects, err := core.RetrieveAllProjects()
 		if err != nil {
 			log.Println("did not retrieve all projects", err)
@@ -112,7 +97,6 @@ func getAllProjects() {
 
 // getProject gets the details of a specific project.
 func getProject() {
-	// we need to read passed the key from the URL that the user calls
 	http.HandleFunc("/project/get", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
@@ -148,7 +132,7 @@ func projectHandler(w http.ResponseWriter, r *http.Request, stage int) {
 	erpc.MarshalSend(w, allProjects)
 }
 
-// various handlers for fetching projects which are at different stages on the platform
+// getProjectsAtIndex gets projects at a specific stage
 func getProjectsAtIndex() {
 	http.HandleFunc("/projects", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query()["index"] == nil {

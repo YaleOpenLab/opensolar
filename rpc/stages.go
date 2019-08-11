@@ -10,15 +10,15 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+// setupStagesHandlers sets up all stage related handlers
 func setupStagesHandlers() {
 	returnAllStages()
 	returnSpecificStage()
 	promoteStage()
 }
 
-// returnAllStages returns all the defined stages for this specific platform.
-// Opensolar has 9 stages defined in stages.go
-// this is a public function that can be called by anyone, so we don't authenticate
+// returnAllStages returns all the defined stages for this specific platform.  Opensolar
+// has 9 stages defined in stages.go
 func returnAllStages() {
 	http.HandleFunc("/stages/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
