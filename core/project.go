@@ -5,12 +5,8 @@ import (
 	platforms "github.com/YaleOpenLab/openx/platforms"
 )
 
-// A Project is the investment structure that will be invested in by people. In the case
-// of the opensolar platform, this is referred to as a solar system.
-
-// Project defines the project struct
+// Project defines the project investment structure in opensolar
 type Project struct {
-	// Describe the project
 	Index                     int     // an Index to keep track of how many projects exist
 	Name                      string  // the name of the project / the identifier by which its referred to
 	State                     string  // the state in which the project has been installed in
@@ -255,17 +251,35 @@ type ContractAuction struct {
 }
 
 const (
-	InvestorWeight         = 0.1 // the percentage weight of the project's total reputation assigned to the investor
-	OriginatorWeight       = 0.1 // the percentage weight of the project's total reputation assigned to the originator
-	ContractorWeight       = 0.3 // the percentage weight of the project's total reputation assigned to the contractor
-	DeveloperWeight        = 0.2 // the percentage weight of the project's total reputation assigned to the developer
-	RecipientWeight        = 0.3 // the percentage weight of the project's total reputation assigned to the recipient
-	NormalThreshold        = 1   // NormalThreshold is the normal payback interval of 1 payback period. Regular notifications are sent regardless of whether the user has paid back towards the project.
-	AlertThreshold         = 2   // AlertThreshold is the threshold above which the user gets a nice email requesting a quick payback whenever possible
-	SternAlertThreshold    = 4   // SternAlertThreshold is the threshold above when the user gets a warning that services will be disconnected if the user doesn't payback soon.
-	DisconnectionThreshold = 6   // DisconnectionThreshold is the threshold above which the user gets a notification telling that services have been disconnected.
+	// InvestorWeight is the percentage weight of the project's total reputation assigned to the investor
+	InvestorWeight = 0.1
+
+	// OriginatorWeight is the percentage weight of the project's total reputation assigned to the originator
+	OriginatorWeight = 0.1
+
+	// ContractorWeight is the percentage weight of the project's total reputation assigned to the contractor
+	ContractorWeight = 0.3
+
+	// DeveloperWeight is the percentage weight of the project's total reputation assigned to the developer
+	DeveloperWeight = 0.2
+
+	// RecipientWeight is the percentage weight of the project's total reputation assigned to the recipient
+	RecipientWeight = 0.3
+
+	// NormalThreshold is the normal payback interval of 1 payback period. Regular notifications are sent regardless of whether the user has paid back towards the project.
+	NormalThreshold = 1
+
+	// AlertThreshold is the threshold above which the user gets a nice email requesting a quick payback whenever possible
+	AlertThreshold = 2
+
+	// SternAlertThreshold is the threshold above when the user gets a warning that services will be disconnected if the user doesn't payback soon.
+	SternAlertThreshold = 4
+
+	// DisconnectionThreshold is the threshold above which the user gets a notification telling that services have been disconnected.
+	DisconnectionThreshold = 6
 )
 
+// SolarProjectArray is an array of Projects
 type SolarProjectArray []Project
 
 // InitializePlatform imports handlers from the main platform struct that are necessary for starting the platform
@@ -273,8 +287,8 @@ func InitializePlatform() error {
 	return platforms.InitializePlatform()
 }
 
-// RefillPlatform checks whether the publicKey passed has any xlm and if its balance
-// is less than 21 XLM, it proceeds to ask the friendbot for more test xlm
+// RefillPlatform checks whether the platform has any xlm and if its balance
+// is less than 21 XLM, it proceeds to ask friendbot for more test xlm
 func RefillPlatform(publicKey string) error {
 	return platforms.RefillPlatform(publicKey)
 }

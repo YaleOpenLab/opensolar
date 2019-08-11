@@ -17,9 +17,9 @@ import (
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
-// platform is designed to be monolithic so we can have everything in one place
+// contains one of the two main contracts behind opensolar
 
-// VerifyBeforeAuthorizing verifies some information on the originator before upgrading the project stage
+// VerifyBeforeAuthorizing verifies information on the originator before upgrading the project stage
 func VerifyBeforeAuthorizing(projIndex int) bool {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -69,10 +69,6 @@ func RecipientAuthorize(projIndex int, recpIndex int) error {
 	return nil
 }
 
-// —VOTING SCHEMES—
-// MW: Lets design this together. Very cool to have votes (which are 'Likes'), but why only investors can vote? Why not projects at stage 1?
-// What does it mean if a project has high votes?
-
 // VoteTowardsProposedProject is a handler that an investor would use to vote towards a
 // specific proposed project on the platform.
 func VoteTowardsProposedProject(invIndex int, votes float64, projectIndex int) error {
@@ -107,7 +103,7 @@ func VoteTowardsProposedProject(invIndex int, votes float64, projectIndex int) e
 	return nil
 }
 
-// preInvestmentChecks associated with the opensolar platform when an Investor bids an investment amount of a specific project
+// preInvestmentCheck associated with the opensolar platform when an Investor bids an investment amount of a specific project
 func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed string) (Project, error) {
 	var project Project
 	var investor Investor
@@ -145,16 +141,16 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 		if project.SeedAssetCode == "" && project.InvestorAssetCode == "" {
 			// this project does not have an asset issuer associated with it yet since there has been
 			// no seed round nor investment round
-			project.InvestorAssetCode = assets.AssetID(consts.InvestorAssetPrefix + project.Metadata) // you can retrieve asetCodes anywhere since metadata is assumed to be unique
+			project.InvestorAssetCode = assets.AssetID(consts.InvestorAssetPrefix + project.Metadata) // creat investor asset
 			err = project.Save()
 			if err != nil {
 				return project, errors.Wrap(err, "couldn't save project")
 			}
-			err = issuer.InitIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd)
+			err = issuer.InitIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd) // start an issuer with the projIndex
 			if err != nil {
 				return project, errors.Wrap(err, "error while initializing issuer")
 			}
-			err = issuer.FundIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd, consts.PlatformSeed)
+			err = issuer.FundIssuer(consts.OpenSolarIssuerDir, projIndex, consts.IssuerSeedPwd, consts.PlatformSeed) // fund the issuer since it needs to issue assets
 			if err != nil {
 				return project, errors.Wrap(err, "error while funding issuer")
 			}
@@ -190,7 +186,7 @@ func SeedInvest(projIndex int, invIndex int, invAmount float64, invSeed string) 
 	if project.Chain == "stellar" || project.Chain == "" {
 		if project.SeedAssetCode == "" {
 			log.Println("assigning a seed asset code")
-			project.SeedAssetCode = "SEEDASSET"
+			project.SeedAssetCode = "SEEDASSET" // set this to a constant asset for now
 		}
 		err = MunibondInvest(consts.OpenSolarIssuerDir, invIndex, invSeed, invAmount, projIndex,
 			project.SeedAssetCode, project.TotalValue, project.SeedInvestmentFactor)
@@ -204,16 +200,16 @@ func SeedInvest(projIndex int, invIndex int, invAmount float64, invSeed string) 
 		}
 
 		return err
-	} else {
-		return errors.New("other chain investments not supported  yet")
 	}
+
+	return errors.New("other chain investments not supported  yet")
 }
 
 // Invest is the main invest function of the opensolar platform
 func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) error {
 	var err error
 
-	// run preinvestment checks to make sure everything is okay
+	// run preinvestment checks
 	project, err := preInvestmentCheck(projIndex, invIndex, invAmount, invSeed)
 	if err != nil {
 		return errors.Wrap(err, "pre investment check failed")
@@ -225,18 +221,16 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 
 	if project.Chain == "stellar" || project.Chain == "" {
 		if project.Stage != 4 {
-			// if the project is not at stage 4 due to some reason, catch it here
 			if project.Stage == 1 || project.Stage == 2 {
-				// need to redirect it to the seedinvest function
+				// investment is in seed stage
 				return SeedInvest(projIndex, invIndex, invAmount, invSeed)
 			}
 			return errors.New("project not at stage where it can solicit investment, quitting")
 		}
-		// call the model and invest in the particular project
+
 		err = MunibondInvest(consts.OpenSolarIssuerDir, invIndex, invSeed, invAmount, projIndex,
 			project.InvestorAssetCode, project.TotalValue, 1)
 		if err != nil {
-			log.Println("Error while seed investing", err)
 			return errors.Wrap(err, "error while investing")
 		}
 
@@ -246,41 +240,44 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 			return errors.Wrap(err, "failed to update project after investment")
 		}
 		return err
-	} else {
-		return errors.New("other chain investments not supported right now")
 	}
+
+	return errors.New("other chain investments not supported right now")
 }
 
-// the updateAfterInvestment of the opensolar platform
+// updateAfterInvestment updates project db params after investment
 func (project *Project) updateAfterInvestment(invAmount float64, invIndex int) error {
-	// MW: It seems that all your messages strings relate to errors, but not to confirmed transactions. It would be useful to add those
 	var err error
-
 	project.MoneyRaised += invAmount
 	project.InvestorIndices = append(project.InvestorIndices, invIndex)
-	log.Println("INV INDEX: ", invIndex)
+
 	err = project.Save()
 	if err != nil {
 		return errors.Wrap(err, "couldn't save project")
 	}
 
 	if project.MoneyRaised == project.TotalValue {
+		// project has raised the entire amount that it needs. Set lock to true and wait for recipient's response
 		project.Lock = true
 		err = project.Save()
 		if err != nil {
 			return errors.Wrap(err, "couldn't save project")
 		}
 
+		// send the recipient a notification that his project has been funded
 		err = project.sendRecipientNotification()
 		if err != nil {
 			return errors.Wrap(err, "error while sending notifications to recipient")
 		}
 
+		// start a goroutine that waits for the recipient to unlock the project
 		go sendRecipientAssets(project.Index)
 	}
 
-	// we need to udpate the project investment map here
-	project.InvestorMap = make(map[string]float64) // make the map
+	if len(project.InvestorMap) == 0 {
+		project.InvestorMap = make(map[string]float64)
+	}
+
 	log.Println("INVESTOR INDICES: ", project.InvestorIndices)
 	for i := range project.InvestorIndices {
 		investor, err := RetrieveInvestor(project.InvestorIndices[i])
@@ -296,14 +293,11 @@ func (project *Project) updateAfterInvestment(invAmount float64, invIndex int) e
 		balance1, err = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.InvestorAssetCode)
 		if err != nil {
 			balance1 = 0
-			// return errors.Wrap(err, "error while retrieving asset balance, quitting")
 		}
 
 		balance2, err = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.SeedAssetCode)
 		if err != nil {
 			balance2 = 0
-			// do nothing, since the user hasn't invested in seed assets yet
-			// return errors.Wrap(err, "error while retrieving asset balance, quitting")
 		}
 
 		balance := balance1 + balance2
@@ -428,10 +422,9 @@ func sendRecipientAssets(projIndex int) error {
 
 	log.Println("Transferred funds to escrow!")
 	project.LockPwd = "" // set lockpwd to nil immediately after retrieving seed
-	metadata := project.Metadata
 
-	project.DebtAssetCode = assets.AssetID(consts.DebtAssetPrefix + metadata)
-	project.PaybackAssetCode = assets.AssetID(consts.PaybackAssetPrefix + metadata)
+	project.DebtAssetCode = assets.AssetID(consts.DebtAssetPrefix + project.Metadata)
+	project.PaybackAssetCode = assets.AssetID(consts.PaybackAssetPrefix + project.Metadata)
 
 	err = MunibondReceive(consts.OpenSolarIssuerDir, project.RecipientIndex, projIndex, project.DebtAssetCode,
 		project.PaybackAssetCode, project.EstimatedAcquisition, recpSeed, project.TotalValue, project.PaybackPeriod)
@@ -447,12 +440,11 @@ func sendRecipientAssets(projIndex int) error {
 	return nil
 }
 
-// updateProjectAfterAcceptance updates the project after acceptance of investment
-// by the recipient
+// updateProjectAfterAcceptance updates the project after the recipient accepts investment into the project
 func (project *Project) updateProjectAfterAcceptance() error {
 
 	project.BalLeft = project.TotalValue
-	project.Stage = Stage5.Number // set to stage 5 (after the raise is done, we need to wait for people to actually construct the solar panels)
+	project.Stage = Stage5.Number // set to stage 5 (after the raise is done, we need to wait for people to construct the solar panels)
 
 	err := project.Save()
 	if err != nil {
@@ -465,11 +457,9 @@ func (project *Project) updateProjectAfterAcceptance() error {
 
 // Payback pays the platform back in STABLEUSD and DebtAsset and receives PaybackAssets
 // in return. Price to be paid per month depends on the electricity consumed by the recipient
-// in the particular time frame
-// If we allow a user to hold balances in btc / xlm, we could direct them to exchange the coin for STABLEUSD
-// (or we could setup a payment provider which accepts fiat + crypto and do this ourselves)
+// in the particular time frame.
 
-// Payback is called by the recipient when he chooses to pay towards the project according to the payback interval
+// Payback is called by the recipient when they choose to pay towards the project according to the payback interval
 func Payback(recpIndex int, projIndex int, assetName string, amount float64, recipientSeed string) error {
 
 	project, err := RetrieveProject(projIndex)
@@ -495,14 +485,11 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 	if project.BalLeft == 0 {
 		log.Println("YOU HAVE PAID OFF THIS ASSET's LOAN, TRANSFERRING FUTURE PAYMENTS AS OWNERSHIP ASSETS OWNERSHIP OF ASSET TO YOU")
 		project.Stage = 9
-		// ownership shift is complete, so future payments will be made towards what's
 	}
 
 	if project.OwnershipShift == 1 {
-		// the recipient has paid off the asset completely. TODO: we need to transfer some sort
-		// of document to the person identifying that they now own the project
+		// the recipient has paid off the asset completely
 		log.Println("You now own the asset completely, there is no need to pay money in the future towards this particular project")
-		project.Stage = 8 // TODO: review where and how this stage transition should occur
 		project.BalLeft = 0
 		project.AmountOwed = 0
 	}
@@ -539,17 +526,16 @@ func DistributePayments(recipientSeed string, escrowPubkey string, projIndex int
 	if project.InterestRate != 0 {
 		fixedRate = project.InterestRate
 	} else {
-		fixedRate = 0.05 // 5 % interest rate if rate not defined earlier
+		fixedRate = 0.05 // 5 % interest rate if rate not defined
 	}
 
 	amountGivenBack := fixedRate * amount
 	for pubkey, percentage := range project.InvestorMap {
-		// send x to this pubkey
 		txAmount := percentage * amountGivenBack
 		// here we send funds from the 2of2 multisig. Platform signs by default
 		err = escrow.SendFundsFromEscrow(project.EscrowPubkey, pubkey, recipientSeed, consts.PlatformSeed, txAmount, "returns")
 		if err != nil {
-			log.Println(err) // if there is an error with one payback, doesn't mean we should stop and wait for the others
+			log.Println("Error with payback to pubkey: ", pubkey, err) // if there is an error with one payback, doesn't mean we should stop and wait for the others
 			continue
 		}
 	}
@@ -584,7 +570,6 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 			log.Println("couldn't retrieve guarantor")
 			time.Sleep(consts.OneWeekInSecond)
 		}
-		// this will be our payback period and we need to check if the user pays us back
 
 		period := float64(time.Duration(project.PaybackPeriod) * consts.OneWeekInSecond) // in seconds due to the const
 		if period == 0 {
@@ -621,12 +606,9 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 			time.Sleep(consts.OneWeekInSecond)
 		} else if factor >= DisconnectionThreshold {
 			// send a disconnection notice to the recipient and let them know we have redirected
-			// power towards the grid. Also maybe email ourselves in this case so that we can
-			// contact them personally to resolve the issue as soon as possible.
-			notif.SendDisconnectionEmail(projIndex, recipient.U.Email)
+			// power towards the grid.
 			for _, i := range project.InvestorIndices {
-				// send an email to recipients to assure them that we're on the issue and will be acting
-				// soon if the recipient fails to pay again.
+				// send an email to investors on teller disconnection
 				investor, err := RetrieveInvestor(i)
 				if err != nil {
 					log.Println(err)
@@ -651,6 +633,7 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 	}
 }
 
+// addWaterfallAccount adds a waterfall account that the recipient must payback towards
 func addWaterfallAccount(projIndex int, pubkey string, amount float64) error {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -663,7 +646,7 @@ func addWaterfallAccount(projIndex int, pubkey string, amount float64) error {
 	return project.Save()
 }
 
-// CoverFirstLoss covers first loss for investors byu sending funds from the guarantor's account
+// CoverFirstLoss covers first loss for investors by sending funds from the guarantor's account
 func CoverFirstLoss(projIndex int, entityIndex int, amount float64) error {
 	// cover first loss for the project specified
 	project, err := RetrieveProject(projIndex)
@@ -676,7 +659,6 @@ func CoverFirstLoss(projIndex int, entityIndex int, amount float64) error {
 		return errors.Wrap(err, "could not retrieve entity from database, quitting")
 	}
 
-	// we now have the entity and the project under question
 	if project.GuarantorIndex != entity.U.Index {
 		return errors.New("guarantor index does not match with entity's index in database")
 	}

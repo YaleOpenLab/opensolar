@@ -11,8 +11,9 @@ import (
 	openx "github.com/YaleOpenLab/openx/database"
 )
 
-// this file handles everything related to openx interaction. Privileged access due to access code
+// this file handles interactions with openx. Privileged access due to access code
 
+// RetrieveUser retrieves a user from openx's database
 func RetrieveUser(key int) (openx.User, error) {
 	var user openx.User
 	keyString, err := utils.ToString(key)
@@ -31,6 +32,7 @@ func RetrieveUser(key int) (openx.User, error) {
 	return user, nil
 }
 
+// ValidateUser validates a user with openx's database
 func ValidateUser(name string, pwhash string) (openx.User, error) {
 	var user openx.User
 	body := consts.OpenxURL + "/platform/user/validate?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash
@@ -45,6 +47,7 @@ func ValidateUser(name string, pwhash string) (openx.User, error) {
 	return user, nil
 }
 
+// NewUser creates a new user in openx's database
 func NewUser(name string, pwhash string, seedpwd string, realname string) (openx.User, error) {
 	var user openx.User
 	body := consts.OpenxURL + "/platform/user/new?code=" + consts.TopSecretCode + "&name=" + name + "&pwhash=" + pwhash +
@@ -62,6 +65,7 @@ func NewUser(name string, pwhash string, seedpwd string, realname string) (openx
 	return user, nil
 }
 
+// CheckUsernameCollision checks for username collisions in openx's database
 func CheckUsernameCollision(name string) bool {
 	body := consts.OpenxURL + "/platform/user/collision?code=" + consts.TopSecretCode + "&name=" + name
 	log.Println(body)
