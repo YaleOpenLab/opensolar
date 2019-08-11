@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	utils "github.com/Varunram/essentials/utils"
 	openx "github.com/YaleOpenLab/openx/database"
+	"github.com/pkg/errors"
 )
 
 // Recipient defines the recipient structure
