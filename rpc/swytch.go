@@ -27,6 +27,7 @@ type getAccessTokenDataHelper struct {
 	Expiresin    int64  `json:"expires_in"`
 }
 
+// GetAccessTokenData is a helper struct for the swytch API
 type GetAccessTokenData struct {
 	Data []getAccessTokenDataHelper `json:"data"`
 }
@@ -165,6 +166,7 @@ type getSwytchUserStructHelper struct {
 	Wallet       string                   `json:"wallet"`
 }
 
+// GetSwytchUserStruct is a helper struct for the swytch API
 type GetSwytchUserStruct struct {
 	Data []getSwytchUserStructHelper `json:"data"`
 }
@@ -250,6 +252,7 @@ type gA2 struct {
 	Nodetype   string      `json:"node_type"`
 }
 
+// GetAssetStruct is a helper struct for the swytch API
 type GetAssetStruct struct {
 	Data []gA2 `json:"data"`
 }
@@ -346,6 +349,7 @@ type getEnergyHelper struct {
 	UpdatedAt       string     `json:"updatedAt"`
 }
 
+// GetEnergyStruct is a helper struct for the swytch API
 type GetEnergyStruct struct {
 	Data []getEnergyHelper `json:"data"`
 }
@@ -444,6 +448,7 @@ type getEnergyAttributionHelper struct {
 	Confirmed            bool                       `json:"confirmed"`
 }
 
+// GetEnergyAttributionData is a helper struct for the swytch API
 type GetEnergyAttributionData struct {
 	Data []getEnergyAttributionHelper `json:"data"`
 }

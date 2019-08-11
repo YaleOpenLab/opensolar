@@ -331,9 +331,9 @@ func testSwytch() {
 		log.Fatal(err)
 	}
 
-	access_token := x1.Data[0].Accesstoken
+	accessToken := x1.Data[0].Accesstoken
 
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getuser?authToken=" + access_token)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getuser?authToken=" + accessToken)
 	if err != nil {
 		log.Println(err)
 		return
