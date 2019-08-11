@@ -5,58 +5,115 @@ import (
 	"time"
 )
 
-// Start repeated params, use only for testing
-var PlatformPublicKey = ""
-var PlatformSeed = ""
-var PlatformEmail = ""
-var PlatformEmailPass = ""
-var StablecoinCode = ""
-var StablecoinPublicKey = ""
-var AnchorUSDCode = ""
-var AnchorUSDAddress = ""
-var AnchorUSDTrustLimit = float64(10000)
-var AnchorAPI = ""
-var Mainnet = false
+// PlatformPublicKey is the Stellar public key of the openx platform
+var PlatformPublicKey string
 
-// End repeated params
+// PlatformSeed is the Stellar seed corresponding to the above Stellar public key
+var PlatformSeed string
 
-var OpenxURL = "http://localhost:8080" // default openx instance to connect to
-var TopSecretCode = "OPENSOLARTEST"     // code for requesting stuff from openx
+// PlatformEmail is the email of the platform used to send notifications related to openx
+var PlatformEmail string
 
-// directories
-var HomeDir = os.Getenv("HOME") + "/.opensolar" // home directory where we store everything
+// PlatformEmailPass is the password for the emial account linked above
+var PlatformEmailPass string
 
-var DbName = "opensolar.db" // the name of the db that we want to store stuff in
-var DbDir = ""              // the directory where the database is stored (project info, user info, etc)
-var OpenSolarIssuerDir = "" // the directory where we store opensolar projects' issuer seeds
-var PlatformSeedFile = ""   // where the platform's seed is stored
+// StablecoinCode is the code of the in house stablecoin that openx possesses
+var StablecoinCode string
 
-// prefixes
-var InvestorAssetPrefix = "InvestorAssets_" // the prefix that will be hashed to give an investor AssetID
-var BondAssetPrefix = "BondAssets_"         // the prefix that will be hashed to give a bond asset
-var CoopAssetPrefix = "CoopAsset_"          // the prefix that will be hashed to give the cooperative asset
-var DebtAssetPrefix = "DebtAssets_"         // the prefix that will be hashed to give a recipient AssetID
-var SeedAssetPrefix = "SeedAssets_"         // the prefix that will be hashed to give an ivnestor his seed id
-var PaybackAssetPrefix = "PaybackAssets_"   // the prefix that will be hashed to give a payback AssetID
-var IssuerSeedPwd = "blah"                  // the password for unlocking the encrypted file. This must be modified a compile time and kept secret
-var EscrowPwd = "blah"                      // the password used for locking the seed used by the escrow. This must be modified a compile time and kept secret
+// StablecoinPublicKey is the public Stellar address of our in house stablecoin
+var StablecoinPublicKey string
 
-// ports + number consts
-var Tlsport = 443                                           // default port for ssl
-var DefaultRpcPort = 8081                                   // the default port on which the rpc server of the platform starts. Defaults to HTTPS
-var LockInterval = int64(1 * 60 * 60 * 24 * 3)              // time a recipient is given to unlock the project and redeem investment, right now at 3 days
-var PaybackInterval = time.Duration(1 * 60 * 60 * 24 * 30)  // second * minute * hour * day * number, 30 days right now
-var OneWeekInSecond = time.Duration(604800 * time.Second)   // one week in seconds
-var TwoWeeksInSecond = time.Duration(1209600 * time.Second) // one week in seconds, easier to have it here than call it in multiple places
-var SixWeeksInSecond = time.Duration(3628800 * time.Second) // six months in seconds, send notification
-var CutDownPeriod = time.Duration(4838400 * time.Second)    // period when we direct power to the grid
+// AnchorUSDCode is the code for AnchorUSD's stablecoin
+var AnchorUSDCode string
 
-// teller related consts
-var TellerHomeDir = HomeDir + "/teller"                        // the home directory of the teller executable
-var TellerMaxLocalStorageSize = 2000                           // in bytes, tweak this later to something like 10M after testing
-var TellerPollInterval = time.Duration(30000 * time.Second)    // frequency with which the teller of a particular system is polled
-var LoginRefreshInterval = time.Duration(5 * 60 * time.Second) // every 5 minutes we refresh the teller to import the changes on the platform
+// AnchorUSDAddress is the address associated with AnchorUSD
+var AnchorUSDAddress string
 
+// AnchorUSDTrustLimit is the trust limit till which an account trusts AnchorUSD's stablecoin
+var AnchorUSDTrustLimit float64
+
+// AnchorAPI is the URL of AnchorUSD's API
+var AnchorAPI string
+
+// Mainnet denotes if openx is running on Stellar mainnet / testnet
+var Mainnet bool
+
+// OpenxURL is the openx URL that opensolar has to connect to
+var OpenxURL = "http://localhost:8080"
+
+// TopSecretCode is a test nuclear code that is used for testing
+var TopSecretCode = "OPENSOLARTEST"
+
+// HomeDir is the directory where opensolar projects, investors, entities, etc are stored
+var HomeDir = os.Getenv("HOME") + "/.opensolar"
+
+// DbDir is the directory where the openx database (boltDB) is stored
+var DbDir = ""
+
+// DbName is the name of the openx database
+var DbName = "opensolar.db"
+
+// OpenSolarIssuerDir is the directory where project escrow seeds are stored
+var OpenSolarIssuerDir = ""
+
+// PlatformSeedFile is the location where PlatformSeedFile is stored and decrypted each time the platform is started
+var PlatformSeedFile string
+
+// InvestorAssetPrefix is the prefix that will be hashed to give an investor AssetID
+var InvestorAssetPrefix = "InvestorAssets_"
+
+// DebtAssetPrefix is the prefix that will be hashed to give a recipient AssetID
+var DebtAssetPrefix = "DebtAssets_"
+
+// SeedAssetPrefix is the prefix that will be hashed to give an ivnestor his seed id
+var SeedAssetPrefix = "SeedAssets_"
+
+// PaybackAssetPrefix is the prefix that will be hashed to give a payback AssetID
+var PaybackAssetPrefix = "PaybackAssets_"
+
+// IssuerSeedPwd is the password of the issuer's seed
+var IssuerSeedPwd = "blah"
+
+// EscrowPwd is the password of the project escrows' seed
+var EscrowPwd = "blah"
+
+// Tlsport is the default SSL port on which openx starts
+var Tlsport = 443
+
+// DefaultRpcPort is the default Insecure port on which openx starts
+var DefaultRpcPort = 8081
+
+// LockInterval is the time a recipient is given to unlock the project and redeem investment, right now at 3 days
+var LockInterval = int64(1 * 60 * 60 * 24 * 3)
+
+// PaybackInterval is the default teller payback interval
+var PaybackInterval = time.Duration(1 * 60 * 60 * 24 * 30)
+
+// OneWeekInSecond is one week in seconds
+var OneWeekInSecond = time.Duration(604800 * time.Second)
+
+// TwoWeeksInSecond is two weeks in seconds
+var TwoWeeksInSecond = time.Duration(1209600 * time.Second)
+
+// SixWeeksInSecond is six weeks in seconds
+var SixWeeksInSecond = time.Duration(3628800 * time.Second)
+
+// CutDownPeriod is the period where we cut down power to the recipient and instead redirect it to the grid
+var CutDownPeriod = time.Duration(4838400 * time.Second)
+
+// TellerHomeDir is the home directory of the teller
+var TellerHomeDir = HomeDir + "/teller" // the home directory of the teller executable
+
+// TellerMaxLocalStorageSize is the max file storage limit on the teller before we hash the entire thing to ipfs
+var TellerMaxLocalStorageSize = 2000
+
+// TellerPollInterval is the frequency at which we poll the interval
+var TellerPollInterval = time.Duration(30000 * time.Second)
+
+// LoginRefreshInterval is the frequency at which the teller's credentials are updated (ie if you change your password, wait 5 minutes for the teller to disconnect)
+var LoginRefreshInterval = time.Duration(5 * 60 * time.Second)
+
+// SetTnConsts sets constants that are relevant for staring opensolar on testnet
 func SetTnConsts() {
 	HomeDir = os.Getenv("HOME") + "/.opensolar/testnet"
 	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
@@ -64,6 +121,7 @@ func SetTnConsts() {
 	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
 }
 
+// SetMnConsts sets constants that are relevant for staring opensolar on mainnet
 func SetMnConsts() {
 	HomeDir = os.Getenv("HOME") + "/.opensolar/mainnet"
 	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)

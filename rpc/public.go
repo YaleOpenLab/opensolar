@@ -41,15 +41,8 @@ func setupPublicRoutes() {
 	getRecpTopReputationPublic()
 }
 
-// public contains all the RPC routes that we explicitly intend to make public. Other
-// routes such as the invest route are things we could make private as well, but that
-// doesn't change the security model since we ask for username+pwauth
-
-// sanitizeInvestor removes sensitive fields frm the investor struct in order to be able
-// to return the investor field in a public route
+// sanitizeInvestor removes sensitive fields from the investor struct
 func sanitizeInvestor(investor core.Investor) SnInvestor {
-	// this is a public route, so we shouldn't ideally return all parameters that are present
-	// in the investor struct
 	var sanitize SnInvestor
 	sanitize.Name = investor.U.Name
 	sanitize.InvestedSolarProjects = investor.InvestedSolarProjects
@@ -59,11 +52,8 @@ func sanitizeInvestor(investor core.Investor) SnInvestor {
 	return sanitize
 }
 
-// sanitizeRecipient removes sensitive fields from the recipient struct in order to be
-// able to return the recipient fields in a public route
+// sanitizeRecipient removes sensitive fields from the recipient struct
 func sanitizeRecipient(recipient core.Recipient) SnRecipient {
-	// this is a public route, so we shouldn't ideally return all parameters that are present
-	// in the investor struct
 	var sanitize SnRecipient
 	sanitize.Name = recipient.U.Name
 	sanitize.PublicKey = recipient.U.StellarWallet.PublicKey
@@ -90,8 +80,7 @@ func sanitizeAllRecipients(recipients []core.Recipient) []SnRecipient {
 	return arr
 }
 
-// getAllInvestors gets a list of all the investors in the system so that we can
-// display it to some entity that is interested to view such stats
+// getAllInvestors gets a list of all the investors in the database
 func getAllInvestorsPublic() {
 	http.HandleFunc("/public/investor/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -107,8 +96,7 @@ func getAllInvestorsPublic() {
 	})
 }
 
-// getAllRecipients gets a list of all the investors in the system so that we can
-// display it to some entity that is interested to view such stats
+// getAllRecipients gets a list of all the investors in the database
 func getAllRecipientsPublic() {
 	http.HandleFunc("/public/recipient/all", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -124,7 +112,7 @@ func getAllRecipientsPublic() {
 	})
 }
 
-// getRecpTopReputationPublic gets a list of the recipients who have the best reputation on the platform
+// getRecpTopReputationPublic gets a list of the recipients sorted by descending order of reputation
 func getRecpTopReputationPublic() {
 	http.HandleFunc("/public/recipient/reputation/top", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
@@ -140,7 +128,7 @@ func getRecpTopReputationPublic() {
 	})
 }
 
-// getInvTopReputationPublic gets a lsit of the investors who have the best reputation on the platform
+// getInvTopReputationPublic gets a list of the investors sorted by descending order of reputation
 func getInvTopReputationPublic() {
 	http.HandleFunc("/public/investor/reputation/top", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)

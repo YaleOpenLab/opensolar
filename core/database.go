@@ -9,9 +9,16 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
+// InvestorBucket is the investor bucket
 var InvestorBucket = []byte("Investors")
+
+// RecipientBucket is the recipient bucket
 var RecipientBucket = []byte("Recipients")
+
+// ProjectsBucket is the project bucket
 var ProjectsBucket = []byte("Projects")
+
+// ContractorBucket is the contractor bucket
 var ContractorBucket = []byte("Contractors")
 
 // CreateHomeDir creates a home directory
@@ -25,7 +32,7 @@ func CreateHomeDir() {
 	db.Close()
 }
 
-// OpenDB opens the db
+// OpenDB opens the db, calls essentials for helpers
 func OpenDB() (*bolt.DB, error) {
 	return edb.OpenDB(consts.DbDir + consts.DbName)
 }

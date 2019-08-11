@@ -21,8 +21,7 @@ import (
 // MunibondInvest invests in a specific munibond
 func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount float64,
 	projIndex int, invAssetCode string, totalValue float64, seedInvestmentFactor float64) error {
-	// offer user to exchange xlm for stableusd and invest directly if the user does not have stableusd
-	// this should be a menu on the Frontend but here we do this automatically
+
 	var err error
 
 	investor, err := RetrieveInvestor(invIndex)
@@ -70,8 +69,7 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 	investor.AmountInvested += invAmount //  / seedInvestmentFactor -> figure out after demo
 	investor.InvestedSolarProjects = append(investor.InvestedSolarProjects, InvestorAsset.GetCode())
 	investor.InvestedSolarProjectsIndices = append(investor.InvestedSolarProjectsIndices, projIndex)
-	// keep note of who all invested in this asset (even though it should be easy
-	// to get that from the blockchain)
+
 	err = investor.Save()
 	if err != nil {
 		return err
@@ -156,15 +154,12 @@ func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetI
 	return nil
 }
 
-// sendPaymentNotif sends a notification every payback period to the recipient to
-// kindly remind him to payback towards the project
+// sendPaymentNotif sends a notification every payback period to the recipient to remind them to payback towards the project
 func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod int, email string) {
-	// setup a payback monitoring routine for monitoring if the recipient pays us back on time
-	// the recipient must give his email to receive updates
 	paybackTimes := 0
 	for {
 
-		_, err := RetrieveRecipient(recpIndex) // need to retrieve to make sure nothing goes awry
+		_, err := RetrieveRecipient(recpIndex)
 		if err != nil {
 			log.Println("Error while retrieving recipient from database", err)
 			message := "Error while retrieving your account details, please contact help as soon as you receive this message " + err.Error()
@@ -188,7 +183,7 @@ func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod int, email str
 }
 
 // MunibondPayback is used by the recipient to pay the platform back. Here, we pay the
-// project escrow instead of the platform since it would be responsible for redistribution of funds
+// project escrow instead of the platform since it is responsible for redistribution of funds
 func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipientSeed string, projIndex int,
 	assetName string, projectInvestors []int, totalValue float64, escrowPubkey string) (float64, error) {
 
@@ -270,10 +265,7 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	return ownershipPct, nil
 }
 
-// the models package won't be imported directly in any place but would be imported
-// by all the investment models that exist
-
-// SendUSDToPlatform sends STABLEUSD back to the platform for investment
+// SendUSDToPlatform sends STABLEUSD back to the platform
 func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, error) {
 	// send stableusd to the platform (not the issuer) since the issuer will be locked
 	// and we can't use the funds. We also need ot be able to redeem the stablecoin for fiat

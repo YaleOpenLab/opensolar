@@ -4,8 +4,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// SelectContractBlind selects the winning bid  based on blind auctio nrules
-// in a blind auction, the bid with the highest price wins
+// handlers for auctions in the event someone decides to do auction for their projects
+
+// SelectContractBlind selects the winning bid based on blind auction rules (in a blind auction, the bid with the highest price wins)
 func SelectContractBlind(arr []Project) (Project, error) {
 	var a Project
 	if len(arr) == 0 {
@@ -22,8 +23,7 @@ func SelectContractBlind(arr []Project) (Project, error) {
 	return a, nil
 }
 
-// SelectContractVickrey selects the winning bid based on vickrey auction rules
-// in a vickrey auction, the bid with the second highest price wins
+// SelectContractVickrey selects the winning bid based on vickrey auction rules (in a vickrey auction, the bid with the second highest price wins)
 func SelectContractVickrey(arr []Project) (Project, error) {
 	var winningContract Project
 	if len(arr) == 0 {
@@ -59,7 +59,7 @@ func SelectContractVickrey(arr []Project) (Project, error) {
 	return winningContract, winningContract.Save()
 }
 
-// SelectContractTime selects the winning contract based on the least time to completion
+// SelectContractTime selects the winning contract based on the least time proposed for completion
 func SelectContractTime(arr []Project) (Project, error) {
 	var a Project
 	if len(arr) == 0 {

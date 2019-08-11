@@ -5,20 +5,6 @@ import (
 	"log"
 )
 
-var Stage0 = Stage{
-	Number:       0,
-	FriendlyName: "Handshake",
-	Name:         "Idea Consolidation",
-	Activities: []string{
-		"[Originator] proposes project and either secures or agrees to serve as [Solar Developer]. NOTE: Originator is the community leader or catalyst for the project, they may opt to serve as the solar developer themselves, or pass that responsibility off, going forward we will use solar developer to represent the interest of both.",
-		"[Solar Developer] creates general estimation of project (eg. with an automatic calculation through Google Project Sunroof, PV) ",
-		"If [Originator]/[Solar Developer] is not landowner [Host] states legal ownership of site (hard proof is optional at this stage)",
-	},
-	StateTrigger: []string{
-		"Matching of originator with receiver, and mutual approval/intention of interest.",
-	},
-}
-
 // StageXtoY promtoes a contract from  stage X.Number to stage Y.Number
 func StageXtoY(index int) error {
 	// check for out of bound errors
@@ -97,6 +83,22 @@ func StageXtoY(index int) error {
 	return project.SetStage(finalStage.Number)
 }
 
+// Stage0 is the Handshake stage
+var Stage0 = Stage{
+	Number:       0,
+	FriendlyName: "Handshake",
+	Name:         "Idea Consolidation",
+	Activities: []string{
+		"[Originator] proposes project and either secures or agrees to serve as [Solar Developer]. NOTE: Originator is the community leader or catalyst for the project, they may opt to serve as the solar developer themselves, or pass that responsibility off, going forward we will use solar developer to represent the interest of both.",
+		"[Solar Developer] creates general estimation of project (eg. with an automatic calculation through Google Project Sunroof, PV) ",
+		"If [Originator]/[Solar Developer] is not landowner [Host] states legal ownership of site (hard proof is optional at this stage)",
+	},
+	StateTrigger: []string{
+		"Matching of originator with receiver, and mutual approval/intention of interest.",
+	},
+}
+
+// Stage1 is the engagement stage
 var Stage1 = Stage{
 	Number:       1,
 	FriendlyName: "Engagement",
@@ -118,6 +120,7 @@ var Stage1 = Stage{
 	},
 }
 
+// Stage2 is the quote stage
 var Stage2 = Stage{
 	Number:       2,
 	FriendlyName: "Quotes",
@@ -141,6 +144,7 @@ var Stage2 = Stage{
 	},
 }
 
+// Stage3 is the signing stage
 var Stage3 = Stage{
 	Number:       3,
 	FriendlyName: "Signing",
@@ -165,6 +169,7 @@ var Stage3 = Stage{
 	},
 }
 
+// Stage4 is the raise stage
 var Stage4 = Stage{
 	Number:       4,
 	FriendlyName: "The Raise",
@@ -182,6 +187,7 @@ var Stage4 = Stage{
 	},
 }
 
+// Stage5 is the construction stage
 var Stage5 = Stage{
 	Number:       5,
 	FriendlyName: "Construction",
@@ -202,6 +208,7 @@ var Stage5 = Stage{
 	},
 }
 
+// Stage6 is the connection stage
 var Stage6 = Stage{
 	Number:       6,
 	FriendlyName: "Interconnection",
@@ -218,6 +225,7 @@ var Stage6 = Stage{
 	},
 }
 
+// Stage7 is the legacy stage
 var Stage7 = Stage{
 	Number:       7,
 	FriendlyName: "Legacy",
@@ -243,6 +251,7 @@ var Stage7 = Stage{
 	},
 }
 
+// Stage8 is the legacy stage
 var Stage8 = Stage{
 	Number:       8,
 	FriendlyName: "Handoff",
@@ -257,6 +266,7 @@ var Stage8 = Stage{
 	},
 }
 
+// Stage9 is the end of life stage
 var Stage9 = Stage{
 	Number:       9,
 	FriendlyName: "End of Life",

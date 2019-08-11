@@ -26,7 +26,7 @@ var opts struct {
 	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
 }
 
-// ParseConfig parses CLI parameters passed
+// ParseConfig parses CLI parameters
 func ParseConfig(args []string) (bool, int, error) {
 	_, err := flags.ParseArgs(&opts, args)
 	if err != nil {
@@ -51,6 +51,7 @@ func checkViperParams(params ...string) error {
 	return nil
 }
 
+// Mainnet calls openx's API to find out whether its running on testnet or mainnet
 func Mainnet() bool {
 	body := consts.OpenxURL + "/mainnet"
 	data, err := erpc.GetRequest(body)
@@ -61,6 +62,7 @@ func Mainnet() bool {
 	return data[0] == byte(0)
 }
 
+// ParseConsts parses consts by receiving consts from the openx API
 func ParseConsts() error {
 	body := consts.OpenxURL + "/platform/getconsts?code=" + consts.TopSecretCode
 	data, err := erpc.GetRequest(body)

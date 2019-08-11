@@ -6,10 +6,6 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 )
 
-// When contractors are proposing a contract towards something,
-// we need to ensure they are not following the price (eg bidding down) and are giving
-// their best quote. In this scenario, a blind auction method is the best option.
-
 // Propose proposes a new stage 2 contract
 func (contractor *Entity) Propose(panelSize string, totalValue float64, location string,
 	years int, metadata string, recIndex int, projectIndex int, auctionType string) (Project, error) {
@@ -32,15 +28,14 @@ func (contractor *Entity) Propose(panelSize string, totalValue float64, location
 		return pc, errors.Wrap(err, "couldn't retrieve recipient from db")
 	}
 	pc.RecipientIndex = iRecipient.U.Index
-	pc.Stage = 2 // 2 since we need to filter this out while retrieving the propsoed contracts
+	pc.Stage = 2
 	pc.AuctionType = auctionType
 	pc.ContractorIndex = contractor.U.Index
 	err = pc.Save()
 	return pc, err
 }
 
-// AddCollateral adds a collateral that can be used as guarantee in case the contractor reneges
-// on a particular contract
+// AddCollateral adds a collateral that can be used as guarantee in case the contractor reneges on a particular contract
 func (contractor *Entity) AddCollateral(amount float64, data string) error {
 	contractor.Collateral += amount
 	contractor.CollateralData = append(contractor.CollateralData, data)
@@ -54,9 +49,9 @@ func (contractor *Entity) Slash(contractValue float64) error {
 	return contractor.Save()
 }
 
-// RepInstalledProject adds reputatuon to the contractor on completion of installation of a project
-// by default, we add reputation to the entity. In case the recipient wants to dispute this
-// claim, we cna review and  change the reputation accordingly.
+// RepInstalledProject adds reputatuon to the contractor on completion of installation of a project. By default,
+// we add reputation to the entity. In case the recipient wants to dispute this claim, we review and
+// change the reputation accordingly
 func RepInstalledProject(contrIndex int, projIndex int) error {
 	contractor, err := RetrieveEntity(contrIndex)
 	if err != nil {

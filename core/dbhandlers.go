@@ -27,29 +27,33 @@ func NewGuarantor(uname string, pwd string, seedpwd string, Name string,
 	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "guarantor")
 }
 
-// NewContractor creates a new contractor and inherits properties from Users
-func NewContractor(uname string, pwd string, seedpwd string, Name string, Address string, Description string) (Entity, error) {
-	// Create a new entity with the boolean of 'contractor' set to 'true.' This is
-	// done just by passing the string "contractor"
+// NewContractor creates a new contractor
+func NewContractor(uname string, pwd string, seedpwd string, Name string,
+	Address string, Description string) (Entity, error) {
 	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "contractor")
 }
 
-// Save or Insert inserts a specific Project into the database
+// Save saves a Project's details
 func (a *Project) Save() error {
 	return edb.Save(consts.DbDir+consts.DbName, ProjectsBucket, a, a.Index)
 }
 
-// Save inserts a passed Investor object into the database
+// Save saves an Investor's details
 func (a *Investor) Save() error {
 	return edb.Save(consts.DbDir+consts.DbName, InvestorBucket, a, a.U.Index)
 }
 
-// Save saves a given recipient's details
+// Save saves a Recipient's details
 func (a *Recipient) Save() error {
 	return edb.Save(consts.DbDir+consts.DbName, RecipientBucket, a, a.U.Index)
 }
 
-// RetrieveInvestor retrieves a particular investor indexed by key from the database
+// Save saves an Entity's details
+func (a *Entity) Save() error {
+	return edb.Save(consts.DbDir+consts.DbName, ContractorBucket, a, a.U.Index)
+}
+
+// RetrieveInvestor retrieves an investor from the database
 func RetrieveInvestor(key int) (Investor, error) {
 	var inv Investor
 	user, err := RetrieveUser(key)
@@ -71,7 +75,7 @@ func RetrieveInvestor(key int) (Investor, error) {
 	return inv, inv.Save()
 }
 
-// RetrieveRecipient retrieves a specific recipient from the database
+// RetrieveRecipient retrieves a recipient from the database
 func RetrieveRecipient(key int) (Recipient, error) {
 	var recp Recipient
 	user, err := RetrieveUser(key)
@@ -93,7 +97,7 @@ func RetrieveRecipient(key int) (Recipient, error) {
 	return recp, recp.Save()
 }
 
-// RetrieveAllUsers gets a list of all User in the database
+// RetrieveAllUsers gets a list of all Users in the database
 func RetrieveAllInvestors() ([]Investor, error) {
 	var arr []Investor
 
@@ -139,7 +143,7 @@ func RetrieveAllRecipients() ([]Recipient, error) {
 	return arr, nil
 }
 
-// TopReputationInvestors gets a list of all the investors with top reputation
+// TopReputationInvestors gets a list of all the investors sorted by descending reputation
 func TopReputationInvestors() ([]Investor, error) {
 	arr, err := RetrieveAllInvestors()
 	if err != nil {
@@ -157,7 +161,7 @@ func TopReputationInvestors() ([]Investor, error) {
 	return arr, nil
 }
 
-// TopReputationRecipient returns a list of recipients with the best reputation
+// TopReputationRecipient returns a list of recipients sorted by descending reputation
 func TopReputationRecipients() ([]Recipient, error) {
 	arr, err := RetrieveAllRecipients()
 	if err != nil {
@@ -175,8 +179,7 @@ func TopReputationRecipients() ([]Recipient, error) {
 	return arr, nil
 }
 
-// ValidateInvestor is a function to validate the investors username and password to log them into the platform, and find the details related to the investor
-// This is separate from the publicKey/seed pair (which are stored encrypted in the database); since we can help users change their password, but we can't help them retrieve their seed.
+// ValidateInvestor validates an investor's pwhash and username
 func ValidateInvestor(name string, pwhash string) (Investor, error) {
 	var rec Investor
 	user, err := ValidateUser(name, pwhash)
@@ -186,7 +189,7 @@ func ValidateInvestor(name string, pwhash string) (Investor, error) {
 	return RetrieveInvestor(user.Index)
 }
 
-// ValidateRecipient validates a particular recipient
+// ValidateRecipient validates a recipient's pwhash and username
 func ValidateRecipient(name string, pwhash string) (Recipient, error) {
 	var rec Recipient
 	user, err := ValidateUser(name, pwhash)
@@ -196,7 +199,7 @@ func ValidateRecipient(name string, pwhash string) (Recipient, error) {
 	return RetrieveRecipient(user.Index)
 }
 
-// RetrieveProject retrieves the project with the specified index from the database
+// RetrieveProject retrieves a project from the database
 func RetrieveProject(key int) (Project, error) {
 	var inv Project
 	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ProjectsBucket, key)
@@ -228,7 +231,7 @@ func RetrieveAllProjects() ([]Project, error) {
 	return projects, nil
 }
 
-// RetrieveProjectsAtStage retrieves projects at a specific stage
+// RetrieveProjectsAtStage retrieves projects at a specific stage from the database
 func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -249,7 +252,7 @@ func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveContractorProjects retrieves projects that are associated with a specific contractor
+// RetrieveContractorProjects retrieves projects that are associated with a specific contractor from the db
 func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -270,7 +273,7 @@ func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveOriginatorProjects retrieves projects that are associated with a specific originator
+// RetrieveOriginatorProjects retrieves projects that are associated with a specific originator from the db
 func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -291,7 +294,7 @@ func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveRecipientProjects retrieves projects that are associated with a specific recipient
+// RetrieveRecipientProjects retrieves projects that are associated with a specific recipient from the db
 func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -312,8 +315,7 @@ func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveLockedProjects retrieves all the projects that are locked and are waiting
-// for the recipient to unlock them
+// RetrieveLockedProjects retrieves all the projects that are locked and are waiting for the recipient to unlock them
 func RetrieveLockedProjects() ([]Project, error) {
 	var arr []Project
 
@@ -331,7 +333,7 @@ func RetrieveLockedProjects() ([]Project, error) {
 	return arr, nil
 }
 
-// SaveOriginatorMoU saves the MoU's hash in the platform's database
+// SaveOriginatorMoU saves the MoU's hash in the database
 func SaveOriginatorMoU(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -341,7 +343,7 @@ func SaveOriginatorMoU(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveContractHash saves a contract's hash in the platform's database
+// SaveContractHash saves a contract's hash in the database
 func SaveContractHash(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -351,7 +353,7 @@ func SaveContractHash(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveInvPlatformContract saves the investor-platform contract's hash in the platform's database
+// SaveInvPlatformContract saves the investor-platform contract's hash in the database
 func SaveInvPlatformContract(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -361,7 +363,7 @@ func SaveInvPlatformContract(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveRecPlatformContract saves the recipient-platform contract's hash in the platform's database
+// SaveRecPlatformContract saves the recipient-platform contract's hash in the database
 func SaveRecPlatformContract(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {

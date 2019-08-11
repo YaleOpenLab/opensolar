@@ -15,77 +15,49 @@ import (
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
-// Entity defines a common structure for contractors, developers and originators. Will be split
-// into their respective roles once they are defined in a better way.
+// Entity defines a common structure for contractors, developers and originators
 type Entity struct {
+	// U is the base User class inherited from openx
 	U *openx.User
-	// inherit the base user class
+
+	// Contractor is a bool that is set if the entity is a contractor
 	Contractor bool
-	// the name of the contractor / company that is contracting
-	// A contractor is party who proposes a specific some of money towards a
-	// particular project. This is the actual amount that the investors invest in.
-	// This ideally must include the developer fee within it, so that investors
-	// don't have to invest in two things. It would also make sense because the contractors
-	// sometimes would hire developers themselves.
+
+	// Developer is a bool that is set if the entity is a developer
 	Developer bool
-	// A developer is someone who installs the required equipment (Raspberry Pi,
-	// network adapters, anti tamper installations and similar) In the initial
-	// projects, this will be us, since we'd be installing the pi ourselves, but in
-	// the future, we expect third party developers / companies to do this for us
-	// and act in a decentralized fashion. This money can either be paid out of chain
-	// in fiat or can be a portion of the funds the investors chooses to invest in.
-	// a contractor may also employ developers by himself, so this entity is not
-	// strictly necessary.
+
+	// Originator is a bool that is set if the entity is a originator
 	Originator bool
-	// An Originator is an entity that will start a project and get a fixed fee for
-	// rendering its service. An Originator's role is not restricted, the originator
-	// can also be the developer, contractor or guarantor. The originator should take
-	// the responsibility of auditing the requirements of the project - panel size,
-	// location, number of panels needed, etc. He then should ideally be able to fill
-	// out some kind of form on the website so that the originator's proposal is live
-	// and shown to potential investors. The originators get paid only when the project
-	// is live, else they can just spam, without any actual investment
+
+	// Guarantor is a bool that is set if the entity is a guarantor
 	Guarantor bool
-	// A guarantor is somebody who can assure investors that the school will get paid
-	// on time. This authority should be trusted and either should be vetted by the law
-	// or have a multisig paying out to the investors beyond a certain timeline if they
-	// don't get paid by the school. This way, the guarantor can be anonymous, like the
-	// nice Pineapple Fund guy. This can also be an insurance company, who is willing to
-	// guarantee for specific school and the school can pay him out of chain / have
-	// that as fee within the contract the originator
+
+	// PastContracts contains a list of all past contracts associated with the entity
 	PastContracts []Project
-	// list of all the contracts that the contractor has won in the past
+
+	// ProposedContracts contains a list of all proposed contracts associated with the entity
 	ProposedContracts []Project
-	// the Originator proposes a contract which will then be taken up
-	// by a contractor, who publishes his own copy of the proposed contract
-	// which will be the set of contracts that will be sent to auction
+
+	// PresentContracts contains a list of all present contracts associated with the entity
 	PresentContracts []Project
-	// list of all contracts that the contractor is presently undertaking
+
+	// PastFeedback contains a list of all feedback on the given entity
 	PastFeedback []Feedback
-	// feedback received on the contractor from parties involved in the past. This is an automated
-	// feedback system which falls backto a manual one in the event of disputes
+
+	// Collateral is the amount the entity is willing to put up as collateral to secure projects
 	Collateral float64
-	// the amount of collateral that the entity is willing to hold in case it reneges
-	// on a specific contract's details. This is an optional parameter but having collateral
-	// would increase investor confidence that a particular entity will keep its word
-	// regarding a particular contract.
+
+	// CollateralData contains data on the collateral amount that the entity is willing to pledge
 	CollateralData []string
-	// the specific thing(s) which the contractor wants to hold as collateral described
-	// as a string (for eg, if a cash bond worth 5000 USD is held as collateral,
-	// collateral would be set to 5000 USD and CollateralData would be "Cash Bond")
+
+	// FirstLossGuarantee is the seed that will be used to transfer funds to investors in case the recipient refuses to pay
 	FirstLossGuarantee string
-	// FirstLossGuarantee is the seedpwd of the guarantor's account. This will be used
-	// only when the recipient defaults and we need to cover losses of investors
+
+	// 	FirstLossGuaranteeAmt is the amount that the guarantor is expected to cover in the case of a breach
 	FirstLossGuaranteeAmt float64
-	// FirstLossGuaranteeAmt is the amoutn that the guarantor is expected to cover in the case
-	// of first loss
 }
 
-func (a *Entity) Save() error {
-	return edb.Save(consts.DbDir+consts.DbName, ContractorBucket, a, a.U.Index)
-}
-
-// RetrieveAllEntitiesWithoutRole gets all the entities in the opensolar platform
+// RetrieveAllEntitiesWithoutRole retrieves all the entities from the database
 func RetrieveAllEntitiesWithoutRole() ([]Entity, error) {
 	var users []Entity
 	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ContractorBucket)
@@ -105,7 +77,7 @@ func RetrieveAllEntitiesWithoutRole() ([]Entity, error) {
 	return users, nil
 }
 
-// RetrieveAllEntities gets all the proposed contracts for a particular recipient
+// RetrieveAllEntities gets all the proposed contracts associated with a particular entity
 func RetrieveAllEntities(role string) ([]Entity, error) {
 	var entities []Entity
 
@@ -143,7 +115,7 @@ func RetrieveEntityHelper(key int) (Entity, error) {
 	return entity, err
 }
 
-// RetrieveEntity retrieves a specific entity from the database
+// RetrieveEntity retrieves an entity from the database
 func RetrieveEntity(key int) (Entity, error) {
 	var entity Entity
 	user, err := RetrieveUser(key)
@@ -195,7 +167,7 @@ func newEntity(uname string, pwd string, seedpwd string, Name string, Address st
 	return a, err
 }
 
-// TopReputationEntitiesWithoutRole returns the list of all the top reputed entities in descending order
+// TopReputationEntitiesWithoutRole returns the list of all the entities in descending order of reputation
 func TopReputationEntitiesWithoutRole() ([]Entity, error) {
 	allEntities, err := RetrieveAllEntitiesWithoutRole()
 	if err != nil {
@@ -213,9 +185,8 @@ func TopReputationEntitiesWithoutRole() ([]Entity, error) {
 	return allEntities, nil
 }
 
-// TopReputationEntities returns the list of all the top reputed entities with the specific role in descending order
+// TopReputationEntities returns the list of all the entities belonging to a specific role in descending order of reputation
 func TopReputationEntities(role string) ([]Entity, error) {
-	// caller knows what role he needs this list for, so directly retrieve and do stuff here
 	allEntities, err := RetrieveAllEntities(role)
 	if err != nil {
 		return allEntities, errors.Wrap(err, "couldn't retrieve all entities")
@@ -232,7 +203,7 @@ func TopReputationEntities(role string) ([]Entity, error) {
 	return allEntities, nil
 }
 
-// ValidateEntity validates the entity with the specific name and pwhash and returns true if everything matches the thing on record
+// ValidateEntity validates the username and pwhash of the entity
 func ValidateEntity(name string, pwhash string) (Entity, error) {
 	var rec Entity
 	user, err := ValidateUser(name, pwhash)
@@ -242,15 +213,17 @@ func ValidateEntity(name string, pwhash string) (Entity, error) {
 	return RetrieveEntity(user.Index)
 }
 
-// AgreeToContractConditions agrees to some specific contract conditions
+// AgreeToContractConditions agrees to some specified contract conditions
 func AgreeToContractConditions(contractHash string, projIndex string,
 	debtAssetCode string, entityIndex int, seedpwd string) error {
 	// we need to display this on the frontend and once the user presses agree, commit
 	// a tx to the blockchain with the outcome
+
 	message := "I agree to the terms and conditions specified in contract " + contractHash +
 		"and by signing this message to the blockchain agree that I accept the investment in project " + projIndex +
 		"whose debt asset is: " + debtAssetCode
-	// hash the message and transmit the message in 5 parts
+
+	// hash the message and transmit the message in 5 parts due to stellar's memo field limit
 	// eg.
 	// CONTRACTHASH9a768ace36ff3d17
 	// 71d5c145a544de3d68343b2e7609

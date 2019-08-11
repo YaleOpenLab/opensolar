@@ -8,22 +8,13 @@ import (
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
+// setupUserRpcs sets up user related RPCs
 func setupUserRpcs() {
 	updateUser()
 }
 
+// updateUser updates credentials of the user
 func updateUser() {
-	/* List of changeable parameters for the user struct
-	Name string
-	City string
-	ZipCode string
-	Country string
-	RecoveryPhone string
-	Address string
-	Description string
-	Email string
-	Notification bool
-	*/
 	http.HandleFunc("/user/update", func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
@@ -90,6 +81,5 @@ func updateUser() {
 			}
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
-		// now we have the user, need to check which parts the user has specified
 	})
 }

@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	utils "github.com/Varunram/essentials/utils"
 	openx "github.com/YaleOpenLab/openx/database"
+	"github.com/pkg/errors"
 )
 
 // Recipient defines the recipient structure
@@ -36,7 +36,7 @@ type Recipient struct {
 	// a bool to denote whether the recipient wants to reload balance from his secondary account to pay any dues that are remaining
 }
 
-// NewRecipient returns a new recipient provided with the function parameters
+// NewRecipient creates and returns a new recipient
 func NewRecipient(uname string, pwd string, seedpwd string, Name string) (Recipient, error) {
 	var a Recipient
 	var err error
