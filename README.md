@@ -1,5 +1,9 @@
 # OpenSolar
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/YaleOpenLab/opensolar)](https://goreportcard.com/report/github.com/YaleOpenLab/opensolar)  
+
+Opensolar is a platform built on openx for financing smart solar infrastructure using the Stellar blockchain. Opensolar uses IoT devices, smart meters and smart contracts to automate the end-end payments flow, making moving money cheaper and faster. Work in Progress.
+
 #### ABSTRACT
 
 The OpenSolar Project and platform aims to use blockchain and IoT based smart contracts to help finance community solar projects. We seek to develop open source core technology to streamline the flow of crowd-based funds (eg. muni bonds and equity crowds) to finance the deployment of solar assets, and allow the end-users to own these resources in a short time frame through regular utility-like payments driven by energy generation and consumption IoT data.
@@ -51,7 +55,7 @@ In this prototype, we use these (Digital) Assets to track multiple things:
 
 NOTE: Stellar limits the character limit of each asset to 12 characters, so the identifier is not unique. In the case collisions arise, the project ID, Debt Assets and time of creation can be used to identify the asset. There seems to be no workaround for this limit, so we are forced to go ahead with this scheme.
 
-2. When a project has reached its target goal in USD, we need to assure investors that their amount invested in the project is reflected in the form of debt. For this, we issue "Recipient Assets" which denote that the reecipient of the funds officially owes its amount (plus a set interest). Like the Investor Asset, this is 1:1 with the amount invested.
+2. When a project has reached its target goal in USD, we need to assure investors that their amount invested in the project is reflected in the form of debt. For this, we issue "Recipient Assets" which denote that the recipient of the funds officially owes its amount (plus a set interest). Like the Investor Asset, this is 1:1 with the amount invested.
 
 3. Once a project has been installed and can generate electricity, the recipient starts to pay back towards the project based on what the IoT powermeter reports. After confirmation of each payment, we issue a Payback Asset, which is proportional to the monthly payment bill. This provides ease of accounting and quick look back on whether the recipient is not defaulting on its payments.
 
@@ -80,7 +84,7 @@ There are various users and entities defined in the code (and more on the way), 
 
 #### PROJECT STAGES
 
- Each solar system deployment is defined as a "Project" and a given project has specific stages with activities that have to be completed before moving on to the next stage. The various stages and their definition can be found [here](stages.go)
+ Each solar system deployment is defined as a "Project" and a given project has specific stages with activities that have to be completed before moving on to the next stage. The various stages and their definition can be found in `core`
 
 ![Project Stages](docs/figures/ProjectStages.png)
 
@@ -97,7 +101,5 @@ A rough path taken by a specific project would be:
 10. Power generation is tested. If the installation works fine, the project's stage is upgraded from stage 5 to stage 6 and the recipient pays back an amount based on electricity consumption with inputs from the energy oracle.
 11. Once the paid amount matches that agreed upon in the contract, ownership of the installed system is granted to the recipient. The Project's stage is upgraded from stage 6 to stage 7.
 
-
-### CODE & REPOSITORY ARCHITECTURE
-The diagram below explains how scripts and folders in the repository are linked.
-![Scripts and Repo Architecture](docs/figures/RepoArchitecture.png)
+# LICENSE
+[GPL3](https://github.com/YaleOpenLab/opensolar/blob/master/LICENSE)
