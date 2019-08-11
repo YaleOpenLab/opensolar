@@ -44,35 +44,43 @@ var opts struct {
 }
 
 var (
-	// local stroage variables
+	// LocalRecipient is the recipient struct associated with the project the teller is installed for
 	LocalRecipient core.Recipient
-	LocalProject   solar.Project
+	// LocalProject is the project that the teller is associated with
+	LocalProject solar.Project
+	// LocalProjIndex contains the project index the teller is associated with
 	LocalProjIndex string
-	LocalSeedPwd   string
-	// store the seed and PublicKey for easy vanity use
-	RecpSeed      string
+	// LocalSeedPwd contains the seed password of a user
+	LocalSeedPwd string
+	// RecpSeed stores the seed and PublicKey for easy vanity use
+	RecpSeed string
+	// RecpPublicKey is the receipient's PublicKey used to authenticate the teller
 	RecpPublicKey string
-	// platform parameters for interfacing with the platform
+	// PlatformPublicKey contains the platform parameters for interfacing with the platform
 	PlatformPublicKey string
-	PlatformEmail     string
-	// the API of the remote openx node
+	// PlatformEmail is the platform's email address
+	PlatformEmail string
+	// ApiUrl is the API of the remote openx node
 	ApiUrl string
-	// variables related to the device
-	DeviceId       string
+	// DeviceId contains the device's id
+	DeviceId string
+	// DeviceLocation contains the device's location
 	DeviceLocation string
-	DeviceInfo     string
+	// DeviceInfo contains information on the user's device
+	DeviceInfo string
 	// StartHash records the blockhash when the teller starts and NowHash stores the blockhash at a particular instant
 	StartHash string
-	NowHash   string
+	// NowHash is the hashchain has right now
+	NowHash string
 	// HashChainHeader is the header of the ipfs hash chain
 	HashChainHeader string
-	// username that the teller has on the swytch platform
+	// SwytchUsername is the username that the teller has on the swytch platform
 	SwytchUsername string
-	// password that the teller has on the swytch platform
+	// SwytchPassword is the password that the teller has on the swytch platform
 	SwytchPassword string
-	// clientId associated with the given IoT Hub on swytch
+	// SwytchClientid is the clientId associated with the given IoT Hub on swytch
 	SwytchClientid string
-	// password associated with the given IoT Hub on swytch
+	// SwytchClientSecret is the password associated with the given IoT Hub on swytch
 	SwytchClientSecret string
 	// AssetName is the asset for which this teller has been installed towards
 	AssetName string

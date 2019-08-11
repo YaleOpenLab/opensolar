@@ -71,6 +71,7 @@ func (a *Investor) ChangeVotingBalance(votes float64) error {
 // CanInvest checks whether an investor has the required funds to invest in a project
 func (a *Investor) CanInvest(targetBalance float64) bool {
 	if !consts.Mainnet {
+		// testnet
 		usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
 		if err != nil {
 			usdBalance = 0
@@ -88,13 +89,13 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 			return true
 		}
 		return false
-
-	} else {
-		usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
-		if err != nil {
-			usdBalance = 0
-		}
-
-		return usdBalance > targetBalance
 	}
+
+	// mainnet
+	usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
+	if err != nil {
+		usdBalance = 0
+	}
+
+	return usdBalance > targetBalance
 }

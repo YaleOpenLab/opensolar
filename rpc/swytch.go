@@ -20,11 +20,11 @@ func setupSwytchApis() {
 }
 
 type getAccessTokenDataHelper struct {
-	Access_token  string `json:"access_token"`
-	Issued_at     int64  `json:"issued_at"`
-	Refresh_token string `json:"refresh_token"`
-	Token_type    string `json:"token_type"`
-	Expires_in    int64  `json:"expires_in"`
+	Accesstoken  string `json:"access_token"`
+	Issuedat     int64  `json:"issued_at"`
+	Refreshtoken string `json:"refresh_token"`
+	Tokentype    string `json:"token_type"`
+	Expiresin    int64  `json:"expires_in"`
 }
 
 type GetAccessTokenData struct {
@@ -148,21 +148,21 @@ func getRefreshToken() {
 }
 
 type getSwytchUserStructToken struct {
-	Valid_token_balance bool   `json:"valid_token_balance"`
-	Checked_on          string `json:"checked_on"`
-	Token_hash          string `json:"token_hash"`
+	Validtokenbalance bool   `json:"valid_token_balance"`
+	Checkedon         string `json:"checked_on"`
+	Tokenhash         string `json:"token_hash"`
 }
 
 type getSwytchUserStructHelper struct {
-	Id            string                   `json:"id"`
-	First_name    string                   `json:"first_name"`
-	Last_name     string                   `json:"last_name"`
-	Name          string                   `json:"name"`
-	Email         string                   `json:"email"`
-	Username      string                   `json:"username"`
-	Roles         []string                 `json:"roles"`
-	Token_staking getSwytchUserStructToken `json:"token_staking"`
-	Wallet        string                   `json:"wallet"`
+	Id           string                   `json:"id"`
+	Firstname    string                   `json:"first_name"`
+	Lastname     string                   `json:"last_name"`
+	Name         string                   `json:"name"`
+	Email        string                   `json:"email"`
+	Username     string                   `json:"username"`
+	Roles        []string                 `json:"roles"`
+	Tokenstaking getSwytchUserStructToken `json:"token_staking"`
+	Wallet       string                   `json:"wallet"`
 }
 
 type GetSwytchUserStruct struct {
@@ -180,7 +180,7 @@ func getSwytchUser() {
 		}
 
 		url := "https://platformapi-staging.swytch.io/v1/auth/user"
-		auth_token := r.URL.Query()["authToken"][0]
+		authToken := r.URL.Query()["authToken"][0]
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
@@ -188,7 +188,7 @@ func getSwytchUser() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		req.Header.Add("authorization", "Bearer "+auth_token)
+		req.Header.Add("authorization", "Bearer "+authToken)
 		req.Header.Add("cache-control", "no-cache")
 
 		res, err := http.DefaultClient.Do(req)
@@ -238,8 +238,8 @@ type gA2 struct {
 	CreatedAt  string      `json:"createdAt"`
 	Position   gA2Position `json:"position"`
 	Arn        string      `json:"arn"`
-	Asset_id   string      `json:"asset_id"`
-	Owner_id   string      `json:"owner_id"`
+	Assetid    string      `json:"asset_id"`
+	Ownerid    string      `json:"owner_id"`
 	Name       string      `json:"name"`
 	Type       string      `json:"type"`
 	Location   string      `json:"location"`
@@ -247,7 +247,7 @@ type gA2 struct {
 	Country    string      `json:"country"`
 	Status     string      `json:"status"`
 	Generating bool        `json:"generating"`
-	Node_type  string      `json:"node_type"`
+	Nodetype   string      `json:"node_type"`
 }
 
 type GetAssetStruct struct {
@@ -264,7 +264,7 @@ func getAssets() {
 			return
 		}
 
-		auth_token := r.URL.Query()["authToken"][0]
+		authToken := r.URL.Query()["authToken"][0]
 		userId := r.URL.Query()["userId"][0]
 
 		url := "https://platformapi-staging.swytch.io/v1/users/" + userId + "/assets"
@@ -275,7 +275,7 @@ func getAssets() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		req.Header.Add("authorization", "Bearer "+auth_token)
+		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -303,47 +303,47 @@ func getAssets() {
 }
 
 type gEMetadata struct {
-	Status           string  `json:"status"`
-	Elevation        string  `json:"elevation"`
-	Longitude        string  `json:"longitude"`
-	Latitude         string  `json:"latitude"`
-	Field8           string  `json:"field8"`
-	Field7           string  `json:"field7"`
-	Field6           string  `json:"field6"`
-	Field5           string  `json:"field5"`
-	Field4           float64 `json:"field4"`
-	Field3           string  `json:"field3"`
-	Field2           string  `json:"field2"`
-	Field1           string  `json:"field1"`
-	Entry_id         float64 `json:"entry_id"`
-	Created_at       string  `json:"created_at"`
-	Manufacturer     string  `json:"manufacturer"`
-	NameplateRating  float64 `json:"nameplateRating"`
-	SerialNO         string  `json:"serialNO"`
-	ThingName        string  `json:"thingName"`
-	ThingArn         string  `json:"thingArn"`
-	ThingId          string  `json:"thingId"`
-	Source_timestamp string  `json:"source_timestamp"`
+	Status          string  `json:"status"`
+	Elevation       string  `json:"elevation"`
+	Longitude       string  `json:"longitude"`
+	Latitude        string  `json:"latitude"`
+	Field8          string  `json:"field8"`
+	Field7          string  `json:"field7"`
+	Field6          string  `json:"field6"`
+	Field5          string  `json:"field5"`
+	Field4          float64 `json:"field4"`
+	Field3          string  `json:"field3"`
+	Field2          string  `json:"field2"`
+	Field1          string  `json:"field1"`
+	Entryid         float64 `json:"entry_id"`
+	Createdat       string  `json:"created_at"`
+	Manufacturer    string  `json:"manufacturer"`
+	NameplateRating float64 `json:"nameplateRating"`
+	SerialNO        string  `json:"serialNO"`
+	ThingName       string  `json:"thingName"`
+	ThingArn        string  `json:"thingArn"`
+	ThingId         string  `json:"thingId"`
+	Sourcetimestamp string  `json:"source_timestamp"`
 }
 
 type getEnergyHelper struct {
-	Id               string     `json:"_id"`
-	Asset_id         string     `json:"asset_id"`
-	Asset_type       string     `json:"asset_type"`
-	Source           string     `json:"source"`
-	Value            float64    `json:"value"`
-	Unit             string     `json:"unit"`
-	Lat              string     `json:"lat"`
-	Lng              string     `json:"lng"`
-	Energy_timestamp string     `json:"energy_timestamp"`
-	Timestamp        string     `json:"timestamp"`
-	Metadata         gEMetadata `json:"meta"`
-	Hash             string     `json:"hash"`
-	Block_id         string     `json:"block_id"`
-	Block_hash       string     `json:"block_hash"`
-	Block_time       string     `json:"block_time"`
-	CreatedAt        string     `json:"createdAt"`
-	UpdatedAt        string     `json:"updatedAt"`
+	Id              string     `json:"_id"`
+	Assetid         string     `json:"asset_id"`
+	Assettype       string     `json:"asset_type"`
+	Source          string     `json:"source"`
+	Value           float64    `json:"value"`
+	Unit            string     `json:"unit"`
+	Lat             string     `json:"lat"`
+	Lng             string     `json:"lng"`
+	Energytimestamp string     `json:"energy_timestamp"`
+	Timestamp       string     `json:"timestamp"`
+	Metadata        gEMetadata `json:"meta"`
+	Hash            string     `json:"hash"`
+	Blockid         string     `json:"block_id"`
+	Blockhash       string     `json:"block_hash"`
+	Blocktime       string     `json:"block_time"`
+	CreatedAt       string     `json:"createdAt"`
+	UpdatedAt       string     `json:"updatedAt"`
 }
 
 type GetEnergyStruct struct {
@@ -360,7 +360,7 @@ func getEnergy() {
 			return
 		}
 
-		auth_token := r.URL.Query()["authToken"][0]
+		authToken := r.URL.Query()["authToken"][0]
 		assetId := r.URL.Query()["assetId"][0]
 
 		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/energy?limit=100&offset=0"
@@ -371,7 +371,7 @@ func getEnergy() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		req.Header.Add("authorization", "Bearer "+auth_token)
+		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -415,33 +415,33 @@ type getEnergyAttributionInputs struct {
 }
 
 type getEnergyAttributionHelper struct {
-	Id                     string                     `json:"_id"`
-	Asset_id               string                     `json:"asset_id"`
-	Attribution_holder     string                     `json:"attribution_holder"`
-	Carbon_offset          string                     `json:"carbon_offset"`
-	Energy_produced        string                     `json:"energy_produced"`
-	Actual_energy_produced string                     `json:"actual_energy_produced"`
-	Token_award            string                     `json:"token_award"`
-	Version                string                     `json:"version"`
-	Origin                 getEnergyAttributionOrigin `json:"origin"`
-	Asset_type             string                     `json:"asset_type"`
-	Production_period      string                     `json:"production_period"`
-	Timestamp              string                     `json:"timestamp"`
-	Epoch                  string                     `json:"epoch"`
-	Block_hash             string                     `json:"block_hash"`
-	Validation_authority   string                     `json:"validation_authority"`
-	Signature              string                     `json:"signature"`
-	Token_id               float64                    `json:"token_id"`
-	CreatedAt              string                     `json:"createdAt"`
-	UpdatedAt              string                     `json:"updatedAt"`
-	Inputs                 getEnergyAttributionInputs `json:"inputs"`
-	Tags                   string                     `json:"tags"`
-	Tx_history             string                     `json:"tx_history"`
-	Processing_status      string                     `json:"processing_status"`
-	Transactions           []string                   `json:"transactions"`
-	Redeemable             bool                       `json:"redeemable"`
-	Claimed                bool                       `json:"claimed"`
-	Confirmed              bool                       `json:"confirmed"`
+	Id                   string                     `json:"_id"`
+	Assetid              string                     `json:"asset_id"`
+	Attributionholder    string                     `json:"attribution_holder"`
+	Carbonoffset         string                     `json:"carbon_offset"`
+	Energyproduced       string                     `json:"energy_produced"`
+	Actualenergyproduced string                     `json:"actual_energy_produced"`
+	Tokenaward           string                     `json:"token_award"`
+	Version              string                     `json:"version"`
+	Origin               getEnergyAttributionOrigin `json:"origin"`
+	Assettype            string                     `json:"asset_type"`
+	Productionperiod     string                     `json:"production_period"`
+	Timestamp            string                     `json:"timestamp"`
+	Epoch                string                     `json:"epoch"`
+	Blockhash            string                     `json:"block_hash"`
+	Validationauthority  string                     `json:"validation_authority"`
+	Signature            string                     `json:"signature"`
+	Tokenid              float64                    `json:"token_id"`
+	CreatedAt            string                     `json:"createdAt"`
+	UpdatedAt            string                     `json:"updatedAt"`
+	Inputs               getEnergyAttributionInputs `json:"inputs"`
+	Tags                 string                     `json:"tags"`
+	Txhistory            string                     `json:"tx_history"`
+	Processingstatus     string                     `json:"processing_status"`
+	Transactions         []string                   `json:"transactions"`
+	Redeemable           bool                       `json:"redeemable"`
+	Claimed              bool                       `json:"claimed"`
+	Confirmed            bool                       `json:"confirmed"`
 }
 
 type GetEnergyAttributionData struct {
@@ -458,7 +458,7 @@ func getEnergyAttribution() {
 			return
 		}
 
-		auth_token := r.URL.Query()["authToken"][0]
+		authToken := r.URL.Query()["authToken"][0]
 		assetId := r.URL.Query()["assetId"][0]
 
 		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/attributions?limit=100&offset=0"
@@ -469,7 +469,7 @@ func getEnergyAttribution() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		req.Header.Add("authorization", "Bearer "+auth_token)
+		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {

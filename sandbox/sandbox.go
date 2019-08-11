@@ -18,6 +18,7 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+// StablecoinSeed stores the stablecoin's seed
 var StablecoinSeed = ""
 
 // parseYamlProject reparses yaml for an existing project

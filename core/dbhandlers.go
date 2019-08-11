@@ -97,7 +97,7 @@ func RetrieveRecipient(key int) (Recipient, error) {
 	return recp, recp.Save()
 }
 
-// RetrieveAllUsers gets a list of all Users in the database
+// RetrieveAllInvestors gets a list of all investors in the database
 func RetrieveAllInvestors() ([]Investor, error) {
 	var arr []Investor
 
@@ -161,7 +161,7 @@ func TopReputationInvestors() ([]Investor, error) {
 	return arr, nil
 }
 
-// TopReputationRecipient returns a list of recipients sorted by descending reputation
+// TopReputationRecipients returns a list of recipients sorted by descending reputation
 func TopReputationRecipients() ([]Recipient, error) {
 	arr, err := RetrieveAllRecipients()
 	if err != nil {

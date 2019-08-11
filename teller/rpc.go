@@ -186,6 +186,7 @@ func StoreLocation(mapskey string) error {
 	return errors.New("Errored out, didn't receive 200")
 }
 
+// PlatformEmailResponse is a wrapper around the platform's email
 type PlatformEmailResponse struct {
 	Email string
 }
@@ -314,11 +315,11 @@ func testSwytch() {
 		log.Fatal(err)
 	}
 
-	refresh_token := x1.Data[0].Refresh_token
+	refreshToken := x1.Data[0].Refreshtoken
 	// we have the access token as well but need to refresh it using the refresh token, so
 	// might as well store later.
 	data, err = erpc.GetRequest("swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&" +
-		"refreshToken=" + refresh_token)
+		"refreshToken=" + refreshToken)
 	if err != nil {
 		log.Println(err)
 		return
@@ -330,7 +331,7 @@ func testSwytch() {
 		log.Fatal(err)
 	}
 
-	access_token := x1.Data[0].Access_token
+	access_token := x1.Data[0].Accesstoken
 
 	data, err = erpc.GetRequest(ApiUrl + "swytch/getuser?authToken=" + access_token)
 	if err != nil {
@@ -344,11 +345,11 @@ func testSwytch() {
 		log.Fatal(err)
 	}
 
-	user_id := x3.Data[0].Id
-	log.Println("USER ID: ", user_id)
+	userId := x3.Data[0].Id
+	log.Println("USER ID: ", userId)
 	// we have the user id, query for assets
 
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getassets?authToken=" + access_token + "&userId=" + user_id)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getassets?authToken=" + access_token + "&userId=" + userId)
 	if err != nil {
 		log.Println(err)
 		return
@@ -360,10 +361,10 @@ func testSwytch() {
 		log.Fatal(err)
 	}
 
-	asset_id := x4.Data[0].Id
-	log.Println("ASSETID: ", asset_id)
+	assetId := x4.Data[0].Id
+	log.Println("ASSETID: ", assetId)
 	// we have the asset id, try to get some info
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getenergy?authToken=" + access_token + "&assetId=" + asset_id)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getenergy?authToken=" + access_token + "&assetId=" + assetId)
 	if err != nil {
 		log.Println(err)
 		return
@@ -377,7 +378,7 @@ func testSwytch() {
 
 	log.Println("Energy data from installed asset: ", x4)
 
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getattributes?authToken=" + access_token + "&assetId=" + asset_id)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getattributes?authToken=" + access_token + "&assetId=" + assetId)
 	if err != nil {
 		log.Println(err)
 		return
