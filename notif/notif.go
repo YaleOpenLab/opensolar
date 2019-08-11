@@ -10,15 +10,14 @@ import (
 // package notif is used to send out notifications regarding important events that take
 // place with respect to a specific project / investment
 
-// footerString is a common footer string that is used by all emails
+// footerString is a common signoff / footer string that is used by all emails sent from the platform's email address
 var footerString = "Have a nice day!\n\nWarm Regards, \nThe OpenSolar Team\n\n\n\n" +
 	"You're receiving this email because your contact was given" +
 	" on the opensolar platform for receiving notifications on orders in which you're a party.\n\n\n"
 
 // SendInvestmentNotifToRecipient sends a notification to the recipient when an investor
-// invests in an order he's the recipient of
+// invests in a project they're recipient of
 func SendInvestmentNotifToRecipient(projIndex int, to string, recpPbTrustHash string, recpAssetHash string, recpDebtTrustHash string, recpDebtAssetHash string) error {
-	// this is sent to the recipient on investment from an investor
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -34,28 +33,9 @@ func SendInvestmentNotifToRecipient(projIndex int, to string, recpPbTrustHash st
 	return email.SendMail(body, to)
 }
 
-// SendInvestmentNotifToRecipientOZ sends a notification to the recipient as part of the opzones platform
-func SendInvestmentNotifToRecipientOZ(projIndex int, to string, recpDebtTrustHash string, recpDebtAssetHash string) error {
-	// this is sent to the recipient on investment from an investor
-	projIndexString, err := utils.ToString(projIndex)
-	if err != nil {
-		return err
-	}
-	body := "Greetings from the opensolar platform! \n\n" +
-		"We're writing to let you know that project number: " + projIndexString + " has been invested in.\n\n" +
-		"Your proofs of payment are attached below and may be used as future reference in case of discrepancies:  \n\n" +
-		"Your debt trusted asset hash is: https://testnet.steexp.com/tx/" + recpDebtTrustHash + "\n" +
-		"Your debt asset hash is: https://testnet.steexp.com/tx/" + recpDebtAssetHash + "\n\n\n" +
-		footerString
-	return email.SendMail(body, to)
-}
-
 // SendInvestmentNotifToInvestor sends a notification to the investor when he invests
 // in a particular project
 func SendInvestmentNotifToInvestor(projIndex int, to string, stableHash string, trustHash string, assetHash string) error {
-	// this is sent to the investor on investment
-	// this should ideally contain all the information he needs for a concise proof of
-	// investment
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -72,9 +52,6 @@ func SendInvestmentNotifToInvestor(projIndex int, to string, stableHash string, 
 
 // SendSeedInvestmentNotifToInvestor sends a notification to the user after seed investment
 func SendSeedInvestmentNotifToInvestor(projIndex int, to string, stableHash string, trustHash string, assetHash string) error {
-	// this is sent to the investor on investment
-	// this should ideally contain all the information he needs for a concise proof of
-	// investment
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -89,10 +66,9 @@ func SendSeedInvestmentNotifToInvestor(projIndex int, to string, stableHash stri
 	return email.SendMail(body, to)
 }
 
-// SendPaybackNotifToRecipient sends a notification email to the recipient when he
-// pays back towards a particular order
+// SendPaybackNotifToRecipient sends a notification email to the recipient when they
+// pay back towards a particular project
 func SendPaybackNotifToRecipient(projIndex int, to string, stableUSDHash string, debtPaybackHash string) error {
-	// this is sent to the recipient
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -109,7 +85,6 @@ func SendPaybackNotifToRecipient(projIndex int, to string, stableUSDHash string,
 // SendPaybackNotifToInvestor sends a notification email to the investor when the recipient
 // pays back towards a particular order
 func SendPaybackNotifToInvestor(projIndex int, to string, stableUSDHash string, debtPaybackHash string) error {
-	// this is sent to the investor on payback from an investor
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -123,10 +98,9 @@ func SendPaybackNotifToInvestor(projIndex int, to string, stableUSDHash string, 
 	return email.SendMail(body, to)
 }
 
-// SendUnlockNotifToRecipient sends a notification email to the investor when the recipient
-// pays back towards a particular order
+// SendUnlockNotifToRecipient sends a notification email to the recipient to unlock
+// the given project for accepting investment
 func SendUnlockNotifToRecipient(projIndex int, to string) error {
-	// this is sent to the investor on payback from an investor
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
 		return err
@@ -140,32 +114,16 @@ func SendUnlockNotifToRecipient(projIndex int, to string) error {
 	return email.SendMail(body, to)
 }
 
-// SendUnlockNotifToRecipientOZ sends an unlock notification as part of the opzones platform
-func SendUnlockNotifToRecipientOZ(projIndex int, to string) error {
-	// this is sent to the investor on payback from an investor
-	projIndexString, err := utils.ToString(projIndex)
-	if err != nil {
-		return err
-	}
-	body := "Greetings from the opzones platform! \n\n" +
-		"We're writing to let you know that project number: " + projIndexString + " has been invested in\n\n" +
-		"You are required to logon to the platform within a period of 3(THREE) days in order to accept the investment\n\n" +
-		"If you choose to not accept the given investment in your project, please be warned that your reputation score " +
-		"will be adjusted accordingly and this may affect any future proposal that you seek funding for on the platform\n\n" +
-		footerString
-	return email.SendMail(body, to)
-}
-
-// SendEmail is a hlper for the rpc to send an email to an entity
+// SendEmail is a helper for the rpc to send an email to an entity
 func SendEmail(message string, to string, name string) error {
-	// we can't send emails directly since we would need their gmail usernames and password for that
+	// we can't send emails as the entities themselves since we would need their email password
 	startString := "Greetings from the opensolar platform! \n\n" +
 		"We're writing to let you know that " + name + " has sent you a message. The message contents follow: \n\n"
 	body := startString + message + "\n\n\n" + footerString
 	return email.SendMail(body, to)
 }
 
-// SendAlertEmail sends an alert email
+// SendAlertEmail sends an alert email to an entity
 func SendAlertEmail(message string, to string) error {
 	startString := "Greetings from the opensolar platform! \n\n" +
 		"We're writing to let you know that you have received a message from the platform: \n\n\n" + message

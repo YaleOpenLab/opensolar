@@ -4,12 +4,12 @@ import (
 	"log"
 	"os"
 
-	// openxconsts "github.com/YaleOpenLab/openx/consts"
-
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+// Mainnet loads the stuff needed for mainnet. Ordering is very important since some consts need the others
+// to function correctly
 func Mainnet() error {
 	consts.HomeDir += "/mainnet"
 	consts.DbDir = consts.HomeDir + "/database/"

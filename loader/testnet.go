@@ -44,6 +44,8 @@ func testSolarProject(index int, panelsize string, totalValue float64, location 
 	return project, nil
 }
 
+// Testnet loads the stuff needed for testnet. Ordering is very important since some consts need the others
+// to function correctly
 func Testnet() error {
 	consts.HomeDir += "/testnet"
 	consts.DbDir = consts.HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
