@@ -16,6 +16,18 @@ import (
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
+// InvRPC contains a list of all investor related endpoints
+var InvRPC = map[int][]string{
+	1: []string{"/investor/register"},
+	2: []string{"/investor/validate"},
+	3: []string{"/investor/all"},
+	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},
+	5: []string{"/investor/vote", "votes", "projIndex"},
+	6: []string{"/investor/localasset", "assetName"},
+	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"},
+	8: []string{"/investor/sendemail", "message", "to"},
+}
+
 // setupInvestorRPCs sets up all investor related RPCs
 func setupInvestorRPCs() {
 	registerInvestor()
@@ -29,7 +41,7 @@ func setupInvestorRPCs() {
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
-func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Investor, error) {
+func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (core.Investor, error) {
 	var prepInvestor core.Investor
 	var err error
 	if r.URL.Query() == nil {
@@ -58,7 +70,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options ...string
 }
 
 func registerInvestor() {
-	http.HandleFunc("/investor/register", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
@@ -77,7 +89,7 @@ func registerInvestor() {
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
 			// user already exists on the platform, need to retrieve the user
-			user, err := openxrpc.CheckReqdParams(w, r) // check whether this person is a user and has params
+			user, err := openxrpc.CheckReqdParams(w, r, InvRPC[1][1:]) // check whether this person is a user and has params
 			if err != nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
@@ -121,9 +133,9 @@ func registerInvestor() {
 
 // validateInvestor validates the username and pwhash of a given investor
 func validateInvestor() {
-	http.HandleFunc("/investor/validate", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(InvRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
-		prepInvestor, err := InvValidateHelper(w, r)
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -134,8 +146,13 @@ func validateInvestor() {
 
 // getAllInvestors gets a list of all the investors in the database
 func getAllInvestors() {
-	http.HandleFunc("/investor/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
+		_, err := InvValidateHelper(w, r, InvRPC[3][1:])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
 		investors, err := core.RetrieveAllInvestors()
 		if err != nil {
 			log.Println("did not retrieve all investors", err)
@@ -148,9 +165,9 @@ func getAllInvestors() {
 
 // Invest invests in a project of the investor's choice
 func invest() {
-	http.HandleFunc("/investor/invest", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
-		investor, err := InvValidateHelper(w, r, "seedpwd", "projIndex", "amount")
+		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -201,8 +218,8 @@ func invest() {
 
 // voteTowardsProject votes towards a proposed project of the user's choice.
 func voteTowardsProject() {
-	http.HandleFunc("/investor/vote", func(w http.ResponseWriter, r *http.Request) {
-		investor, err := InvValidateHelper(w, r, "votes", "projIndex")
+	http.HandleFunc(InvRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
+		investor, err := InvValidateHelper(w, r, InvRPC[5][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -234,9 +251,9 @@ func voteTowardsProject() {
 // addLocalAssetInv adds a local asset that can be traded in a p2p fashion wihtout direct involvement
 // from the platform
 func addLocalAssetInv() {
-	http.HandleFunc("/investor/localasset", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(InvRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 
-		prepInvestor, err := InvValidateHelper(w, r, "assetName")
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -257,8 +274,8 @@ func addLocalAssetInv() {
 
 // invAssetInv sends a local asset to a remote peer
 func invAssetInv() {
-	http.HandleFunc("/investor/sendlocalasset", func(w http.ResponseWriter, r *http.Request) {
-		prepInvestor, err := InvValidateHelper(w, r, "assetName", "seedpwd", "destination", "amount")
+	http.HandleFunc(InvRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -305,8 +322,8 @@ func invAssetInv() {
 
 // sendEmail sends an email to a specific entity
 func sendEmail() {
-	http.HandleFunc("/investor/sendemail", func(w http.ResponseWriter, r *http.Request) {
-		prepInvestor, err := InvValidateHelper(w, r, "message", "to")
+	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return

@@ -10,6 +10,20 @@ import (
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
+// ParticleRPC contains a list of all particle related endpoints
+var ParticleRPC = map[int][]string{
+	1:  []string{"/particle/devices", "accessToken"},
+	2:  []string{"/particle/productinfo", "accessToken", "productInfo"},
+	3:  []string{"/particle/deviceinfo", "accessToken", "deviceId"},
+	4:  []string{"/particle/deviceping", "accessToken", "deviceId"},
+	5:  []string{"/particle/devicesignal", "signal", "accessToken"},
+	6:  []string{"/particle/getdeviceid", "serialNumber", "accessToken"},
+	7:  []string{"/particle/diag/last", "accessToken", "deviceId"},
+	8:  []string{"/particle/diag/all", "accessToken", "deviceId"},
+	9:  []string{"/particle/user/info", "accessToken"},
+	10: []string{"/particle/sims", "accessToken"},
+}
+
 // setupParticleHandlers sets up all the particle related endpoints
 func setupParticleHandlers() {
 	listAllDevices()
@@ -114,11 +128,11 @@ type ParticleEventStream struct {
 // listAllDevices lists all the devices registered to the user holding the specific access token
 func listAllDevices() {
 	// make a curl request out to lcoalhost and get the ping response
-	http.HandleFunc("/particle/devices", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		// validate if the person requesting this is a vlaid user on the platform
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[1][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -133,10 +147,10 @@ func listAllDevices() {
 
 // listProductInfo liusts all the producsts belonging to the user with the access token
 func listProductInfo() {
-	http.HandleFunc("/particle/productinfo", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "productInfo")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[2][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -153,11 +167,11 @@ func listProductInfo() {
 
 // getDeviceInfo returns the information of a specific device. REquires device id and the accesstoken
 func getDeviceInfo() {
-	http.HandleFunc("/particle/deviceinfo", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		// validate if the person requesting this is a vlaid user on the platform
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[3][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -175,10 +189,10 @@ func getDeviceInfo() {
 // pingDevice pings a specific device and sees whether its up. Could be useful to create a monitoring
 // dashboard of sorts where people can see if their devices are online or not
 func pingDevice() {
-	http.HandleFunc("/particle/deviceping", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -197,10 +211,10 @@ func pingDevice() {
 // on receiving this signal. Can be set to on or off depending on whether we want the device to flash
 // in rainbow colors or not
 func signalDevice() {
-	http.HandleFunc("/particle/devicesignal", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "signal", "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[5][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -230,10 +244,10 @@ func signalDevice() {
 
 // serialNumberInfo gets the device id of a device on recipt of the serial number
 func serialNumberInfo() {
-	http.HandleFunc("/particle/getdeviceid", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "serialNumber", "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[6][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -250,10 +264,10 @@ func serialNumberInfo() {
 
 // getDiagnosticsLast gets a list of the last diagnostic report that belongs to the specific device
 func getDiagnosticsLast() {
-	http.HandleFunc("/particle/diag/last", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[7][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -270,10 +284,10 @@ func getDiagnosticsLast() {
 // getAllDiagnostics gets all the past diagnostic reports of the associated device id. Requires
 // accessToken for authentication
 func getAllDiagnostics() {
-	http.HandleFunc("/particle/diag/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken", "deviceId")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[8][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -289,10 +303,10 @@ func getAllDiagnostics() {
 
 // getParticleUserInfo gets the information of a particular user associated with an accessToken
 func getParticleUserInfo() {
-	http.HandleFunc("/particle/user/info", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[9][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -307,10 +321,10 @@ func getParticleUserInfo() {
 
 // getAllSims gets the informatiomn of all sim card that areassociated with the particular accessToken
 func getAllSims() {
-	http.HandleFunc("/particle/sims", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ParticleRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := openxrpc.CheckReqdParams(w, r, "accessToken")
+		_, err := openxrpc.CheckReqdParams(w, r, ParticleRPC[10][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
