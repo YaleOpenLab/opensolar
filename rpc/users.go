@@ -8,6 +8,11 @@ import (
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
+// UserRPC is a collection of all user RPC endpoints and their required params
+var UserRPC = map[int][]string{
+	1: []string{"/user/update"},
+}
+
 // setupUserRpcs sets up user related RPCs
 func setupUserRpcs() {
 	updateUser()
@@ -15,10 +20,10 @@ func setupUserRpcs() {
 
 // updateUser updates credentials of the user
 func updateUser() {
-	http.HandleFunc("/user/update", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		user, err := openxrpc.CheckReqdParams(w, r)
+		user, err := openxrpc.CheckReqdParams(w, r, UserRPC[1][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -62,7 +67,7 @@ func updateUser() {
 		}
 
 		// check whether given user is an investor or recipient
-		investor, err := InvValidateHelper(w, r)
+		investor, err := InvValidateHelper(w, r, UserRPC[1][1:])
 		if err == nil {
 			investor.U = &user
 			err = investor.Save()
@@ -71,7 +76,7 @@ func updateUser() {
 				return
 			}
 		}
-		recipient, err := RecpValidateHelper(w, r)
+		recipient, err := RecpValidateHelper(w, r, UserRPC[1][1:])
 		if err == nil {
 			recipient.U = &user
 			err = recipient.Save()

@@ -14,6 +14,26 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+// RecpRPC is a collection of all recipient RPC endpoints and their required params
+var RecpRPC = map[int][]string{
+	1:  []string{"/recipient/all"},
+	2:  []string{"/recipient/register"},
+	3:  []string{"/recipient/validate"},
+	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},
+	5:  []string{"/recipient/deviceId", "deviceId"},
+	6:  []string{"/recipient/startdevice", "start"},
+	7:  []string{"/recipient/storelocation", "location"},
+	8:  []string{"/recipient/auction/choose/blind"},
+	9:  []string{"/recipient/auction/choose/vickrey"},
+	10: []string{"/recipient/auction/choose/time"},
+	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},
+	12: []string{"/recipient/addemail", "email"},
+	13: []string{"/recipient/finalize", "projIndex"},
+	14: []string{"/recipient/originate", "projIndex"},
+	15: []string{"/recipient/trustlimit", "assetName"},
+	16: []string{"/recipient/ssh", "hash"},
+}
+
 // setupRecipientRPCs sets up all RPCs related to the recipient
 func setupRecipientRPCs() {
 	registerRecipient()
@@ -36,7 +56,7 @@ func setupRecipientRPCs() {
 }
 
 // RecpValidateHelper is a helper that helps validates recipients in routes
-func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...string) (core.Recipient, error) {
+func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (core.Recipient, error) {
 	var prepRecipient core.Recipient
 	var err error
 	if r.URL.Query() == nil {
@@ -66,9 +86,14 @@ func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options ...strin
 
 // getAllRecipients gets a list of all the recipients who have registered on the platform
 func getAllRecipients() {
-	http.HandleFunc("/recipient/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
+		_, err := RecpValidateHelper(w, r, RecpRPC[1][1:])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
 		recipients, err := core.RetrieveAllRecipients()
 		if err != nil {
 			log.Println("did not retrieve all recipients", err)
@@ -81,7 +106,7 @@ func getAllRecipients() {
 
 // registerRecipient creates and stores a new recipient on the platform
 func registerRecipient() {
-	http.HandleFunc("/recipient/register", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
@@ -99,7 +124,7 @@ func registerRecipient() {
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
 			// user already exists on the platform, need to retrieve the user
-			user, err := openxrpc.CheckReqdParams(w, r) // check whether this person is a user and has params
+			user, err := openxrpc.CheckReqdParams(w, r, RecpRPC[2][1:]) // check whether this person is a user and has params
 			if err != nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
@@ -143,10 +168,10 @@ func registerRecipient() {
 
 // validateRecipient validates a recipient on the platform
 func validateRecipient() {
-	http.HandleFunc("/recipient/validate", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		prepRecipient, err := RecpValidateHelper(w, r)
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[3][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -157,11 +182,11 @@ func validateRecipient() {
 
 // payback pays back towards an  invested order
 func payback() {
-	http.HandleFunc("/recipient/payback", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		prepRecipient, err := RecpValidateHelper(w, r, "assetName", "amount", "seedpwd", "projIndex")
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -201,11 +226,11 @@ func payback() {
 
 // storeDeviceId stores the recipient's device id from the teller. Called by the teller
 func storeDeviceId() {
-	http.HandleFunc("/recipient/deviceId", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		prepRecipient, err := RecpValidateHelper(w, r, "deviceId")
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[5][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -225,11 +250,11 @@ func storeDeviceId() {
 // storeStartTime stores the start time of the remote device installed as part of an
 // invested project. Called by the teller
 func storeStartTime() {
-	http.HandleFunc("/recipient/startdevice", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		prepRecipient, err := RecpValidateHelper(w, r, "start")
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[6][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -248,11 +273,11 @@ func storeStartTime() {
 
 // storeDeviceLocation stores the location of the remote device when it starts up. Called by the teller
 func storeDeviceLocation() {
-	http.HandleFunc("/recipient/storelocation", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 
-		prepRecipient, err := RecpValidateHelper(w, r, "location")
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[7][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -272,10 +297,10 @@ func storeDeviceLocation() {
 // chooseBlindAuction chooses a blind auction method to choose for the winner. Also commonly
 // known as a 1st price auction.
 func chooseBlindAuction() {
-	http.HandleFunc("/recipient/auction/choose/blind", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r)
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[8][1:])
 		if err != nil {
 			log.Println("did not validate recipient", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -310,10 +335,10 @@ func chooseBlindAuction() {
 // chooseVickreyAuction chooses a vickrey auction method to choose the winning contractor.
 // also known as a second price auction
 func chooseVickreyAuction() {
-	http.HandleFunc("/recipient/auction/choose/vickrey", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r)
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[9][1:])
 		if err != nil {
 			log.Println("did not validate recipient", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -347,10 +372,10 @@ func chooseVickreyAuction() {
 
 // chooseTimeAuction chooses the winning contractor based on least completion time
 func chooseTimeAuction() {
-	http.HandleFunc("/recipient/auction/choose/time", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r)
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[10][1:])
 		if err != nil {
 			log.Println("did not validate recipient", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -385,10 +410,10 @@ func chooseTimeAuction() {
 // unlockOpenSolar unlocks a project which has just been invested in, signalling that the recipient
 // has accepted the investment.
 func unlockOpenSolar() {
-	http.HandleFunc("/recipient/unlock/opensolar", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r, "seedpwd", "projIndex")
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[11][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -415,10 +440,10 @@ func unlockOpenSolar() {
 
 // addEmail adds an email address to the recipient's profile
 func addEmail() {
-	http.HandleFunc("/recipient/addemail", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r, "email")
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[12][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -437,10 +462,10 @@ func addEmail() {
 
 // finalizeProject finalizes (ie moves from stage 2 to 3) a specific project
 func finalizeProject() {
-	http.HandleFunc("/recipient/finalize", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[13][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		_, err := RecpValidateHelper(w, r, "projIndex")
+		_, err := RecpValidateHelper(w, r, RecpRPC[13][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -473,10 +498,10 @@ func finalizeProject() {
 
 // originateProject originates (ie moves from stage 0 to 1) a project
 func originateProject() {
-	http.HandleFunc("/recipient/originate", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[14][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r, "projIndex")
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[14][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -502,10 +527,10 @@ func originateProject() {
 
 // calculateTrustLimit calculates the trust limit associated with a specific asset.
 func calculateTrustLimit() {
-	http.HandleFunc("/recipient/trustlimit", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[15][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
-		recipient, err := RecpValidateHelper(w, r, "assetName")
+		recipient, err := RecpValidateHelper(w, r, RecpRPC[15][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -526,11 +551,11 @@ func calculateTrustLimit() {
 // storeStateHash stores the start time of the remote device installed as part of an invested project.
 // Called by the teller
 func storeStateHash() {
-	http.HandleFunc("/recipient/ssh", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(RecpRPC[16][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
 		erpc.CheckOrigin(w, r)
 		// first validate the recipient or anyone would be able to set device ids
-		prepRecipient, err := RecpValidateHelper(w, r, "hash")
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[16][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
