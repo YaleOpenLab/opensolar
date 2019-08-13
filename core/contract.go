@@ -316,9 +316,18 @@ func (project *Project) updateAfterInvestment(invAmount float64, invIndex int) e
 // sendRecipientNotification sends the notification to the recipient requesting them
 // to logon to the platform and unlock the project that has just been invested in
 func (project *Project) sendRecipientNotification() error {
-	recipient, err := RetrieveRecipient(project.RecipientIndex)
+	var recipient Recipient
+	var err error
+
+	recipient, err = RetrieveRecipient(project.RecipientIndex)
 	if err != nil {
-		return errors.Wrap(err, "couldn't retrieve recipient")
+		// don't stop execution here, send an email to platform admin
+		notif.SendRecpNotFoundEmail(project.Index, project.RecipientIndex)
+		time.Sleep(consts.OneHour)
+		recipient, err = RetrieveRecipient(project.RecipientIndex)
+		if err != nil {
+			return errors.Wrap(err, "couldn't retrieve recipient")
+		}
 	}
 	notif.SendUnlockNotifToRecipient(project.Index, recipient.U.Email)
 	return nil

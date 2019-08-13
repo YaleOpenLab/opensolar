@@ -338,3 +338,21 @@ func SendPasswordResetEmail(to string, vCode string) error {
 
 	return email.SendMail(body, to)
 }
+
+func SendRecpNotFoundEmail(projIndex int, recpIndex int) error {
+	projIndexString, err := utils.ToString(projIndex)
+	if err != nil {
+		return err
+	}
+
+	recpIndexString, err := utils.ToString(recpIndex)
+	if err != nil {
+		return err
+	}
+
+	body := "Greetings from the opensolar platform! \n\nWe're writing to let you know that project with index: " + projIndexString +
+		" and recipient index: " + recpIndexString + " has just beenf funded. Please create a new recipient account with log details in order to be able to proceed with investment" +
+		"\n\n\n" + footerString
+
+	return email.SendMail(body, consts.AdminEmail)
+}

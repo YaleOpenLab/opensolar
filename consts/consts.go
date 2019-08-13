@@ -17,6 +17,9 @@ var PlatformEmail string
 // PlatformEmailPass is the password for the emial account linked above
 var PlatformEmailPass string
 
+// AdminEmail is the email of the platform's admin that is public
+var AdminEmail string
+
 // StablecoinCode is the code of the in house stablecoin that openx possesses
 var StablecoinCode string
 
@@ -85,6 +88,9 @@ var DefaultRpcPort = 8081
 
 // LockInterval is the time a recipient is given to unlock the project and redeem investment, right now at 3 days
 var LockInterval = int64(1 * 60 * 60 * 24 * 3)
+
+// OneHour is one hour in seconds
+var OneHour = time.Duration(1 * 60 * 60)
 
 // PaybackInterval is the default teller payback interval
 var PaybackInterval = time.Duration(1 * 60 * 60 * 24 * 30)
