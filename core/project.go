@@ -27,6 +27,7 @@ type Project struct {
 
 	// Define parameters related to finance
 	MoneyRaised          float64 // total money that has been raised until now
+	SeedMoneyRaised      float64 // total seed money that has been raised until now
 	EstimatedAcquisition int     // the year in which the recipient is expected to repay the initial investment amount by
 	BalLeft              float64 // denotes the balance left to pay by the party, percentage raised is not stored in the database since that can be calculated
 	InterestRate         float64 // the rate of return for investors
@@ -76,16 +77,17 @@ type Project struct {
 	TaxEquityInvestor           string    // tax equity investor if any
 
 	// Define parameters that will not be defined directly but will be used for the backend flow
-	Lock           bool               // lock investment in order to wait for recipient's confirmation
-	LockPwd        string             // the recipient's seedpwd. Will be set to null as soon as we use it.
-	Votes          float64            // the number of votes towards a proposed contract by investors
-	AmountOwed     float64            // the amoutn owed to investors as a cumulative sum. Used in case of a breach
-	Reputation     float64            // the positive reputation associated with a given project
-	OwnershipShift float64            // the percentage of the project that the recipient now owns
-	StageData      []string           // the data associated with stage migrations
-	StageChecklist []map[string]bool  // the checklist that has to be completed before moving on to the next stage
-	InvestorMap    map[string]float64 // publicKey: percentage donation
-	WaterfallMap   map[string]float64 // publickey:amount map ni order to pay multiple accounts. A bit ugly, but should work fine. Make map before using
+	Lock            bool               // lock investment in order to wait for recipient's confirmation
+	LockPwd         string             // the recipient's seedpwd. Will be set to null as soon as we use it.
+	Votes           float64            // the number of votes towards a proposed contract by investors
+	AmountOwed      float64            // the amoutn owed to investors as a cumulative sum. Used in case of a breach
+	Reputation      float64            // the positive reputation associated with a given project
+	OwnershipShift  float64            // the percentage of the project that the recipient now owns
+	StageData       []string           // the data associated with stage migrations
+	StageChecklist  []map[string]bool  // the checklist that has to be completed before moving on to the next stage
+	InvestorMap     map[string]float64 // publicKey: percentage donation
+	SeedInvestorMap map[string]float64 // the list of all seed investors who've invested in the project
+	WaterfallMap    map[string]float64 // publickey:amount map ni order to pay multiple accounts. A bit ugly, but should work fine. Make map before using
 
 	// Define things that will be displayed on the frontend
 	Terms               []TermsHelper               // the terms of the project
