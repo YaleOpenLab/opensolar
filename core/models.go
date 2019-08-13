@@ -20,7 +20,7 @@ import (
 
 // MunibondInvest invests in a specific munibond
 func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount float64,
-	projIndex int, invAssetCode string, totalValue float64, seedInvestmentFactor float64) error {
+	projIndex int, invAssetCode string, totalValue float64, seedInvestmentFactor float64, seed bool) error {
 
 	var err error
 
@@ -66,9 +66,15 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 
 	log.Printf("Sent InvAsset %s to investor %s with txhash %s", InvestorAsset.GetCode(), investor.U.StellarWallet.PublicKey, invAssetTxHash)
 
-	investor.AmountInvested += invAmount //  / seedInvestmentFactor -> figure out after demo
-	investor.InvestedSolarProjects = append(investor.InvestedSolarProjects, InvestorAsset.GetCode())
-	investor.InvestedSolarProjectsIndices = append(investor.InvestedSolarProjectsIndices, projIndex)
+	investor.AmountInvested += invAmount
+
+	if seed {
+		investor.SeedInvestedSolarProjects = append(investor.InvestedSolarProjects, InvestorAsset.GetCode())
+		investor.SeedInvestedSolarProjectsIndices = append(investor.InvestedSolarProjectsIndices, projIndex)
+	} else {
+		investor.InvestedSolarProjects = append(investor.InvestedSolarProjects, InvestorAsset.GetCode())
+		investor.InvestedSolarProjectsIndices = append(investor.InvestedSolarProjectsIndices, projIndex)
+	}
 
 	err = investor.Save()
 	if err != nil {

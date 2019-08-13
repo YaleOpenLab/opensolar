@@ -30,6 +30,12 @@ type Investor struct {
 	// InvestedSolarProjectsIndices is an integer list of the projects the investor has invested in
 	InvestedSolarProjectsIndices []int
 
+	// InvestedSolarProjects is a list of the investor assets of the opensolar projects the investor has invested in
+	SeedInvestedSolarProjects []string
+
+	// InvestedSolarProjectsIndices is an integer list of the projects the investor has invested in
+	SeedInvestedSolarProjectsIndices []int
+
 	// WeightedROI is the weighted ROI that the investor is expected to get for his investments
 	WeightedROI string
 

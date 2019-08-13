@@ -189,12 +189,12 @@ func SeedInvest(projIndex int, invIndex int, invAmount float64, invSeed string) 
 			project.SeedAssetCode = "SEEDASSET" // set this to a constant asset for now
 		}
 		err = MunibondInvest(consts.OpenSolarIssuerDir, invIndex, invSeed, invAmount, projIndex,
-			project.SeedAssetCode, project.TotalValue, project.SeedInvestmentFactor)
+			project.SeedAssetCode, project.TotalValue, project.SeedInvestmentFactor, true)
 		if err != nil {
 			return errors.Wrap(err, "error while investing")
 		}
 
-		err = project.updateAfterInvestment(invAmount, invIndex)
+		err = project.updateAfterInvestment(invAmount, invIndex, true)
 		if err != nil {
 			return errors.Wrap(err, "couldn't update project after investment")
 		}
@@ -229,13 +229,13 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 		}
 
 		err = MunibondInvest(consts.OpenSolarIssuerDir, invIndex, invSeed, invAmount, projIndex,
-			project.InvestorAssetCode, project.TotalValue, 1)
+			project.InvestorAssetCode, project.TotalValue, 1, false)
 		if err != nil {
 			return errors.Wrap(err, "error while investing")
 		}
 
 		// once the investment is complete, update the project and store in the database
-		err = project.updateAfterInvestment(invAmount, invIndex)
+		err = project.updateAfterInvestment(invAmount, invIndex, false)
 		if err != nil {
 			return errors.Wrap(err, "failed to update project after investment")
 		}
@@ -246,9 +246,12 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 }
 
 // updateAfterInvestment updates project db params after investment
-func (project *Project) updateAfterInvestment(invAmount float64, invIndex int) error {
+func (project *Project) updateAfterInvestment(invAmount float64, invIndex int, seed bool) error {
 	var err error
 	project.MoneyRaised += invAmount
+	if seed {
+		project.SeedMoneyRaised += invAmount * (project.SeedInvestmentFactor - 1)
+	}
 	project.InvestorIndices = append(project.InvestorIndices, invIndex)
 
 	err = project.Save()
@@ -414,6 +417,7 @@ func sendRecipientAssets(projIndex int) error {
 
 	log.Println("successfully setup escrow")
 	project.EscrowPubkey = escrowPubkey
+	// transfer totalValue to the escrow, don't account for SeedMoneyRaised here
 	err = escrow.TransferFundsToEscrow(project.TotalValue, project.Index, project.EscrowPubkey, consts.PlatformSeed)
 	if err != nil {
 		log.Println(err)
@@ -426,8 +430,9 @@ func sendRecipientAssets(projIndex int) error {
 	project.DebtAssetCode = assets.AssetID(consts.DebtAssetPrefix + project.Metadata)
 	project.PaybackAssetCode = assets.AssetID(consts.PaybackAssetPrefix + project.Metadata)
 
+	// when sending debt and payback assets, account for SeedMoneyRaised
 	err = MunibondReceive(consts.OpenSolarIssuerDir, project.RecipientIndex, projIndex, project.DebtAssetCode,
-		project.PaybackAssetCode, project.EstimatedAcquisition, recpSeed, project.TotalValue, project.PaybackPeriod)
+		project.PaybackAssetCode, project.EstimatedAcquisition, recpSeed, project.TotalValue+project.SeedMoneyRaised, project.PaybackPeriod)
 	if err != nil {
 		return errors.Wrap(err, "error while receiving assets from issuer on recipient's end")
 	}
@@ -443,8 +448,9 @@ func sendRecipientAssets(projIndex int) error {
 // updateProjectAfterAcceptance updates the project after the recipient accepts investment into the project
 func (project *Project) updateProjectAfterAcceptance() error {
 
-	project.BalLeft = project.TotalValue
-	project.Stage = Stage5.Number // set to stage 5 (after the raise is done, we need to wait for people to construct the solar panels)
+	// update balleft with SeedMoneyRaised
+	project.BalLeft = project.TotalValue + project.SeedMoneyRaised // to carry over the extra returns that seed investors get
+	project.Stage = Stage5.Number                                  // set to stage 5 (after the raise is done, we need to wait for people to construct the solar panels)
 
 	err := project.Save()
 	if err != nil {
