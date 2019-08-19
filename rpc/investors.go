@@ -167,6 +167,7 @@ func getAllInvestors() {
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		erpc.CheckGet(w, r)
+		log.Println("In invest RPC")
 		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -201,6 +202,7 @@ func invest() {
 			return
 		}
 
+		log.Println("reaches here", investorPubkey)
 		if !xlm.AccountExists(investorPubkey) {
 			erpc.ResponseHandler(w, erpc.StatusNotFound)
 			return

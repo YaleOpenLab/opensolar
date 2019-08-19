@@ -127,7 +127,7 @@ func SetTnConsts() {
 	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
 }
 
-// SetMnConsts sets constants that are relevant for staring opensolar on mainnet
+// SetMnConsts sets constants that are relevant for staring opensolar on mainnet // THIS IS UNUSED
 func SetMnConsts() {
 	HomeDir = os.Getenv("HOME") + "/.opensolar/mainnet"
 	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)

@@ -6,6 +6,7 @@ import (
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
+	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 )
 
 // Mainnet loads the stuff needed for mainnet. Ordering is very important since some consts need the others
@@ -15,6 +16,7 @@ func Mainnet() error {
 	consts.DbDir = consts.HomeDir + "/database/"
 	consts.OpenSolarIssuerDir = consts.HomeDir + "/projects/"
 	consts.PlatformSeedFile = consts.HomeDir + "/platformseed.hex"
+	xlm.SetConsts(0, consts.Mainnet)
 
 	if _, err := os.Stat(consts.HomeDir); os.IsNotExist(err) {
 		// nothing exists, create dbs and buckets

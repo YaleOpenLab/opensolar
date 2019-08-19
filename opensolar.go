@@ -12,9 +12,9 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	consts "github.com/YaleOpenLab/opensolar/consts"
+	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
-	// core "github.com/YaleOpenLab/opensolar/core"
 
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -127,6 +127,22 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+
+	project, err := core.RetrieveProject(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	project.Metadata = "MAINNETTEST"
+	project.InvestorAssetCode = ""
+	project.TotalValue = 1
+	project.MoneyRaised = 0
+	project.InvestmentType = "munibond"
+	project.RecipientIndex = 2
+	err = project.Save()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// rpc.KillCode = "NUKE" // compile time nuclear code
