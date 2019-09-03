@@ -390,17 +390,22 @@ func sendRecipientAssets(projIndex int) error {
 		return errors.Wrap(err, "Couldn't retrieve project")
 	}
 
-	for utils.Unix()-startTime < consts.LockInterval {
-		log.Printf("WAITING FOR PROJECT %d TO BE UNLOCKED", projIndex)
-		project, err = RetrieveProject(projIndex)
-		if err != nil {
-			return errors.Wrap(err, "Couldn't retrieve project")
+	if len(project.OneTimeUnlock) == 0 {
+		for utils.Unix()-startTime < consts.LockInterval {
+			log.Printf("WAITING FOR PROJECT %d TO BE UNLOCKED", projIndex)
+			project, err = RetrieveProject(projIndex)
+			if err != nil {
+				return errors.Wrap(err, "Couldn't retrieve project")
+			}
+			if !project.Lock {
+				log.Println("Project UNLOCKED IN LOOP")
+				break
+			}
+			time.Sleep(10 * time.Second)
 		}
-		if !project.Lock {
-			log.Println("Project UNLOCKED IN LOOP")
-			break
-		}
-		time.Sleep(10 * time.Second)
+	} else {
+		project.LockPwd = project.OneTimeUnlock
+		project.OneTimeUnlock = "" // set this to nil since this is a one time unlock. LockPwd will be set to nil later
 	}
 
 	// lock is open, retrieve project and transfer assets

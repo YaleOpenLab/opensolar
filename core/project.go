@@ -113,7 +113,8 @@ type Project struct {
 	FEText                map[string]interface{} // put all the fe text in here reading it from the relevant json file(s)
 	MapLink               string                 // the google maps link to the installation site
 
-	Chain string // the chain on which the project desires to be.
+	Chain         string // the chain on which the project desires to be.
+	OneTimeUnlock string // a one time unlock password where the recipient can store his seedpwd in (will be decrypted after investment)
 }
 
 // ExplorePageSummaryHelper defines the params that will appear on the frontend's explore page
