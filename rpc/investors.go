@@ -48,7 +48,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 		return prepInvestor, errors.New("url query can't be empty")
 	}
 
-	options = append(options, "username", "pwhash")
+	options = append(options, "username", "token")
 
 	for _, option := range options {
 		if r.URL.Query()[option] == nil {
@@ -56,11 +56,11 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 		}
 	}
 
-	if len(r.URL.Query()["pwhash"][0]) != 128 {
-		return prepInvestor, errors.New("pwhash length not 128, quitting")
+	if len(r.URL.Query()["token"][0]) != 32 {
+		return prepInvestor, errors.New("token length not 32, quitting")
 	}
 
-	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
 		log.Println("did not validate investor", err)
 		return prepInvestor, err
@@ -137,6 +137,7 @@ func validateInvestor() {
 		erpc.CheckGet(w, r)
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
 		if err != nil {
+			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}

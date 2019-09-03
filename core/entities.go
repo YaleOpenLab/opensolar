@@ -204,9 +204,9 @@ func TopReputationEntities(role string) ([]Entity, error) {
 }
 
 // ValidateEntity validates the username and pwhash of the entity
-func ValidateEntity(name string, pwhash string) (Entity, error) {
+func ValidateEntity(name string, token string) (Entity, error) {
 	var rec Entity
-	user, err := ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, token)
 	if err != nil {
 		return rec, errors.Wrap(err, "couldn't validate user")
 	}

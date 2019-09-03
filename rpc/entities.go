@@ -26,11 +26,11 @@ func EntityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, 
 	erpc.CheckGet(w, r)
 	var prepInvestor core.Entity
 	if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
-		len(r.URL.Query()["pwhash"][0]) != 128 {
+		len(r.URL.Query()["token"][0]) != 32 {
 		return prepInvestor, errors.New("Invalid params passed")
 	}
 
-	prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
 		return prepEntity, errors.Wrap(err, "Error while validating entity")
 	}

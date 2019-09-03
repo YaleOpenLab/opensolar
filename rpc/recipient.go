@@ -63,7 +63,7 @@ func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 		return prepRecipient, errors.New("url query can't be empty")
 	}
 
-	options = append(options, "username", "pwhash")
+	options = append(options, "username", "token")
 
 	for _, option := range options {
 		if r.URL.Query()[option] == nil {
@@ -71,11 +71,11 @@ func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 		}
 	}
 
-	if len(r.URL.Query()["pwhash"][0]) != 128 {
-		return prepRecipient, errors.New("pwhash length not 128, quitting")
+	if len(r.URL.Query()["token"][0]) != 32 {
+		return prepRecipient, errors.New("token length not 32, quitting")
 	}
 
-	prepRecipient, err = core.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["pwhash"][0])
+	prepRecipient, err = core.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
 		log.Println("did not validate recipient", err)
 		return prepRecipient, err

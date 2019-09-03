@@ -179,20 +179,20 @@ func TopReputationRecipients() ([]Recipient, error) {
 	return arr, nil
 }
 
-// ValidateInvestor validates an investor's pwhash and username
-func ValidateInvestor(name string, pwhash string) (Investor, error) {
+// ValidateInvestor validates an investor's token and username
+func ValidateInvestor(name string, token string) (Investor, error) {
 	var rec Investor
-	user, err := ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, token)
 	if err != nil {
 		return rec, errors.Wrap(err, "failed to validate user")
 	}
 	return RetrieveInvestor(user.Index)
 }
 
-// ValidateRecipient validates a recipient's pwhash and username
-func ValidateRecipient(name string, pwhash string) (Recipient, error) {
+// ValidateRecipient validates a recipient's token and username
+func ValidateRecipient(name string, token string) (Recipient, error) {
 	var rec Recipient
-	user, err := ValidateUser(name, pwhash)
+	user, err := ValidateUser(name, token)
 	if err != nil {
 		return rec, errors.Wrap(err, "Error while validating user")
 	}
