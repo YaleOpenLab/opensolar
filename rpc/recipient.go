@@ -32,6 +32,7 @@ var RecpRPC = map[int][]string{
 	14: []string{"/recipient/originate", "projIndex"},
 	15: []string{"/recipient/trustlimit", "assetName"},
 	16: []string{"/recipient/ssh", "hash"},
+	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
 }
 
 // setupRecipientRPCs sets up all RPCs related to the recipient
@@ -53,6 +54,7 @@ func setupRecipientRPCs() {
 	calculateTrustLimit()
 	// unlockCBond()
 	storeStateHash()
+	setOneTimeUnlock()
 }
 
 // RecpValidateHelper is a helper that helps validates recipients in routes
@@ -568,6 +570,37 @@ func storeStateHash() {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func setOneTimeUnlock() {
+	http.HandleFunc(RecpRPC[17][0], func(w http.ResponseWriter, r *http.Request) {
+		erpc.CheckGet(w, r)
+		erpc.CheckOrigin(w, r)
+		// first validate the recipient or anyone would be able to set device ids
+		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[17][1:])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		seedpwd := r.URL.Query()["seedpwd"][0]
+
+		err = prepRecipient.SetOneTimeUnlock(projIndex, seedpwd)
+		if err != nil {
+			log.Println("did not set one time unlock", err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+
+		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
