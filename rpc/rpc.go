@@ -12,32 +12,52 @@ import (
 )
 
 // relayGetRequest relays get requests to openx
-func relayGetRequest() {
+func relayRequest() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		body := consts.OpenxURL + r.URL.String()
-		log.Println(body)
-		data, err := erpc.GetRequest(body)
-		if err != nil {
-			log.Println("could not submit transacation to testnet, quitting")
-			erpc.ResponseHandler(w, http.StatusInternalServerError)
-			return
-		}
+		if r.Method == "GET" {
+			err := erpc.CheckGet(w, r)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			body := consts.OpenxURL + r.URL.String()
+			log.Println(body)
+			data, err := erpc.GetRequest(body)
+			if err != nil {
+				log.Println("could not relay get request", err)
+				erpc.ResponseHandler(w, http.StatusInternalServerError)
+				return
+			}
 
-		var x interface{}
-		_ = json.Unmarshal(data, &x)
-		erpc.MarshalSend(w, x)
+			var x interface{}
+			_ = json.Unmarshal(data, &x)
+			erpc.MarshalSend(w, x)
+		} else if r.Method == "POST" {
+			err := erpc.CheckPost(w, r)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			body := consts.OpenxURL + r.URL.String()
+			log.Println(body)
+
+			err = r.ParseForm()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			data, err := erpc.PostForm(body, r.Form)
+			var x interface{}
+			_ = json.Unmarshal(data, &x)
+			erpc.MarshalSend(w, x)
+		}
 	})
 }
 
 // StartServer starts the opensolar backend server
 func StartServer(portx int, insecure bool) {
 	erpc.SetupPingHandler()
-	relayGetRequest()
+	relayRequest()
 	setupProjectRPCs()
 	setupUserRpcs()
 	setupInvestorRPCs()
