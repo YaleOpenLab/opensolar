@@ -372,3 +372,31 @@ func SaveRecPlatformContract(projIndex int, hash string) error {
 	a.StageData = append(a.StageData, hash)
 	return a.Save()
 }
+
+// MarkFlagged is used by an admin to mark the project as flagged
+func MarkFlagged(projIndex int, adminIndex int) error {
+	a, err := RetrieveProject(projIndex)
+	if err != nil {
+		return errors.Wrap(err, "couldn't retrieve project")
+	}
+
+	if a.Reports > consts.ProjectReportThreshold {
+		a.AdminFlagged = true
+		a.FlaggedBy = adminIndex
+	} else {
+		return errors.New("project hasn't reached report threshold yet")
+	}
+	return a.Save()
+}
+
+// UserMarkFlagged is used by users to mark the project as flagged
+func UserMarkFlagged(projIndex int, userIndex int) error {
+	a, err := RetrieveProject(projIndex)
+	if err != nil {
+		return errors.Wrap(err, "couldn't retrieve project")
+	}
+
+	a.UserFlaggedBy = append(a.UserFlaggedBy, userIndex)
+	a.Reports += 1
+	return a.Save()
+}

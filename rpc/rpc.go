@@ -4,12 +4,33 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
+
+func checkReqdParams(r *http.Request, options []string) error {
+
+	if r.URL.Query() == nil {
+		return errors.New("url query can't be empty")
+	}
+
+	options = append(options, "username", "token") // default for all endpoints
+
+	for _, option := range options {
+		if r.URL.Query()[option] == nil {
+			return errors.New("required param: " + option + " not specified, quitting")
+		}
+	}
+
+	if len(r.URL.Query()["token"][0]) != 32 {
+		return errors.New("pwhash length not 128, quitting")
+	}
+
+	return nil
+}
 
 // relayGetRequest relays get requests to openx
 func relayRequest() {
@@ -67,7 +88,7 @@ func StartServer(portx int, insecure bool) {
 	setupParticleHandlers()
 	setupSwytchApis()
 	setupStagesHandlers()
-	// adminHandlers()
+	setupAdminHandlers()
 
 	port, err := utils.ToString(portx)
 	if err != nil {

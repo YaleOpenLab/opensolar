@@ -136,6 +136,10 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 		return project, errors.New("Investment amount greater than what is required! Adjust your investment")
 	}
 
+	if project.AdminFlagged {
+		return project, errors.New("this proejct has been flagged by an admin. Please wait for their further action before proceeding")
+	}
+
 	// the checks till here are common for all chains. The stuff following this is exclusive to stellar.
 	if project.Chain == "stellar" || project.Chain == "" {
 		if project.SeedAssetCode == "" && project.InvestorAssetCode == "" {
