@@ -38,37 +38,31 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 
 	termsHelper := viper.Get("Terms").(map[string]interface{})
 	if projIndex == 8 {
-		terms := make([]core.TermsHelper, 9)
 		i := 0
 		for _, elem := range termsHelper {
 			// elem inside here is a map of "variable": values.
 			newMap := elem.(map[string]interface{})
-			terms[i].Variable = newMap["variable"].(string)
-			terms[i].Value = newMap["value"].(string)
-			terms[i].RelevantParty = newMap["relevantparty"].(string)
-			terms[i].Note = newMap["note"].(string)
-			terms[i].Status = newMap["status"].(string)
-			terms[i].SupportDoc = newMap["supportdoc"].(string)
+			project.Terms[i].Variable = newMap["variable"].(string)
+			project.Terms[i].Value = newMap["value"].(string)
+			project.Terms[i].RelevantParty = newMap["relevantparty"].(string)
+			project.Terms[i].Note = newMap["note"].(string)
+			project.Terms[i].Status = newMap["status"].(string)
+			project.Terms[i].SupportDoc = newMap["supportdoc"].(string)
 			i += 1
 		}
-
-		project.Terms = terms
 	} else {
-		terms := make([]core.TermsHelper, 6)
 		i := 0
 		for _, elem := range termsHelper {
 			// elem inside here is a map of "variable": values.
 			newMap := elem.(map[string]interface{})
-			terms[i].Variable = newMap["variable"].(string)
-			terms[i].Value = newMap["value"].(string)
-			terms[i].RelevantParty = newMap["relevantparty"].(string)
-			terms[i].Note = newMap["note"].(string)
-			terms[i].Status = newMap["status"].(string)
-			terms[i].SupportDoc = newMap["supportdoc"].(string)
+			project.Terms[i].Variable = newMap["variable"].(string)
+			project.Terms[i].Value = newMap["value"].(string)
+			project.Terms[i].RelevantParty = newMap["relevantparty"].(string)
+			project.Terms[i].Note = newMap["note"].(string)
+			project.Terms[i].Status = newMap["status"].(string)
+			project.Terms[i].SupportDoc = newMap["supportdoc"].(string)
 			i += 1
 		}
-
-		project.Terms = terms
 	}
 
 	execSummaryReader := viper.Get("ExecutiveSummary.Investment").(map[string]interface{})
@@ -99,21 +93,14 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 	}
 	project.ExecutiveSummary.SustainabilityMetrics = execSummaryWriter
 
-	var bullets core.BulletHelper
-	bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
-	bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
-	bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
+	project.Bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
+	project.Bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
+	project.Bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
 
-	project.Bullets = bullets
-
-	var architecture core.ArchitectureHelper
-
-	architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
-	architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
-	architecture.System = viper.Get("Architecture.System").(string)
-	architecture.InverterSize = viper.Get("Architecture.InverterSize").(string)
-
-	project.Architecture = architecture
+	project.Architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
+	project.Architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
+	project.Architecture.System = viper.Get("Architecture.System").(string)
+	project.Architecture.InverterSize = viper.Get("Architecture.InverterSize").(string)
 
 	project.Index = viper.Get("Index").(int)
 	project.Name = viper.Get("Name").(string)
@@ -170,70 +157,53 @@ func parseYaml(fileName string, feJson string) error {
 	}
 
 	var project core.Project
-	terms := make([]core.TermsHelper, 6)
 	termsHelper := viper.Get("Terms").(map[string]interface{})
 
 	i := 0
 	for _, elem := range termsHelper {
 		// elem inside here is a map of "variable": values.
 		newMap := elem.(map[string]interface{})
-		terms[i].Variable = newMap["variable"].(string)
-		terms[i].Value = newMap["value"].(string)
-		terms[i].RelevantParty = newMap["relevantparty"].(string)
-		terms[i].Note = newMap["note"].(string)
-		terms[i].Status = newMap["status"].(string)
-		terms[i].SupportDoc = newMap["supportdoc"].(string)
+		project.Terms[i].Variable = newMap["variable"].(string)
+		project.Terms[i].Value = newMap["value"].(string)
+		project.Terms[i].RelevantParty = newMap["relevantparty"].(string)
+		project.Terms[i].Note = newMap["note"].(string)
+		project.Terms[i].Status = newMap["status"].(string)
+		project.Terms[i].SupportDoc = newMap["supportdoc"].(string)
 		i += 1
 	}
 
-	project.Terms = terms
-	var executiveSummary core.ExecutiveSummaryHelper
-
 	execSummaryReader := viper.Get("ExecutiveSummary.Investment").(map[string]interface{})
-	execSummaryWriter := make(map[string]string)
+	project.ExecutiveSummary.Investment = make(map[string]string)
 	for key, elem := range execSummaryReader {
-		execSummaryWriter[key] = elem.(string)
+		project.ExecutiveSummary.Investment[key] = elem.(string)
 	}
-	executiveSummary.Investment = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.Financials").(map[string]interface{})
-	execSummaryWriter = make(map[string]string)
+	project.ExecutiveSummary.Financials = make(map[string]string)
 	for key, elem := range execSummaryReader {
-		execSummaryWriter[key] = elem.(string)
+		project.ExecutiveSummary.Financials[key] = elem.(string)
 	}
-	executiveSummary.Financials = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.ProjectSize").(map[string]interface{})
-	execSummaryWriter = make(map[string]string)
+	project.ExecutiveSummary.ProjectSize = make(map[string]string)
 	for key, elem := range execSummaryReader {
-		execSummaryWriter[key] = elem.(string)
+		project.ExecutiveSummary.ProjectSize[key] = elem.(string)
 	}
-	executiveSummary.ProjectSize = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.SustainabilityMetrics").(map[string]interface{})
-	execSummaryWriter = make(map[string]string)
+	project.ExecutiveSummary.SustainabilityMetrics = make(map[string]string)
 	for key, elem := range execSummaryReader {
-		execSummaryWriter[key] = elem.(string)
+		project.ExecutiveSummary.SustainabilityMetrics[key] = elem.(string)
 	}
-	executiveSummary.SustainabilityMetrics = execSummaryWriter
 
-	project.ExecutiveSummary = executiveSummary
+	project.Bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
+	project.Bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
+	project.Bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
 
-	var bullets core.BulletHelper
-	bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
-	bullets.Bullet2 = viper.Get("Bullets.Bullet2").(string)
-	bullets.Bullet3 = viper.Get("Bullets.Bullet3").(string)
-
-	project.Bullets = bullets
-
-	var architecture core.ArchitectureHelper
-
-	architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
-	architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
-	architecture.System = viper.Get("Architecture.System").(string)
-	architecture.InverterSize = viper.Get("Architecture.InverterSize").(string)
-
-	project.Architecture = architecture
+	project.Architecture.SolarArray = viper.Get("Architecture.SolarArray").(string)
+	project.Architecture.DailyAvgGeneration = viper.Get("Architecture.DailyAvgGeneration").(string)
+	project.Architecture.System = viper.Get("Architecture.System").(string)
+	project.Architecture.InverterSize = viper.Get("Architecture.InverterSize").(string)
 
 	project.Index = viper.Get("Index").(int)
 	project.Name = viper.Get("Name").(string)

@@ -78,7 +78,12 @@ func getAccessToken() {
 			return
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, _ := ioutil.ReadAll(res.Body)
 
 		var x GetAccessTokenData
@@ -139,7 +144,12 @@ func getRefreshToken() {
 			return
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, _ := ioutil.ReadAll(res.Body)
 
 		var x GetAccessTokenData
@@ -208,7 +218,12 @@ func getSwytchUser() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println(err)
@@ -298,7 +313,12 @@ func getAssets() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println(err)
@@ -398,7 +418,12 @@ func getEnergy() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println(err)
@@ -500,7 +525,12 @@ func getEnergyAttribution() {
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
 		}
 
-		defer res.Body.Close()
+		defer func() {
+			if ferr := res.Body.Close(); ferr != nil {
+				err = ferr
+			}
+		}()
+
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println(err)

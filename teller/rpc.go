@@ -349,7 +349,7 @@ func testSwytch() {
 	log.Println("USER ID: ", userId)
 	// we have the user id, query for assets
 
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getassets?authToken=" + access_token + "&userId=" + userId)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getassets?authToken=" + accessToken + "&userId=" + userId)
 	if err != nil {
 		log.Println(err)
 		return
@@ -364,7 +364,7 @@ func testSwytch() {
 	assetId := x4.Data[0].Id
 	log.Println("ASSETID: ", assetId)
 	// we have the asset id, try to get some info
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getenergy?authToken=" + access_token + "&assetId=" + assetId)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getenergy?authToken=" + accessToken + "&assetId=" + assetId)
 	if err != nil {
 		log.Println(err)
 		return
@@ -378,7 +378,7 @@ func testSwytch() {
 
 	log.Println("Energy data from installed asset: ", x4)
 
-	data, err = erpc.GetRequest(ApiUrl + "swytch/getattributes?authToken=" + access_token + "&assetId=" + assetId)
+	data, err = erpc.GetRequest(ApiUrl + "swytch/getattributes?authToken=" + accessToken + "&assetId=" + assetId)
 	if err != nil {
 		log.Println(err)
 		return

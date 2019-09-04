@@ -184,7 +184,12 @@ func storeDataLocal() {
 		log.Println("error while reading from streaming endpoint: ", err)
 		return
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		if ferr := resp.Body.Close(); ferr != nil {
+			err = ferr
+		}
+	}()
 
 	reader := bufio.NewReader(resp.Body)
 	x := make([]byte, 200)
