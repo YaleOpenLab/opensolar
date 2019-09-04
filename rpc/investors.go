@@ -10,7 +10,6 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	openxrpc "github.com/YaleOpenLab/openx/rpc"
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	notif "github.com/YaleOpenLab/opensolar/notif"
@@ -18,7 +17,7 @@ import (
 
 // InvRPC contains a list of all investor related endpoints
 var InvRPC = map[int][]string{
-	1: []string{"/investor/register"},
+	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},
 	2: []string{"/investor/validate"},
 	3: []string{"/investor/all"},
 	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},
@@ -44,24 +43,16 @@ func setupInvestorRPCs() {
 func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (core.Investor, error) {
 	var prepInvestor core.Investor
 	var err error
-	if r.URL.Query() == nil {
-		return prepInvestor, errors.New("url query can't be empty")
-	}
 
-	options = append(options, "username", "token")
-
-	for _, option := range options {
-		if r.URL.Query()[option] == nil {
-			return prepInvestor, errors.New("required param: " + option + "not specified, quitting")
-		}
-	}
-
-	if len(r.URL.Query()["token"][0]) != 32 {
-		return prepInvestor, errors.New("token length not 32, quitting")
+	err = checkReqdParams(w, r, options)
+	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		return prepInvestor, errors.New("reqd params not present can't be empty")
 	}
 
 	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
 		log.Println("did not validate investor", err)
 		return prepInvestor, err
 	}
@@ -71,25 +62,28 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 
 func registerInvestor() {
 	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-		if r.URL.Query()["name"] == nil || r.URL.Query()["username"] == nil ||
-			r.URL.Query()["pwhash"] == nil || r.URL.Query()["seedpwd"] == nil {
-			log.Println("missing basic set of params that can be used ot validate a user")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		err = checkReqdParams(w, r, InvRPC[1][1:])
+		if err != nil {
+			log.Println(err)
 			return
 		}
 
 		name := r.URL.Query()["name"][0]
 		username := r.URL.Query()["username"][0]
 		pwhash := r.URL.Query()["pwhash"][0]
+		token := r.URL.Query()["token"][0]
 		seedpwd := r.URL.Query()["seedpwd"][0]
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
 			// user already exists on the platform, need to retrieve the user
-			user, err := openxrpc.CheckReqdParams(w, r, InvRPC[1][1:]) // check whether this person is a user and has params
+			user, err := core.ValidateUser(username, token) // check whether this person is a user and has params
 			if err != nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return
@@ -134,11 +128,13 @@ func registerInvestor() {
 // validateInvestor validates the username and pwhash of a given investor
 func validateInvestor() {
 	http.HandleFunc(InvRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
+		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
+		if err != nil {
 			return
 		}
 		erpc.MarshalSend(w, prepInvestor)
@@ -148,8 +144,12 @@ func validateInvestor() {
 // getAllInvestors gets a list of all the investors in the database
 func getAllInvestors() {
 	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		_, err := InvValidateHelper(w, r, InvRPC[3][1:])
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		_, err = InvValidateHelper(w, r, InvRPC[3][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -167,7 +167,11 @@ func getAllInvestors() {
 // Invest invests in a project of the investor's choice
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		log.Println("In invest RPC")
 		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
 		if err != nil {

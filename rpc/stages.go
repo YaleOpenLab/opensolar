@@ -21,8 +21,11 @@ func setupStagesHandlers() {
 // has 9 stages defined in stages.go
 func returnAllStages() {
 	http.HandleFunc("/stages/all", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		var arr []core.Stage
 		arr = append(arr, core.Stage0, core.Stage1, core.Stage2, core.Stage3, core.Stage4,
@@ -35,8 +38,11 @@ func returnAllStages() {
 // returnSpecificStage returns details on a specific stage defined in the opensolar platform
 func returnSpecificStage() {
 	http.HandleFunc("/stages", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["index"] == nil {
 			log.Println("User did not pass index to retrieve stage for, quitting!")
@@ -83,8 +89,11 @@ func returnSpecificStage() {
 // promoteStage returns details on a specific stage defined in the opensolar platform
 func promoteStage() {
 	http.HandleFunc("/stages/promote", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["index"] == nil {
 			log.Println("some fields missing to promote from stage x to y, quitting!")

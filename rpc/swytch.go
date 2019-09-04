@@ -34,8 +34,11 @@ type GetAccessTokenData struct {
 
 func getAccessToken() {
 	http.HandleFunc("/swytch/accessToken", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["clientId"] == nil || r.URL.Query()["clientSecret"] == nil ||
 			r.URL.Query()["username"] == nil || r.URL.Query()["password"] == nil {
@@ -92,8 +95,11 @@ func getAccessToken() {
 
 func getRefreshToken() {
 	http.HandleFunc("/swytch/refreshToken", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["clientId"] == nil || r.URL.Query()["clientSecret"] == nil ||
 			r.URL.Query()["refreshToken"] == nil {
@@ -173,8 +179,11 @@ type GetSwytchUserStruct struct {
 
 func getSwytchUser() {
 	http.HandleFunc("/swytch/getuser", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["authToken"] == nil {
 			erpc.MarshalSend(w, erpc.StatusBadRequest)
@@ -259,8 +268,11 @@ type GetAssetStruct struct {
 
 func getAssets() {
 	http.HandleFunc("/swytch/getassets", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["authToken"] == nil || r.URL.Query()["userId"] == nil {
 			erpc.MarshalSend(w, erpc.StatusBadRequest)
@@ -356,8 +368,11 @@ type GetEnergyStruct struct {
 
 func getEnergy() {
 	http.HandleFunc("/swytch/getenergy", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["authToken"] == nil || r.URL.Query()["assetId"] == nil {
 			erpc.MarshalSend(w, erpc.StatusBadRequest)
@@ -455,8 +470,11 @@ type GetEnergyAttributionData struct {
 
 func getEnergyAttribution() {
 	http.HandleFunc("/swytch/geteattributes", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		if r.URL.Query()["authToken"] == nil || r.URL.Query()["assetId"] == nil {
 			erpc.MarshalSend(w, erpc.StatusBadRequest)

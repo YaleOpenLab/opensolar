@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	erpc "github.com/Varunram/essentials/rpc"
+	utils "github.com/Varunram/essentials/utils"
 	core "github.com/YaleOpenLab/opensolar/core"
 	openx "github.com/YaleOpenLab/openx/database"
-	utils "github.com/Varunram/essentials/utils"
 )
 
 func setupAdminHandlers() {
@@ -42,7 +42,7 @@ func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, er
 
 func flagProject() {
 	http.HandleFunc(AdminRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := checkReqdParams(r, AdminRPC[1][1:])
+		err := checkReqdParams(w, r, AdminRPC[1][1:])
 		if err != nil {
 			return
 		}

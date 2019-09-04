@@ -1,14 +1,14 @@
 package rpc
 
 import (
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
-	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	openx "github.com/YaleOpenLab/openx/database"
 	core "github.com/YaleOpenLab/opensolar/core"
+	openx "github.com/YaleOpenLab/openx/database"
 	// openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
@@ -24,13 +24,20 @@ func setupUserRpcs() {
 	reportProject()
 }
 
-func userValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, error) {
+func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (openx.User, error) {
 	var user openx.User
+
+	err := checkReqdParams(w, r, options)
+	if err != nil {
+		log.Println(err)
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		return user, err
+	}
 
 	username := r.URL.Query()["username"][0]
 	token := r.URL.Query()["token"][0]
 
-	user, err := core.ValidateUser(username, token)
+	user, err = core.ValidateUser(username, token)
 	if err != nil {
 		log.Println(err)
 		erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -50,20 +57,13 @@ func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		err = checkReqdParams(r, UserRPC[1][1:])
+		user, err := userValidateHelper(w, r, UserRPC[1][1:])
 		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
-		}
-
-		user, err := userValidateHelper(w, r)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		}
 
 		if r.URL.Query()["name"] != nil {
@@ -114,7 +114,7 @@ func updateUser() {
 				return
 			}
 		}
-		recipient, err := RecpValidateHelper(w, r, UserRPC[1][1:])
+		recipient, err := recpValidateHelper(w, r, UserRPC[1][1:])
 		if err == nil {
 			recipient.U = &user
 			err = recipient.Save()
@@ -132,20 +132,13 @@ func reportProject() {
 	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		err = checkReqdParams(r, UserRPC[2][1:])
+		user, err := userValidateHelper(w, r, UserRPC[1][1:])
 		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
-		}
-
-		user, err := userValidateHelper(w, r)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		}
 
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])

@@ -82,8 +82,11 @@ func insertProject() {
 // getAllProjects gets a list of all the projects in the database
 func getAllProjects() {
 	http.HandleFunc("/project/all", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		allProjects, err := core.RetrieveAllProjects()
 		if err != nil {
@@ -98,8 +101,11 @@ func getAllProjects() {
 // getProject gets the details of a specific project.
 func getProject() {
 	http.HandleFunc("/project/get", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		if r.URL.Query()["index"] == nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -121,8 +127,11 @@ func getProject() {
 
 // projectHandler gets proejcts at a specific stage from the database
 func projectHandler(w http.ResponseWriter, r *http.Request, stage int) {
-	erpc.CheckGet(w, r)
-	erpc.CheckOrigin(w, r)
+	err := erpc.CheckGet(w, r)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	allProjects, err := core.RetrieveProjectsAtStage(stage)
 	if err != nil {
 		log.Println("did not retrieve project at specific stage", err)
