@@ -9,7 +9,6 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	openxrpc "github.com/YaleOpenLab/openx/rpc"
 
 	core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -57,28 +56,20 @@ func setupRecipientRPCs() {
 	setOneTimeUnlock()
 }
 
-// RecpValidateHelper is a helper that helps validates recipients in routes
-func RecpValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (core.Recipient, error) {
+// recpValidateHelper is a helper that helps validates recipients in routes
+func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (core.Recipient, error) {
 	var prepRecipient core.Recipient
 	var err error
-	if r.URL.Query() == nil {
-		return prepRecipient, errors.New("url query can't be empty")
-	}
 
-	options = append(options, "username", "token")
-
-	for _, option := range options {
-		if r.URL.Query()[option] == nil {
-			return prepRecipient, errors.New("required param: " + option + "not specified, quitting")
-		}
-	}
-
-	if len(r.URL.Query()["token"][0]) != 32 {
-		return prepRecipient, errors.New("token length not 32, quitting")
+	err = checkReqdParams(w, r, options)
+	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		return prepRecipient, errors.New("reqd params not present can't be empty")
 	}
 
 	prepRecipient, err = core.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
 		log.Println("did not validate recipient", err)
 		return prepRecipient, err
 	}
@@ -95,9 +86,8 @@ func getAllRecipients() {
 			return
 		}
 
-		_, err = RecpValidateHelper(w, r, RecpRPC[1][1:])
+		_, err = recpValidateHelper(w, r, RecpRPC[1][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 		recipients, err := core.RetrieveAllRecipients()
@@ -133,9 +123,13 @@ func registerRecipient() {
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
 			// user already exists on the platform, need to retrieve the user
-			user, err := openxrpc.CheckReqdParams(w, r, RecpRPC[2][1:]) // check whether this person is a user and has params
+			user, err := userValidateHelper(w, r, nil) // check whether this person is a user and has params
 			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return
+			}
+
+			err = checkReqdParams(w, r, RecpRPC[2][1:])
+			if err != nil {
 				return
 			}
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
@@ -184,9 +178,8 @@ func validateRecipient() {
 			return
 		}
 
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[3][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[3][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 		erpc.MarshalSend(w, prepRecipient)
@@ -202,9 +195,8 @@ func payback() {
 			return
 		}
 
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[4][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[4][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -250,9 +242,8 @@ func storeDeviceId() {
 			return
 		}
 
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[5][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[5][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 		// we have the recipient ready. Now set the device id
@@ -277,9 +268,8 @@ func storeStartTime() {
 			return
 		}
 
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[6][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -303,9 +293,8 @@ func storeDeviceLocation() {
 			return
 		}
 
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[7][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[7][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -330,10 +319,8 @@ func chooseBlindAuction() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[8][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[8][1:])
 		if err != nil {
-			log.Println("did not validate recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -372,10 +359,8 @@ func chooseVickreyAuction() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[9][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[9][1:])
 		if err != nil {
-			log.Println("did not validate recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -413,10 +398,8 @@ func chooseTimeAuction() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[10][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[10][1:])
 		if err != nil {
-			log.Println("did not validate recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -455,9 +438,8 @@ func unlockOpenSolar() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[11][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[11][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -489,9 +471,8 @@ func addEmail() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[12][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[12][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -515,9 +496,8 @@ func finalizeProject() {
 			return
 		}
 
-		_, err = RecpValidateHelper(w, r, RecpRPC[13][1:])
+		_, err = recpValidateHelper(w, r, RecpRPC[13][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -555,9 +535,8 @@ func originateProject() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[14][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[14][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -588,9 +567,8 @@ func calculateTrustLimit() {
 			return
 		}
 
-		recipient, err := RecpValidateHelper(w, r, RecpRPC[15][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[15][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -617,9 +595,8 @@ func storeStateHash() {
 		}
 
 		// first validate the recipient or anyone would be able to set device ids
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[16][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[16][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -643,9 +620,8 @@ func setOneTimeUnlock() {
 		}
 
 		// first validate the recipient or anyone would be able to set device ids
-		prepRecipient, err := RecpValidateHelper(w, r, RecpRPC[17][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[17][1:])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
