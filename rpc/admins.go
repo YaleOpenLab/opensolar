@@ -16,7 +16,7 @@ func setupAdminHandlers() {
 }
 
 var AdminRPC = map[int][]string{
-	1: []string{"/admin/check"},
+	1: []string{"/admin/flag", "projIndex"},
 }
 
 func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, error) {
@@ -42,10 +42,8 @@ func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, er
 
 func flagProject() {
 	http.HandleFunc(AdminRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err = checkReqdParams(r, "projIndex")
+		err := checkReqdParams(r, AdminRPC[1][1:])
 		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 

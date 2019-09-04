@@ -8,14 +8,13 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
-func checkReqdParams(r *http.Request, options ...string) error {
+func checkReqdParams(r *http.Request, options []string) error {
 
 	if r.URL.Query() == nil {
-		return prepUser, errors.New("url query can't be empty")
+		return errors.New("url query can't be empty")
 	}
 
 	options = append(options, "username", "token") // default for all endpoints
@@ -26,8 +25,8 @@ func checkReqdParams(r *http.Request, options ...string) error {
 		}
 	}
 
-	if len(r.URL.Query()["token"][0]) != consts.AccessTokenLength {
-		return prepUser, errors.New("pwhash length not 128, quitting")
+	if len(r.URL.Query()["token"][0]) != 32 {
+		return errors.New("pwhash length not 128, quitting")
 	}
 
 	return nil

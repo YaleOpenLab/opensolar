@@ -397,5 +397,6 @@ func UserMarkFlagged(projIndex int, userIndex int) error {
 	}
 
 	a.UserFlaggedBy = append(a.UserFlaggedBy, userIndex)
+	a.Reports += 1
 	return a.Save()
 }
