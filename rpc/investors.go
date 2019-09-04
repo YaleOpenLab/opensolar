@@ -46,13 +46,13 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 
 	err = checkReqdParams(w, r, options)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return prepInvestor, errors.New("reqd params not present can't be empty")
 	}
 
 	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		log.Println("did not validate investor", err)
 		return prepInvestor, err
 	}

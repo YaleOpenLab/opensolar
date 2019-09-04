@@ -14,7 +14,7 @@ import (
 func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) error {
 
 	if r.URL.Query() == nil {
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return errors.New("url query can't be empty")
 	}
 
@@ -22,13 +22,13 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) e
 
 	for _, option := range options {
 		if r.URL.Query()[option] == nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return errors.New("required param: " + option + " not specified, quitting")
 		}
 	}
 
 	if len(r.URL.Query()["token"][0]) != 32 {
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return errors.New("pwhash length not 128, quitting")
 	}
 

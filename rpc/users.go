@@ -30,7 +30,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	err := checkReqdParams(w, r, options)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return user, err
 	}
 
@@ -40,7 +40,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	user, err = core.ValidateUser(username, token)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return user, err
 	}
 

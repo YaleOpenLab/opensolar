@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 // ParticleRPC contains a list of all particle related endpoints
@@ -137,7 +136,7 @@ func listAllDevices() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[1][1:])
+		err = checkReqdParams(w, r, ParticleRPC[1][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -159,7 +158,7 @@ func listProductInfo() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[2][1:])
+		err = checkReqdParams(w, r, ParticleRPC[2][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -184,7 +183,7 @@ func getDeviceInfo() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[3][1:])
+		err = checkReqdParams(w, r, ParticleRPC[3][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -209,7 +208,7 @@ func pingDevice() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[4][1:])
+		err = checkReqdParams(w, r, ParticleRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -235,7 +234,7 @@ func signalDevice() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[5][1:])
+		err = checkReqdParams(w, r, ParticleRPC[5][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -272,7 +271,7 @@ func serialNumberInfo() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[6][1:])
+		err = checkReqdParams(w, r, ParticleRPC[6][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -296,7 +295,7 @@ func getDiagnosticsLast() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[7][1:])
+		err = checkReqdParams(w, r, ParticleRPC[7][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -320,7 +319,7 @@ func getAllDiagnostics() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[8][1:])
+		err = checkReqdParams(w, r, ParticleRPC[8][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -343,7 +342,7 @@ func getParticleUserInfo() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[9][1:])
+		err = checkReqdParams(w, r, ParticleRPC[9][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -365,7 +364,7 @@ func getAllSims() {
 			return
 		}
 
-		_, err = openxrpc.CheckReqdParams(w, r, ParticleRPC[10][1:])
+		err = checkReqdParams(w, r, ParticleRPC[10][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
