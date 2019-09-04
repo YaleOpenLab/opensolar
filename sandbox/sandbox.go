@@ -71,37 +71,33 @@ func parseYamlProject(fileName string, feJson string, projIndex int) error {
 		project.Terms = terms
 	}
 
-	var executiveSummary core.ExecutiveSummaryHelper
-
 	execSummaryReader := viper.Get("ExecutiveSummary.Investment").(map[string]interface{})
 	execSummaryWriter := make(map[string]string)
 	for key, elem := range execSummaryReader {
 		execSummaryWriter[key] = elem.(string)
 	}
-	executiveSummary.Investment = execSummaryWriter
+	project.ExecutiveSummary.Investment = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.Financials").(map[string]interface{})
 	execSummaryWriter = make(map[string]string)
 	for key, elem := range execSummaryReader {
 		execSummaryWriter[key] = elem.(string)
 	}
-	executiveSummary.Financials = execSummaryWriter
+	project.ExecutiveSummary.Financials = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.ProjectSize").(map[string]interface{})
 	execSummaryWriter = make(map[string]string)
 	for key, elem := range execSummaryReader {
 		execSummaryWriter[key] = elem.(string)
 	}
-	executiveSummary.ProjectSize = execSummaryWriter
+	project.ExecutiveSummary.ProjectSize = execSummaryWriter
 
 	execSummaryReader = viper.Get("ExecutiveSummary.SustainabilityMetrics").(map[string]interface{})
 	execSummaryWriter = make(map[string]string)
 	for key, elem := range execSummaryReader {
 		execSummaryWriter[key] = elem.(string)
 	}
-	executiveSummary.SustainabilityMetrics = execSummaryWriter
-
-	project.ExecutiveSummary = executiveSummary
+	project.ExecutiveSummary.SustainabilityMetrics = execSummaryWriter
 
 	var bullets core.BulletHelper
 	bullets.Bullet1 = viper.Get("Bullets.Bullet1").(string)
