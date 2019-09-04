@@ -52,6 +52,10 @@ type Project struct {
 	SeedMoneyRaised      float64            // total seed money that has been raised until now
 	EstimatedAcquisition int                // the year in which the recipient is expected to repay the initial investment amount by
 	BalLeft              float64            // denotes the balance left to pay by the party, percentage raised is not stored in the database since that can be calculated
+	AdminFlagged         bool               // denotes if someone reports the project as flagged
+	FlaggedBy            int                // the index of the admin who flagged the project
+	UserFlaggedBy        []int              // the indices of the users who flagged the project
+	Reports              int                // the number of reports against htis particular project
 
 	// below are all the non critical params
 	Name                        string     // the name of the project / the identifier by which its referred to

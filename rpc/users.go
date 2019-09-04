@@ -1,21 +1,25 @@
 package rpc
 
 import (
+	"log"
 	"net/http"
 
 	erpc "github.com/Varunram/essentials/rpc"
-
+	utils "github.com/Varunram/essentials/utils"
+	core "github.com/YaleOpenLab/opensolar/core"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 // UserRPC is a collection of all user RPC endpoints and their required params
 var UserRPC = map[int][]string{
 	1: []string{"/user/update"},
+	2: []string{"/user/report", "projIndex"},
 }
 
 // setupUserRpcs sets up user related RPCs
 func setupUserRpcs() {
 	updateUser()
+	reportProject()
 }
 
 // updateUser updates credentials of the user
@@ -85,6 +89,41 @@ func updateUser() {
 				return
 			}
 		}
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+// reportProject updates credentials of the user
+func reportProject() {
+	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		user, err := openxrpc.CheckReqdParams(w, r, UserRPC[2][1:])
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		err = core.UserMarkFlagged(projIndex, user.Index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
