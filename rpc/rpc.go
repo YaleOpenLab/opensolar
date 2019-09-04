@@ -2,9 +2,9 @@ package rpc
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
-	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"

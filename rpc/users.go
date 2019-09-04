@@ -1,14 +1,14 @@
 package rpc
 
 import (
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
-	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	openx "github.com/YaleOpenLab/openx/database"
 	core "github.com/YaleOpenLab/opensolar/core"
+	openx "github.com/YaleOpenLab/openx/database"
 	// openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
@@ -50,6 +50,7 @@ func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
@@ -132,6 +133,7 @@ func reportProject() {
 	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 

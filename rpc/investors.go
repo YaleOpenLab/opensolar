@@ -71,9 +71,11 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 
 func registerInvestor() {
 	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		erpc.CheckOrigin(w, r)
-
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		if r.URL.Query()["name"] == nil || r.URL.Query()["username"] == nil ||
 			r.URL.Query()["pwhash"] == nil || r.URL.Query()["seedpwd"] == nil {
 			log.Println("missing basic set of params that can be used ot validate a user")
@@ -134,7 +136,11 @@ func registerInvestor() {
 // validateInvestor validates the username and pwhash of a given investor
 func validateInvestor() {
 	http.HandleFunc(InvRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
 		if err != nil {
 			log.Println(err)
@@ -148,8 +154,12 @@ func validateInvestor() {
 // getAllInvestors gets a list of all the investors in the database
 func getAllInvestors() {
 	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
-		_, err := InvValidateHelper(w, r, InvRPC[3][1:])
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		_, err = InvValidateHelper(w, r, InvRPC[3][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -167,7 +177,11 @@ func getAllInvestors() {
 // Invest invests in a project of the investor's choice
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		log.Println("In invest RPC")
 		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
 		if err != nil {
