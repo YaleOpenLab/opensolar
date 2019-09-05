@@ -139,7 +139,8 @@ func main() {
 	project.TotalValue = 1
 	project.MoneyRaised = 0
 	project.InvestmentType = "munibond"
-	project.RecipientIndex = 2
+	project.RecipientIndex = 1
+	project.DebtAssetCode = "TESTTELLER"
 	err = project.Save()
 	if err != nil {
 		log.Fatal(err)

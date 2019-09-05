@@ -31,12 +31,11 @@ func BlockStamp() (string, error) {
 func RefreshLogin(username string, pwhash string) error {
 	var err error
 	for {
+		time.Sleep(consts.TellerPollInterval)
 		err = LoginToPlatform(username, pwhash)
 		if err != nil {
 			log.Println(err)
 		}
-
-		time.Sleep(consts.TellerPollInterval)
 	}
 }
 
@@ -116,7 +115,7 @@ func checkPayback() {
 
 // updateState hashes the current state of the teller into ipfs and commits the ipfs hash
 // to the blockchain
-func updateState() {
+func updateState(trigger bool) {
 	for {
 		subcommand := "Energy production data for this cycle: " + "100" + "W"
 		// no spaces since this won't allow us to send in a requerst which has strings in it
@@ -157,6 +156,9 @@ func updateState() {
 		// send email to the platform for this?  maybe overkill
 		// TODO: Define structures on the backend that would keep track of this state change
 		ColorOutput("Updated State: "+hash1+" "+hash2, MagentaColor)
+		if trigger {
+			break // we trigerred this manually, don't want to keep doing this
+		}
 		time.Sleep(consts.TellerPollInterval)
 	}
 }

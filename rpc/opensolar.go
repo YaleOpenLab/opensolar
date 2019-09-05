@@ -121,6 +121,7 @@ func getProject() {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
+		log.Println("CONTRACT: ", contract, uKey)
 		erpc.MarshalSend(w, contract)
 	})
 }
