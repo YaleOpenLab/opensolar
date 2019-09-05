@@ -5,3 +5,4 @@ server.crt
 server.key
 config.yaml
 watcher/watcher
+config.yaml
