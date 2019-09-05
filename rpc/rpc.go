@@ -13,25 +13,49 @@ import (
 
 func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) error {
 
-	if r.URL.Query() == nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-		return errors.New("url query can't be empty")
-	}
-
-	options = append(options, "username", "token") // default for all endpoints
-
-	for _, option := range options {
-		if r.URL.Query()[option] == nil {
+	if r.Method == "GET" {
+		if r.URL.Query() == nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return errors.New("required param: " + option + " not specified, quitting")
+			return errors.New("url query can't be empty")
+		}
+
+		options = append(options, "username", "token") // default for all endpoints
+
+		for _, option := range options {
+			if r.URL.Query()[option] == nil {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return errors.New("required param: " + option + " not specified, quitting")
+			}
+		}
+
+		if len(r.URL.Query()["token"][0]) != 32 {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return errors.New("token length not 32, quitting")
+		}
+	} else if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return err
+		}
+
+		if r.FormValue("username") == "" || r.FormValue("token") == "" {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return errors.New("required params username or token missing")
+		}
+
+		if len(r.FormValue("token")) != 32 {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return errors.New("token length not 32, quitting")
+		}
+
+		for _, option := range options {
+			if r.FormValue(option) == "" {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return errors.New("required param: " + option + " not specified, quitting")
+			}
 		}
 	}
-
-	if len(r.URL.Query()["token"][0]) != 32 {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-		return errors.New("pwhash length not 128, quitting")
-	}
-
 	return nil
 }
 

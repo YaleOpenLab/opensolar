@@ -32,6 +32,7 @@ var RecpRPC = map[int][]string{
 	15: []string{"/recipient/trustlimit", "assetName"},
 	16: []string{"/recipient/ssh", "hash"},
 	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
+	18: []string{"/recipient/register/teller", "url", "projIndex"},
 }
 
 // setupRecipientRPCs sets up all RPCs related to the recipient
@@ -54,6 +55,7 @@ func setupRecipientRPCs() {
 	// unlockCBond()
 	storeStateHash()
 	setOneTimeUnlock()
+	storeTellerURL()
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -63,11 +65,21 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 
 	err = checkReqdParams(w, r, options)
 	if err != nil {
+		log.Println(err)
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return prepRecipient, errors.New("reqd params not present can't be empty")
 	}
 
-	prepRecipient, err = core.ValidateRecipient(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
+	var username, token string
+
+	if r.Method == "GET" {
+		username = r.URL.Query()["username"][0]
+		token = r.URL.Query()["token"][0]
+	} else if r.Method == "POST" {
+		username = r.FormValue("username")
+		token = r.FormValue("token")
+	}
+	prepRecipient, err = core.ValidateRecipient(username, token)
 	if err != nil {
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		log.Println("did not validate recipient", err)
@@ -642,6 +654,58 @@ func setOneTimeUnlock() {
 
 		}
 
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func storeTellerURL() {
+	http.HandleFunc(RecpRPC[18][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println("THIS IS THER ERROR")
+			return
+		}
+
+		log.Println("check this")
+		recipient, err := recpValidateHelper(w, r, RecpRPC[18][1:])
+		if err != nil {
+			return
+		}
+
+		log.Println("redcp validate helpr doesn't run")
+		err = r.ParseForm()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		projIndex, err := utils.ToInt(r.FormValue("projIndex"))
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		project, err := core.RetrieveProject(projIndex)
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		if project.RecipientIndex != recipient.U.Index {
+			log.Println("receipient indices don't match, quitting")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		url := r.FormValue("url")
+		project.TellerUrl = url
+		err = project.Save()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		go core.MonitorTeller(projIndex, url)
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

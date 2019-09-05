@@ -6,7 +6,7 @@ import (
 	"time"
 
 	erpc "github.com/Varunram/essentials/rpc"
-//	consts "github.com/YaleOpenLab/opensolar/consts"
+	//	consts "github.com/YaleOpenLab/opensolar/consts"
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
