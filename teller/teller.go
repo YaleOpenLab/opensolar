@@ -61,7 +61,7 @@ var (
 	PlatformPublicKey string
 	// PlatformEmail is the platform's email address
 	PlatformEmail string
-	// ApiUrl is the API of the remote openx node
+	// ApiUrl is the API of the remote opensolar instance
 	ApiUrl string
 	// DeviceId contains the device's id
 	DeviceId string
@@ -171,7 +171,7 @@ func main() {
 	// non daemon mode, CLI available.
 	go func() {
 		<-signalChan
-		log.Println("\nSigint received, not quitting wihtout closing endhandler!")
+		log.Println("\nSigint received, not quitting without closing endhandler!")
 		close(cleanupDone)
 	}()
 

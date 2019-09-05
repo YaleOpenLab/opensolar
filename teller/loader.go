@@ -22,28 +22,28 @@ func StartTeller() error {
 		return errors.Wrap(err, "Error while reading email values from config file")
 	}
 
-	if viper.Get("platformPublicKey") == nil || viper.Get("seedpwd") == nil || viper.Get("username") == nil ||
-		viper.Get("password") == nil || viper.Get("apiurl") == nil || viper.Get("mapskey") == nil ||
-		viper.Get("projIndex") == nil || viper.Get("assetName") == nil {
+	if viper.IsSet("platformPublicKey") || viper.IsSet("seedpwd") || viper.IsSet("username") ||
+		viper.IsSet("password") || viper.IsSet("apiurl") || viper.IsSet("mapskey") ||
+		viper.IsSet("projIndex") || viper.IsSet("assetName") {
 		return errors.New("Required parameters to be present in the config file: platformPublicKey, " +
 			"seedpwd, username, password, apiurl, mapskey, projIndex, assetName (case-sensitive)")
 	}
 
-	PlatformPublicKey = viper.Get("platformPublicKey").(string)
-	LocalSeedPwd = viper.Get("seedpwd").(string)                       // seed password used to unlock the seed of the recipient on the platform
-	username := viper.Get("username").(string)                         // username of the recipient on the platform
-	password := utils.SHA3hash(viper.Get("password").(string))         // password of the recipient on the platform
-	ApiUrl = viper.Get("apiurl").(string)                              // ApiUrl of the remote / local openx node
-	mapskey := viper.Get("mapskey").(string)                           // google maps API key
-	LocalProjIndex, err = utils.ToString(viper.Get("projIndex").(int)) // get the project index which should be in the config file
+	PlatformPublicKey = viper.GetString("platformPublicKey")
+	LocalSeedPwd = viper.GetString("seedpwd")                       // seed password used to unlock the seed of the recipient on the platform
+	username := viper.GetString("username")                         // username of the recipient on the platform
+	password := utils.SHA3hash(viper.GetString("password"))         // password of the recipient on the platform
+	ApiUrl = viper.GetString("apiurl")                              // ApiUrl of the remote / local openx node
+	mapskey := viper.GetString("mapskey")                           // google maps API key
+	LocalProjIndex, err = utils.ToString(viper.GetInt("projIndex")) // get the project index which should be in the config file
 	if err != nil {
 		return err
 	}
-	AssetName = viper.Get("assetName").(string) // used to double check before starting the teller
-	SwytchUsername = viper.Get("susername").(string)
-	SwytchPassword = viper.Get("spassword").(string)
-	SwytchClientid = viper.Get("sclientid").(string)
-	SwytchClientSecret = viper.Get("sclientsecret").(string)
+	AssetName = viper.GetString("assetName")
+	SwytchUsername = viper.GetString("susername")
+	SwytchPassword = viper.GetString("spassword")
+	SwytchClientid = viper.GetString("sclientid")
+	SwytchClientSecret = viper.GetString("sclientsecret")
 
 	projIndex, err := getProjectIndex(AssetName)
 	if err != nil {
@@ -61,12 +61,12 @@ func StartTeller() error {
 
 	// don't allow login before this since that becomes an attack vector where a person can guess
 	// multiple passwords
-	err = loginToPlatform(username, password)
+	err = login(username, password)
 	if err != nil {
 		return errors.Wrap(err, "Error while logging on to the platform")
 	}
 
-	go RefreshLogin(username, password) // update local copy of the recipient every 5 minutes
+	go refreshLogin(username, password) // update local copy of the recipient every 5 minutes
 
 	RecpSeed, err = wallet.DecryptSeed(LocalRecipient.U.StellarWallet.EncryptedSeed, LocalSeedPwd)
 	if err != nil {

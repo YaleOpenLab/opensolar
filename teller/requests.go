@@ -31,8 +31,8 @@ func getLocation(mapskey string) string {
 	return location
 }
 
-// PingRpc pings the platform to see if its up
-func pingRpc() error {
+// ping pings the platform to see if its up
+func ping() error {
 	// make a curl request out to lcoalhost and get the ping response
 	data, err := erpc.GetRequest(ApiUrl + "/ping")
 	if err != nil {
@@ -78,13 +78,13 @@ var LoginReturn struct {
 	Token string
 }
 
-// LoginToPlatform logs on to the platform
-func loginToPlatform(username string, pwhash string) error {
+// login logs on to the platform
+func login(username string, pwhash string) error {
 	// we first need to login and then get the access token
 	postdata := url.Values{}
 	postdata.Set("username", username)
 	postdata.Set("pwhash", pwhash)
-	data, err := erpc.PostForm(ApiUrl+"/token", postdata)
+	data, err := erpc.PostForm(ApiUrl+"/token", postdata) // call /token to get a token
 	if err != nil {
 		return err
 	}
@@ -95,6 +95,7 @@ func loginToPlatform(username string, pwhash string) error {
 		return err
 	}
 
+	// validate that the user is indeed a recipient
 	Token = LoginReturn.Token
 	data, err = erpc.GetRequest(ApiUrl + "/recipient/validate?" + "username=" + username + "&token=" + LoginReturn.Token)
 	if err != nil {

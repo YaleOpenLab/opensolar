@@ -32,14 +32,14 @@ func BlockStamp() (string, error) {
 	return hash, err
 }
 
-// RefreshLogin runs once every 5 minutes in order to fetch the latest recipient details
+// refreshLogin runs once every 5 minutes in order to fetch the latest recipient details
 // for eg, if the recipient loads his balance on the platform, we need it to be reflected on
 // the teller
-func RefreshLogin(username string, pwhash string) error {
+func refreshLogin(username string, pwhash string) error {
 	var err error
 	for {
 		time.Sleep(consts.TellerPollInterval)
-		err = loginToPlatform(username, pwhash)
+		err = login(username, pwhash)
 		if err != nil {
 			log.Println(err)
 		}

@@ -71,7 +71,7 @@ func ParseInput(input []string) {
 	case "help":
 		fmt.Println("List of commands: ping, receive, display, info, update")
 	case "ping":
-		err := pingRpc()
+		err := ping()
 		if err != nil {
 			log.Println(err)
 		}
