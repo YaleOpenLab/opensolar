@@ -45,7 +45,7 @@ func StartTeller() error {
 	SwytchClientid = viper.Get("sclientid").(string)
 	SwytchClientSecret = viper.Get("sclientsecret").(string)
 
-	projIndex, err := GetProjectIndex(AssetName)
+	projIndex, err := getProjectIndex(AssetName)
 	if err != nil {
 		return errors.Wrap(err, "couldn't get project index")
 	}
@@ -61,7 +61,7 @@ func StartTeller() error {
 
 	// don't allow login before this since that becomes an attack vector where a person can guess
 	// multiple passwords
-	err = LoginToPlatform(username, password)
+	err = loginToPlatform(username, password)
 	if err != nil {
 		return errors.Wrap(err, "Error while logging on to the platform")
 	}
@@ -83,7 +83,7 @@ func StartTeller() error {
 		return errors.New("PUBLIC KEYS DON'T MATCH, QUITTING!")
 	}
 
-	LocalProject, err = GetLocalProjectDetails(LocalProjIndex)
+	LocalProject, err = getLocalProjectDetails(LocalProjIndex)
 	if err != nil {
 		return errors.Wrap(err, "couldn't get local project details")
 	}
@@ -104,20 +104,20 @@ func StartTeller() error {
 		return errors.Wrap(err, "could not get device id from local storage")
 	}
 
-	err = StoreStartTime()
+	err = storeStartTime()
 	if err != nil {
 		return errors.Wrap(err, "could not store start time locally")
 	}
 
 	// store location at the start because if a person changes location, it is likely that the
 	// teller goes offline and we get notified
-	err = StoreLocation(mapskey) // stores DeviceLocation
+	err = storeLocation(mapskey) // stores DeviceLocation
 	if err != nil {
 		return errors.Wrap(err, "could not store location of teller")
 	}
 
 	log.Println("STORED LOCATION SUCCESSFULLY")
-	err = GetPlatformEmail()
+	err = getPlatformEmail()
 	if err != nil {
 		return errors.Wrap(err, "could not store platform email")
 	}

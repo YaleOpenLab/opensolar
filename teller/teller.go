@@ -11,8 +11,8 @@ import (
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	solar "github.com/YaleOpenLab/opensolar/core"
+	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 )
 
 // package teller contains the remote client code that would be run on the client's

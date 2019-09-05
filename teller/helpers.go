@@ -2,11 +2,17 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/tls"
+	"encoding/hex"
+	"encoding/json"
 	//"bytes"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 	//"encoding/json"
 
@@ -14,8 +20,9 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	//	rpc "github.com/YaleOpenLab/openx/rpc"
-
 	consts "github.com/YaleOpenLab/opensolar/consts"
+	core "github.com/YaleOpenLab/opensolar/core"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
@@ -32,7 +39,7 @@ func RefreshLogin(username string, pwhash string) error {
 	var err error
 	for {
 		time.Sleep(consts.TellerPollInterval)
-		err = LoginToPlatform(username, pwhash)
+		err = loginToPlatform(username, pwhash)
 		if err != nil {
 			log.Println(err)
 		}
@@ -66,7 +73,7 @@ func endHandler() error {
 		log.Println(err)
 	}
 
-	err = SendDeviceShutdownEmail(tx1, tx2)
+	err = sendDeviceShutdownEmail(tx1, tx2)
 	if err != nil {
 		log.Println(err)
 	}
@@ -104,10 +111,10 @@ func checkPayback() {
 		assetName := LocalProject.DebtAssetCode
 		amount := oracle.MonthlyBill() // TODO: consumption data must be accumulated from zigbee in the future
 
-		err := ProjectPayback(assetName, amount)
+		err := projectPayback(assetName, amount)
 		if err != nil {
 			log.Println("Error while paying amount back", err)
-			SendDevicePaybackFailedEmail()
+			sendDevicePaybackFailedEmail()
 		}
 		time.Sleep(time.Duration(time.Duration(LocalProject.PaybackPeriod) * consts.OneWeekInSecond))
 	}
@@ -296,8 +303,143 @@ func commitDataShutdown() {
 	file.Write([]byte(fileHash))
 	file.Close()
 
-	err = StoreStateHistory(fileHash)
+	err = storeStateHistory(fileHash)
 	if err != nil {
 		return
 	}
+}
+
+const tellerUrl = "https://localhost"
+
+type statusResponse struct {
+	Code   int
+	Status string
+}
+
+// MonitorTeller monitors a teller and checks whether its live. If not, send an email to platform admins
+func MonitorTeller(projIndex int) {
+	// call this function only after a specific order has been accepted by the recipient
+	for {
+		project, err := core.RetrieveProject(projIndex)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		client := &http.Client{Transport: tr}
+
+		req, err := http.NewRequest("GET", tellerUrl+"/ping", nil)
+		if err != nil {
+			log.Println("did not create new GET request", err)
+			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
+			time.Sleep(consts.TellerPollInterval)
+			continue
+		}
+
+		req.Header.Set("Origin", "localhost")
+		res, err := client.Do(req)
+		if err != nil {
+			log.Println("did not make request", err)
+			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
+			time.Sleep(consts.TellerPollInterval)
+			continue
+		}
+		data, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Println("error while reading response body", err)
+			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
+			time.Sleep(consts.TellerPollInterval)
+			continue
+		}
+
+		var x statusResponse
+		err = json.Unmarshal(data, &x)
+		if err != nil {
+			log.Println("error while unmarshalling data", err)
+			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
+			time.Sleep(consts.TellerPollInterval)
+			continue
+		}
+
+		if x.Code != 200 || x.Status != "HEALTH OK" {
+			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
+		}
+
+		res.Body.Close()
+		time.Sleep(consts.TellerPollInterval)
+	}
+}
+
+// GenerateRandomString generates a random string of length _n_
+func GenerateRandomString(n int) (string, error) {
+	// generate a crypto secure random string
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", errors.Wrap(err, "could not read random bytes to generate random string")
+	}
+
+	return hex.EncodeToString(b), nil
+}
+
+// GenerateDeviceID generates a random 16 character device ID
+func GenerateDeviceID() (string, error) {
+	rs, err := GenerateRandomString(16)
+	if err != nil {
+		return "", errors.Wrap(err, "could not generate random string")
+	}
+	upperCase := strings.ToUpper(rs)
+	return upperCase, nil
+}
+
+// CheckDeviceID checks the device's ID against a locally saved copy
+func CheckDeviceID() error {
+	// checks whether there is a device id set on this device beforehand
+	if _, err := os.Stat(consts.TellerHomeDir); os.IsNotExist(err) {
+		// directory does not exist, create a device id
+		log.Println("Creating home directory for teller")
+		os.MkdirAll(consts.TellerHomeDir, os.ModePerm)
+		path := consts.TellerHomeDir + "/deviceid.hex"
+		file, err := os.Create(path)
+		if err != nil {
+			return errors.Wrap(err, "could not create device id file")
+		}
+		deviceId, err := GenerateDeviceID()
+		if err != nil {
+			return errors.Wrap(err, "could not generate device id")
+		}
+		ColorOutput("GENERATED UNIQUE DEVICE ID: "+deviceId, GreenColor)
+		_, err = file.Write([]byte(deviceId))
+		if err != nil {
+			return errors.Wrap(err, "could not write device id to file")
+		}
+		file.Close()
+		err = setDeviceId(LocalRecipient.U.Username, deviceId)
+		if err != nil {
+			return errors.Wrap(err, "could not store device id in remote platform")
+		}
+	}
+	return nil
+}
+
+// GetDeviceID retrieves the deviceId from storage
+func GetDeviceID() (string, error) {
+	path := consts.TellerHomeDir + "/deviceid.hex"
+	file, err := os.Open(path)
+	if err != nil {
+		return "", errors.Wrap(err, "could not open teller home path")
+	}
+	// read the hex string from the file
+	data := make([]byte, 32)
+	numInt, err := file.Read(data)
+	if err != nil {
+		return "", errors.Wrap(err, "could not read from file")
+	}
+	if numInt != 32 {
+		return "", errors.New("Length of strings doesn't match, quitting!")
+	}
+	return string(data), nil
 }

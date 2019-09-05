@@ -6,13 +6,43 @@ import (
 	"net/http"
 
 	utils "github.com/Varunram/essentials/utils"
-
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
+	"github.com/fatih/color"
 )
 
 // commands.go has a list of all the commands supported by the teller. This is intentionally
 // tweaked and limited to ensure that this serves only data related to the specific project
 // at hand
+
+var (
+	// WhiteColor is a pretty handler for the default colors defined
+	WhiteColor = color.FgHiWhite
+	// GreenColor is a pretty handler for the default colors defined
+	GreenColor = color.FgHiGreen
+	// RedColor is a pretty handler for the default colors defined
+	RedColor = color.FgHiRed
+
+	// CyanColor is a pretty handler for the default colors defined
+	// CyanColor = color.FgHiCyan
+	// HiYellowColor is a pretty handler for the default colors defined
+	// HiYellowColor = color.FgHiYellow
+
+	// YellowColor is a pretty handler for the default colors defined
+	YellowColor = color.FgYellow
+	// MagentaColor is a pretty handler for the default colors defined
+	MagentaColor = color.FgMagenta
+
+	// HiWhiteColor is a pretty handler for the default colors defined
+	// HiWhiteColor = color.FgHiWhite
+	// FaintColor is a pretty handler for the default colors defined
+	// FaintColor = color.Faint
+)
+
+// ColorOutput prints the string in the passed color
+func ColorOutput(msg string, gColor color.Attribute) {
+	x := color.New(gColor)
+	x.Fprintf(color.Output, "%s\n", msg)
+}
 
 // WriteToHandler writes a reply to the passed handler
 func WriteToHandler(w http.ResponseWriter, jsonString []byte) {
@@ -41,7 +71,7 @@ func ParseInput(input []string) {
 	case "help":
 		fmt.Println("List of commands: ping, receive, display, info, update")
 	case "ping":
-		err := PingRpc()
+		err := pingRpc()
 		if err != nil {
 			log.Println(err)
 		}
@@ -92,7 +122,7 @@ func ParseInput(input []string) {
 			ColorOutput(balanceS, MagentaColor)
 		case "info":
 			var err error
-			LocalProject, err = GetLocalProjectDetails(LocalProjIndex)
+			LocalProject, err = getLocalProjectDetails(LocalProjIndex)
 			if err != nil {
 				log.Println(err)
 				break

@@ -1,4 +1,6 @@
 #!/bin/bash
+# This script can be used to verify the hash chain and retrieve past history
+# from a single hash
 echo "Enter the hash received from the teller: "
 read input
 hash=$input # get this value from the user

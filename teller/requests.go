@@ -17,7 +17,7 @@ import (
 )
 
 // GetLocation gets the teller's location
-func GetLocation(mapskey string) string {
+func getLocation(mapskey string) string {
 	// see https://developers.google.com/maps/documentation/geolocation/intro on how
 	// to improve location accuracy
 	client := geo.NewGoogleGeo(mapskey)
@@ -32,7 +32,7 @@ func GetLocation(mapskey string) string {
 }
 
 // PingRpc pings the platform to see if its up
-func PingRpc() error {
+func pingRpc() error {
 	// make a curl request out to lcoalhost and get the ping response
 	data, err := erpc.GetRequest(ApiUrl + "/ping")
 	if err != nil {
@@ -54,7 +54,7 @@ func PingRpc() error {
 }
 
 // GetProjectIndex gets a specific project's index
-func GetProjectIndex(assetName string) (int, error) {
+func getProjectIndex(assetName string) (int, error) {
 	data, err := erpc.GetRequest(ApiUrl + "/project/all")
 	if err != nil {
 		log.Println("Error while making get request: ", err)
@@ -79,12 +79,12 @@ var LoginReturn struct {
 }
 
 // LoginToPlatform logs on to the platform
-func LoginToPlatform(username string, pwhash string) error {
+func loginToPlatform(username string, pwhash string) error {
 	// we first need to login and then get the access token
 	postdata := url.Values{}
 	postdata.Set("username", username)
 	postdata.Set("pwhash", pwhash)
-	data, err := erpc.PostForm(ApiUrl + "/token", postdata)
+	data, err := erpc.PostForm(ApiUrl+"/token", postdata)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func LoginToPlatform(username string, pwhash string) error {
 }
 
 // ProjectPayback pays back to the platform
-func ProjectPayback(assetName string, amountx float64) error {
+func projectPayback(assetName string, amountx float64) error {
 	amount, err := utils.ToString(amountx)
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func ProjectPayback(assetName string, amountx float64) error {
 }
 
 // SetDeviceId sets the device id of the teller
-func SetDeviceId(username string, deviceId string) error {
+func setDeviceId(username string, deviceId string) error {
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/deviceId?" + "username=" + username +
 		"&token=" + Token + "&deviceid=" + deviceId)
 	if err != nil {
@@ -159,7 +159,7 @@ func SetDeviceId(username string, deviceId string) error {
 }
 
 // StoreStartTime stores that start time of this particular instance
-func StoreStartTime() error {
+func storeStartTime() error {
 	unixString, err := utils.ToString(utils.Unix())
 	if err != nil {
 		return err
@@ -183,8 +183,8 @@ func StoreStartTime() error {
 }
 
 // StoreLocation stores the location of the teller
-func StoreLocation(mapskey string) error {
-	location := GetLocation(mapskey) // this happens to return null
+func storeLocation(mapskey string) error {
+	location := getLocation(mapskey) // this happens to return null
 	log.Println("MAPSKEY: ", mapskey, location)
 	log.Println(ApiUrl + "/recipient/storelocation?" + "username=" + LocalRecipient.U.Username +
 		"&token=" + Token + "&location=" + location)
@@ -214,7 +214,7 @@ type PlatformEmailResponse struct {
 }
 
 // GetPlatformEmail gets the email of the platform
-func GetPlatformEmail() error {
+func getPlatformEmail() error {
 	data, err := erpc.GetRequest(ApiUrl + "/platformemail?" + "username=" + LocalRecipient.U.Username +
 		"&token=" + Token)
 	if err != nil {
@@ -234,7 +234,7 @@ func GetPlatformEmail() error {
 }
 
 // SendDeviceShutdownEmail sends a shutdown notice to the platform
-func SendDeviceShutdownEmail(tx1 string, tx2 string) error {
+func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 
 	data, err := erpc.GetRequest(ApiUrl + "/tellershutdown?" + "username=" + LocalRecipient.U.Username +
 		"&token=" + Token + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId +
@@ -257,7 +257,7 @@ func SendDeviceShutdownEmail(tx1 string, tx2 string) error {
 }
 
 // GetLocalProjectDetails gets the details of the local project
-func GetLocalProjectDetails(projIndex string) (opensolar.Project, error) {
+func getLocalProjectDetails(projIndex string) (opensolar.Project, error) {
 
 	var x opensolar.Project
 	body := ApiUrl + "/project/get?index=" + projIndex
@@ -276,8 +276,8 @@ func GetLocalProjectDetails(projIndex string) (opensolar.Project, error) {
 	return x, nil
 }
 
-// SendDevicePaybackFailedEmail sends a notification if the payback routine breaks in its execution
-func SendDevicePaybackFailedEmail() error {
+// sendDevicePaybackFailedEmail sends a notification if the payback routine breaks in its execution
+func sendDevicePaybackFailedEmail() error {
 
 	data, err := erpc.GetRequest(ApiUrl + "/tellerpayback?" + "username=" + LocalRecipient.U.Username +
 		"&token=" + Token + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId)
@@ -298,8 +298,8 @@ func SendDevicePaybackFailedEmail() error {
 	return errors.New("Errored out, didn't receive 200")
 }
 
-// StoreStateHistory stores state history in the data file
-func StoreStateHistory(hash string) error {
+// storeStateHistory stores state history in the data file
+func storeStateHistory(hash string) error {
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/ssh?" + "username=" + LocalRecipient.U.Username +
 		"&token=" + Token + "&hash=" + hash)
 	if err != nil {
