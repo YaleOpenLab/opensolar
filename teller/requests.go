@@ -49,7 +49,7 @@ func ping() error {
 	if err != nil {
 		return err
 	}
-	ColorOutput("PLATFORM STATUS: "+codeString, GreenColor)
+	colorOutput("PLATFORM STATUS: "+codeString, GreenColor)
 	return nil
 }
 
@@ -106,7 +106,7 @@ func login(username string, pwhash string) error {
 	if err != nil {
 		return err
 	}
-	ColorOutput("AUTHENTICATED RECIPIENT", GreenColor)
+	colorOutput("AUTHENTICATED RECIPIENT", GreenColor)
 	LocalRecipient = x
 	return nil
 }
@@ -134,7 +134,7 @@ func projectPayback(assetName string, amountx float64) error {
 	}
 	log.Println("PAYBACK RESPONSE: ", x)
 	if x.Code == 200 {
-		ColorOutput("PAID!", GreenColor)
+		colorOutput("PAID!", GreenColor)
 		return nil
 	}
 	return errors.New("Errored out")
@@ -153,7 +153,7 @@ func setDeviceId(username string, deviceId string) error {
 		return err
 	}
 	if x.Code == 200 {
-		ColorOutput("PAID!", GreenColor)
+		colorOutput("PAID!", GreenColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -177,7 +177,7 @@ func storeStartTime() error {
 		return err
 	}
 	if x.Code == 200 {
-		ColorOutput("LOGGED START TIME SUCCESSFULLY!", GreenColor)
+		colorOutput("LOGGED START TIME SUCCESSFULLY!", GreenColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -203,7 +203,7 @@ func storeLocation(mapskey string) error {
 		return err
 	}
 	if x.Code == 200 {
-		ColorOutput("LOGGED LOCATION SUCCESSFULLY!", GreenColor)
+		colorOutput("LOGGED LOCATION SUCCESSFULLY!", GreenColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -230,7 +230,7 @@ func getPlatformEmail() error {
 		return err
 	}
 	PlatformEmail = x.Email
-	ColorOutput("PLATFORMEMAIL: "+PlatformEmail, GreenColor)
+	colorOutput("PLATFORMEMAIL: "+PlatformEmail, GreenColor)
 	return nil
 }
 
@@ -251,7 +251,7 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 		return err
 	}
 	if x.Code == 200 {
-		ColorOutput("SENT STOP EMAIL SUCCESSFULLY", GreenColor)
+		colorOutput("SENT STOP EMAIL SUCCESSFULLY", GreenColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -293,7 +293,7 @@ func sendDevicePaybackFailedEmail() error {
 		return err
 	}
 	if x.Code == 200 {
-		ColorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
+		colorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -313,8 +313,9 @@ func storeStateHistory(hash string) error {
 	if err != nil {
 		return err
 	}
+
 	if x.Code == 200 {
-		ColorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
+		colorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")

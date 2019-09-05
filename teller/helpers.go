@@ -156,7 +156,7 @@ func updateState(trigger bool) {
 		// we updated state as hash1 and hash2
 		// send email to the platform for this?  maybe overkill
 		// TODO: Define structures on the backend that would keep track of this state change
-		ColorOutput("Updated State: "+hash1+" "+hash2, MagentaColor)
+		colorOutput("Updated State: "+hash1+" "+hash2, MagentaColor)
 		if trigger {
 			break // we trigerred this manually, don't want to keep doing this
 		}
@@ -347,7 +347,7 @@ func checkDeviceID() error {
 		if err != nil {
 			return errors.Wrap(err, "could not generate device id")
 		}
-		ColorOutput("GENERATED UNIQUE DEVICE ID: "+deviceId, GreenColor)
+		colorOutput("GENERATED UNIQUE DEVICE ID: "+deviceId, GreenColor)
 		_, err = file.Write([]byte(deviceId))
 		if err != nil {
 			return errors.Wrap(err, "could not write device id to file")

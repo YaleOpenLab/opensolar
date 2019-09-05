@@ -10,10 +10,6 @@ import (
 	"github.com/fatih/color"
 )
 
-// commands.go has a list of all the commands supported by the teller. This is intentionally
-// tweaked and limited to ensure that this serves only data related to the specific project
-// at hand
-
 var (
 	// WhiteColor is a pretty handler for the default colors defined
 	WhiteColor = color.FgHiWhite
@@ -38,22 +34,11 @@ var (
 	// FaintColor = color.Faint
 )
 
-// ColorOutput prints the string in the passed color
-func ColorOutput(msg string, gColor color.Attribute) {
+// colorOutput prints the string in the passed color
+func colorOutput(msg string, gColor color.Attribute) {
 	x := color.New(gColor)
 	x.Fprintf(color.Output, "%s\n", msg)
 }
-
-// WriteToHandler writes a reply to the passed handler
-func WriteToHandler(w http.ResponseWriter, jsonString []byte) {
-	w.Header().Add("Access-Control-Allow-Origin", "localhost")
-	w.Header().Add("Access-Control-Allow-Methods", "GET")
-	w.Header().Add("Content-Type", "application/json")
-	w.Write(jsonString)
-}
-
-// the teller has a basic CLi interface that might help in remote debugging when using an SSH service
-// like dataplicity
 
 // ParseInput parses user input
 func ParseInput(input []string) {
@@ -100,7 +85,7 @@ func ParseInput(input []string) {
 			subsubcommand := input[2]
 			var balance float64
 			var err error
-			ColorOutput("Displaying balance in "+subsubcommand+" for user: ", WhiteColor)
+			colorOutput("Displaying balance in "+subsubcommand+" for user: ", WhiteColor)
 
 			switch subsubcommand {
 			case "xlm":
@@ -119,7 +104,7 @@ func ParseInput(input []string) {
 				log.Println(err)
 				return
 			}
-			ColorOutput(balanceS, MagentaColor)
+			colorOutput(balanceS, MagentaColor)
 		case "info":
 			var err error
 			LocalProject, err = getLocalProjectDetails(LocalProjIndex)

@@ -132,8 +132,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ColorOutput("TELLER PUBKEY: "+RecpPublicKey, GreenColor)
-	ColorOutput("DEVICE ID: "+DeviceId, GreenColor)
+	colorOutput("TELLER PUBKEY: "+RecpPublicKey, GreenColor)
+	colorOutput("DEVICE ID: "+DeviceId, GreenColor)
 	// testSwytch() tests the endpoints associated with the swytch platform
 	// channels for preventing immediate sigint. Need this so that the action of any party which attempts
 	// to close the teller would still be reported to the platform and emailed to the recipient
@@ -208,7 +208,7 @@ func main() {
 		rl.SaveHistory(msg)
 
 		cmdslice := strings.Fields(msg)
-		ColorOutput("entered command: "+msg, YellowColor)
+		colorOutput("entered command: "+msg, YellowColor)
 
 		ParseInput(cmdslice)
 	}
