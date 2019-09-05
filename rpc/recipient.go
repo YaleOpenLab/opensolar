@@ -270,6 +270,7 @@ func storeStartTime() {
 
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][1:])
 		if err != nil {
+			log.Println("COULDN'T VALIDATE THIS GUY")
 			return
 		}
 

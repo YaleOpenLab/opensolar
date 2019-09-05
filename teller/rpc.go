@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"log"
+	"net/url"
 
 	geo "github.com/martinlindhe/google-geolocate"
 
@@ -54,11 +55,12 @@ func PingRpc() error {
 
 // GetProjectIndex gets a specific project's index
 func GetProjectIndex(assetName string) (int, error) {
-	data, err := erpc.GetRequest(ApiUrl + "/projects?index=7")
+	data, err := erpc.GetRequest(ApiUrl + "/project/all")
 	if err != nil {
 		log.Println("Error while making get request: ", err)
 		return -1, err
 	}
+
 	var x opensolar.SolarProjectArray
 	err = json.Unmarshal(data, &x)
 	if err != nil {
@@ -72,9 +74,29 @@ func GetProjectIndex(assetName string) (int, error) {
 	return -1, errors.New("Not found")
 }
 
+var LoginReturn struct {
+	Token string
+}
+
 // LoginToPlatform logs on to the platform
 func LoginToPlatform(username string, pwhash string) error {
-	data, err := erpc.GetRequest(ApiUrl + "/recipient/validate?" + "username=" + username + "&pwhash=" + pwhash)
+	// we first need to login and then get the access token
+	postdata := url.Values{}
+	postdata.Set("username", username)
+	postdata.Set("pwhash", pwhash)
+	data, err := erpc.PostForm(ApiUrl + "/token", postdata)
+	if err != nil {
+		return err
+	}
+
+	log.Println(string(data))
+	err = json.Unmarshal(data, &LoginReturn)
+	if err != nil {
+		return err
+	}
+
+	Token = LoginReturn.Token
+	data, err = erpc.GetRequest(ApiUrl + "/recipient/validate?" + "username=" + username + "&token=" + LoginReturn.Token)
 	if err != nil {
 		return err
 	}
@@ -96,10 +118,10 @@ func ProjectPayback(assetName string, amountx float64) error {
 	}
 	// retrieve project index
 	log.Println("PAYMENT BODY: ", ApiUrl+"/recipient/payback?"+"username="+LocalRecipient.U.Username+
-		"&pwhash="+LocalRecipient.U.Pwhash+"&projIndex="+LocalProjIndex+"&assetName="+LocalProject.DebtAssetCode+"&seedpwd="+
+		"&token="+Token+"&projIndex="+LocalProjIndex+"&assetName="+LocalProject.DebtAssetCode+"&seedpwd="+
 		LocalSeedPwd+"&amount="+amount)
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/payback?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&projIndex=" + LocalProjIndex + "&assetName=" + LocalProject.DebtAssetCode + "&seedpwd=" +
+		"&token=" + Token + "&projIndex=" + LocalProjIndex + "&assetName=" + LocalProject.DebtAssetCode + "&seedpwd=" +
 		LocalSeedPwd + "&amount=" + amount)
 	if err != nil {
 		return err
@@ -118,9 +140,9 @@ func ProjectPayback(assetName string, amountx float64) error {
 }
 
 // SetDeviceId sets the device id of the teller
-func SetDeviceId(username string, pwhash string, deviceId string) error {
+func SetDeviceId(username string, deviceId string) error {
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/deviceId?" + "username=" + username +
-		"&pwhash=" + pwhash + "&deviceid=" + deviceId)
+		"&token=" + Token + "&deviceid=" + deviceId)
 	if err != nil {
 		return err
 	}
@@ -143,7 +165,7 @@ func StoreStartTime() error {
 		return err
 	}
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/startdevice?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&start=" + unixString)
+		"&token=" + Token + "&start=" + unixString + "&code=OPENSOLARTEST")
 	if err != nil {
 		return err
 	}
@@ -165,9 +187,9 @@ func StoreLocation(mapskey string) error {
 	location := GetLocation(mapskey) // this happens to return null
 	log.Println("MAPSKEY: ", mapskey, location)
 	log.Println(ApiUrl + "/recipient/storelocation?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&location=" + location)
+		"&token=" + Token + "&location=" + location)
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/storelocation?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&location=" + location)
+		"&token=" + Token + "&location=" + location)
 	if err != nil {
 		log.Println("RPC ERROR IN STORELOCATION ENDPOINT")
 		return err
@@ -194,7 +216,7 @@ type PlatformEmailResponse struct {
 // GetPlatformEmail gets the email of the platform
 func GetPlatformEmail() error {
 	data, err := erpc.GetRequest(ApiUrl + "/platformemail?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash)
+		"&token=" + Token)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -215,7 +237,7 @@ func GetPlatformEmail() error {
 func SendDeviceShutdownEmail(tx1 string, tx2 string) error {
 
 	data, err := erpc.GetRequest(ApiUrl + "/tellershutdown?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId +
+		"&token=" + Token + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId +
 		"&tx1=" + tx1 + "&tx2=" + tx2)
 	if err != nil {
 		log.Println(err)
@@ -258,7 +280,7 @@ func GetLocalProjectDetails(projIndex string) (opensolar.Project, error) {
 func SendDevicePaybackFailedEmail() error {
 
 	data, err := erpc.GetRequest(ApiUrl + "/tellerpayback?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId)
+		"&token=" + Token + "&projIndex=" + LocalProjIndex + "&deviceId=" + DeviceId)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -279,7 +301,7 @@ func SendDevicePaybackFailedEmail() error {
 // StoreStateHistory stores state history in the data file
 func StoreStateHistory(hash string) error {
 	data, err := erpc.GetRequest(ApiUrl + "/recipient/ssh?" + "username=" + LocalRecipient.U.Username +
-		"&pwhash=" + LocalRecipient.U.Pwhash + "&hash=" + hash)
+		"&token=" + Token + "&hash=" + hash)
 	if err != nil {
 		log.Println(err)
 		return err

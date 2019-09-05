@@ -114,7 +114,7 @@ var TellerHomeDir = HomeDir + "/teller" // the home directory of the teller exec
 var TellerMaxLocalStorageSize = 2000
 
 // TellerPollInterval is the frequency at which we poll the interval
-var TellerPollInterval = time.Duration(30000 * time.Second)
+var TellerPollInterval = time.Duration(3600 * 24 * time.Second)
 
 // LoginRefreshInterval is the frequency at which the teller's credentials are updated (ie if you change your password, wait 5 minutes for the teller to disconnect)
 var LoginRefreshInterval = time.Duration(5 * 60 * time.Second)

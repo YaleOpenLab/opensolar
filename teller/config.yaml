@@ -1,11 +1,11 @@
-username: supasto@test.com
-password: password
+username: martin
+password: p
 seedpwd: x
-apiurl: "https://api.openx.solar"
-platformPublicKey: "GDHZLFBNYI3C3IHTTDEI6OPU2WDQD2KGD5QOSQJOBXKLSGLNYHQTFXKI"
+apiurl: "http://localhost:8081" # opensolar URL
+platformPublicKey: "GBSB7CBVVYK3J3DW4Q7E7ODUJQH5GYKNNMKFAN5KBGT7CKZGT2CWMUBL"
 mapskey: "AIzaSyBi4drFj60P4QHkmxfCxuy8p4_wnDXmCBw"
-projIndex: 4
-assetName: OXA6fd8ca6bc
+projIndex: 1
+assetName: TESTTELLER
 sclientid: "c0fe38566a254a3a80b2a42081b46843"
 sclientsecret: "46d10252a4954007af5e2f8941aeeb37"
 susername: "pr-collab%40swytch.io"

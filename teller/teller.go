@@ -11,6 +11,7 @@ import (
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
+	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	solar "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -84,6 +85,8 @@ var (
 	SwytchClientSecret string
 	// AssetName is the asset for which this teller has been installed towards
 	AssetName string
+	// Token is the access token used to logon to the platform
+	Token string
 )
 
 var cleanupDone chan struct{}
@@ -111,6 +114,7 @@ func autoComplete() readline.AutoCompleter {
 
 func main() {
 	var err error
+	xlm.SetConsts(10, false)
 	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {
 		log.Fatal("Failed to parse arguments / Help command")
