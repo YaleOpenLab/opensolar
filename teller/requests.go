@@ -335,7 +335,8 @@ func testSwytch() {
 	var x1 rpc.GetAccessTokenData
 	err = json.Unmarshal(data, &x1)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	refreshToken := x1.Data[0].Refreshtoken
@@ -351,7 +352,8 @@ func testSwytch() {
 	var x2 rpc.GetAccessTokenData
 	err = json.Unmarshal(data, &x2)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		break
 	}
 
 	accessToken := x1.Data[0].Accesstoken
@@ -365,7 +367,8 @@ func testSwytch() {
 	var x3 rpc.GetSwytchUserStruct
 	err = json.Unmarshal(data, &x3)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		break
 	}
 
 	userId := x3.Data[0].Id
@@ -381,7 +384,8 @@ func testSwytch() {
 	var x4 rpc.GetAssetStruct
 	err = json.Unmarshal(data, &x4)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		break
 	}
 
 	assetId := x4.Data[0].Id
@@ -396,7 +400,8 @@ func testSwytch() {
 	var x5 rpc.GetEnergyStruct
 	err = json.Unmarshal(data, &x5)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		break
 	}
 
 	log.Println("Energy data from installed asset: ", x4)
@@ -410,7 +415,8 @@ func testSwytch() {
 	var x6 rpc.GetEnergyAttributionData
 	err = json.Unmarshal(data, &x6)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		break
 	}
 
 	log.Println("Energy Attribute data: ", x6)

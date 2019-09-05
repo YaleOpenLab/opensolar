@@ -22,9 +22,9 @@ func StartTeller() error {
 		return errors.Wrap(err, "Error while reading email values from config file")
 	}
 
-	if viper.IsSet("platformPublicKey") || viper.IsSet("seedpwd") || viper.IsSet("username") ||
-		viper.IsSet("password") || viper.IsSet("apiurl") || viper.IsSet("mapskey") ||
-		viper.IsSet("projIndex") || viper.IsSet("assetName") {
+	if !viper.IsSet("platformPublicKey") || !viper.IsSet("seedpwd") || !viper.IsSet("username") ||
+		!viper.IsSet("password") || !viper.IsSet("apiurl") || !viper.IsSet("mapskey") ||
+		!viper.IsSet("projIndex") || !viper.IsSet("assetName") {
 		return errors.New("Required parameters to be present in the config file: platformPublicKey, " +
 			"seedpwd, username, password, apiurl, mapskey, projIndex, assetName (case-sensitive)")
 	}
@@ -94,12 +94,12 @@ func StartTeller() error {
 	}
 
 	// check for device id and set it if none is set
-	err = CheckDeviceID()
+	err = checkDeviceID()
 	if err != nil {
 		return errors.Wrap(err, "could not check device id")
 	}
 
-	DeviceId, err = GetDeviceID() // Stores DeviceId
+	DeviceId, err = getDeviceID() // Stores DeviceId
 	if err != nil {
 		return errors.Wrap(err, "could not get device id from local storage")
 	}

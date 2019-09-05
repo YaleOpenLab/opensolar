@@ -2,10 +2,6 @@ package main
 
 import (
 	"bufio"
-	"crypto/rand"
-	"crypto/tls"
-	"encoding/hex"
-	"encoding/json"
 	//"bytes"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -21,8 +17,6 @@ import (
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	//	rpc "github.com/YaleOpenLab/openx/rpc"
 	consts "github.com/YaleOpenLab/opensolar/consts"
-	core "github.com/YaleOpenLab/opensolar/core"
-	notif "github.com/YaleOpenLab/opensolar/notif"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
@@ -213,7 +207,8 @@ func storeDataLocal() {
 		data, err := ioutil.ReadFile(path)
 		if err != nil {
 			// don't start the teller if we can't read the last known hash since this would break continuity
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 		HashChainHeader = string(data)
 	}
@@ -288,7 +283,12 @@ func commitDataShutdown() {
 		log.Println("Couldn't hash file: ", err)
 	}
 
-	os.Remove(path)
+	defer func() {
+		if ferr := os.Remove(path); ferr != nil {
+			ferr = err
+		}
+	}()
+
 	_, err = os.Create(path)
 	if err != nil {
 		log.Println("error while opening file", err)
@@ -300,8 +300,16 @@ func commitDataShutdown() {
 		log.Println("error while opening file", err)
 		return
 	}
+
 	file.Write([]byte(fileHash))
-	file.Close()
+	err = file.Close()
+	if err != nil {
+		defer func() {
+			if ferr := os.Remove(path); ferr != nil {
+				ferr = err
+			}
+		}()
+	}
 
 	err = storeStateHistory(fileHash)
 	if err != nil {
@@ -316,87 +324,15 @@ type statusResponse struct {
 	Status string
 }
 
-// MonitorTeller monitors a teller and checks whether its live. If not, send an email to platform admins
-func MonitorTeller(projIndex int) {
-	// call this function only after a specific order has been accepted by the recipient
-	for {
-		project, err := core.RetrieveProject(projIndex)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		client := &http.Client{Transport: tr}
-
-		req, err := http.NewRequest("GET", tellerUrl+"/ping", nil)
-		if err != nil {
-			log.Println("did not create new GET request", err)
-			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
-			time.Sleep(consts.TellerPollInterval)
-			continue
-		}
-
-		req.Header.Set("Origin", "localhost")
-		res, err := client.Do(req)
-		if err != nil {
-			log.Println("did not make request", err)
-			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
-			time.Sleep(consts.TellerPollInterval)
-			continue
-		}
-		data, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println("error while reading response body", err)
-			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
-			time.Sleep(consts.TellerPollInterval)
-			continue
-		}
-
-		var x statusResponse
-		err = json.Unmarshal(data, &x)
-		if err != nil {
-			log.Println("error while unmarshalling data", err)
-			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
-			time.Sleep(consts.TellerPollInterval)
-			continue
-		}
-
-		if x.Code != 200 || x.Status != "HEALTH OK" {
-			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)
-		}
-
-		res.Body.Close()
-		time.Sleep(consts.TellerPollInterval)
-	}
-}
-
-// GenerateRandomString generates a random string of length _n_
-func GenerateRandomString(n int) (string, error) {
-	// generate a crypto secure random string
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", errors.Wrap(err, "could not read random bytes to generate random string")
-	}
-
-	return hex.EncodeToString(b), nil
-}
-
 // GenerateDeviceID generates a random 16 character device ID
-func GenerateDeviceID() (string, error) {
-	rs, err := GenerateRandomString(16)
-	if err != nil {
-		return "", errors.Wrap(err, "could not generate random string")
-	}
+func generateDeviceID() (string, error) {
+	rs := utils.GetRandomString(16)
 	upperCase := strings.ToUpper(rs)
 	return upperCase, nil
 }
 
 // CheckDeviceID checks the device's ID against a locally saved copy
-func CheckDeviceID() error {
+func checkDeviceID() error {
 	// checks whether there is a device id set on this device beforehand
 	if _, err := os.Stat(consts.TellerHomeDir); os.IsNotExist(err) {
 		// directory does not exist, create a device id
@@ -407,7 +343,7 @@ func CheckDeviceID() error {
 		if err != nil {
 			return errors.Wrap(err, "could not create device id file")
 		}
-		deviceId, err := GenerateDeviceID()
+		deviceId, err := generateDeviceID()
 		if err != nil {
 			return errors.Wrap(err, "could not generate device id")
 		}
@@ -426,19 +362,25 @@ func CheckDeviceID() error {
 }
 
 // GetDeviceID retrieves the deviceId from storage
-func GetDeviceID() (string, error) {
+func getDeviceID() (string, error) {
 	path := consts.TellerHomeDir + "/deviceid.hex"
 	file, err := os.Open(path)
 	if err != nil {
 		return "", errors.Wrap(err, "could not open teller home path")
 	}
+
+	defer func() {
+		if ferr := file.Close(); ferr != nil {
+			err = ferr
+		}
+	}()
 	// read the hex string from the file
 	data := make([]byte, 32)
-	numInt, err := file.Read(data)
+	readBytes, err := file.Read(data)
 	if err != nil {
 		return "", errors.Wrap(err, "could not read from file")
 	}
-	if numInt != 32 {
+	if readBytes != 32 {
 		return "", errors.New("Length of strings doesn't match, quitting!")
 	}
 	return string(data), nil

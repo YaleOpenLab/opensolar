@@ -68,11 +68,9 @@ func startServer(port int) {
 
 	portString, err := utils.ToString(port)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("couldn't parse port, setting it to 80 by default")
+		portString = "80"
 	}
 
-	err = http.ListenAndServeTLS(":"+portString, "ssl/server.crt", "ssl/server.key", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	log.Fatal(http.ListenAndServeTLS(":"+portString, "ssl/server.crt", "ssl/server.key", nil))
 }

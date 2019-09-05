@@ -148,7 +148,7 @@ func main() {
 
 	// rpc.KillCode = "NUKE" // compile time nuclear code
 	// run this only when you need to monitor the tellers. Not required for local testing.
-	// go opensolar.MonitorTeller(1)
+	go core.MonitorTeller(1, "https://localhost:80")
 	fmt.Println(`
 		██████╗ ██████╗ ███████╗███╗   ██╗███████╗ ██████╗ ██╗      █████╗ ██████╗
 	 ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██╔═══██╗██║     ██╔══██╗██╔══██╗

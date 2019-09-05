@@ -67,7 +67,8 @@ func relayRequest() {
 
 			err = r.ParseForm()
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				return
 			}
 
 			data, err := erpc.PostForm(body, r.Form)
@@ -95,7 +96,8 @@ func StartServer(portx int, insecure bool) {
 
 	port, err := utils.ToString(portx)
 	if err != nil {
-		log.Fatal("Port not string")
+		log.Println("couldn't parse passed port, setting it to default 80")
+		port = "80"
 	}
 
 	log.Println("Starting RPC Server on Port: ", port)
