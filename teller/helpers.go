@@ -21,7 +21,7 @@ import (
 )
 
 // BlockStamp gets the latest block hash
-func BlockStamp() (string, error) {
+func blockStamp() (string, error) {
 	hash, err := xlm.GetLatestBlockHash()
 	return hash, err
 }
@@ -46,7 +46,7 @@ func endHandler() error {
 	log.Println("Gracefully shutting down, please do not press any button in the process")
 	var err error
 
-	NowHash, err = BlockStamp()
+	NowHash, err = blockStamp()
 	if err != nil {
 		log.Println(err)
 	}

@@ -141,7 +141,7 @@ func main() {
 	cleanupDone = make(chan struct{})
 	signal.Notify(signalChan, os.Interrupt)
 
-	StartHash, err = BlockStamp()
+	StartHash, err = blockStamp()
 	if err != nil {
 		log.Fatal(err)
 	}

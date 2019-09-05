@@ -353,7 +353,7 @@ func testSwytch() {
 	err = json.Unmarshal(data, &x2)
 	if err != nil {
 		log.Println(err)
-		break
+		return
 	}
 
 	accessToken := x1.Data[0].Accesstoken
@@ -368,7 +368,7 @@ func testSwytch() {
 	err = json.Unmarshal(data, &x3)
 	if err != nil {
 		log.Println(err)
-		break
+		return
 	}
 
 	userId := x3.Data[0].Id
@@ -385,7 +385,7 @@ func testSwytch() {
 	err = json.Unmarshal(data, &x4)
 	if err != nil {
 		log.Println(err)
-		break
+		return
 	}
 
 	assetId := x4.Data[0].Id
@@ -401,7 +401,7 @@ func testSwytch() {
 	err = json.Unmarshal(data, &x5)
 	if err != nil {
 		log.Println(err)
-		break
+		return
 	}
 
 	log.Println("Energy data from installed asset: ", x4)
@@ -416,7 +416,7 @@ func testSwytch() {
 	err = json.Unmarshal(data, &x6)
 	if err != nil {
 		log.Println(err)
-		break
+		return
 	}
 
 	log.Println("Energy Attribute data: ", x6)
