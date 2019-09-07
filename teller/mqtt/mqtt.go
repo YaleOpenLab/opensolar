@@ -15,7 +15,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"crypto/x509"
@@ -31,20 +30,20 @@ func sub(mqttopts *mqtt.ClientOptions) {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	fmt.Println("Sample Publisher Started")
+	log.Println("Sample Publisher Started")
 	for i := 0; i < opts.Num; i++ {
-		fmt.Println("---- doing publish ----")
+		log.Println("---- doing publish ----")
 		token := client.Publish(opts.Topic, byte(opts.Qos), false, opts.Payload)
 		token.Wait()
 	}
 
 	client.Disconnect(250)
-	fmt.Println("Sample Publisher Disconnected")
+	log.Println("Sample Publisher Disconnected")
 }
 
 var opts struct {
 	Topic     string `long:"topic" description:"The topic name to/from which to publish/subscribe"`
-	Broker    string `long:"broker" description:"The broker URI" default:"localhost:1883"`
+	Broker    string `long:"broker" description:"The broker URI" default:"tls://localhost:8883"`
 	Password  string `long:"password" description:"The password"`
 	User      string `long:"user" description:"the user" default:"username"`
 	Id        string `long:"id" description:"the clientid" default:"id"`
@@ -67,27 +66,27 @@ func main() {
 	}
 
 	if !(opts.Action == "pub" || opts.Action == "sub") {
-		fmt.Println("Invalid setting for -action, must be pub or sub")
+		log.Println("Invalid setting for -action, must be pub or sub")
 		return
 	}
 
 	if opts.Topic == "" {
-		fmt.Println("Invalid setting for -topic, must not be empty")
+		log.Println("Invalid setting for -topic, must not be empty")
 		return
 	}
 
-	fmt.Printf("Sample Info:\n")
-	fmt.Printf("\taction:    %s\n", opts.Action)
-	fmt.Printf("\tbroker:    %s\n", opts.Broker)
-	fmt.Printf("\tclientid:  %s\n", opts.Id)
-	fmt.Printf("\tuser:      %s\n", opts.User)
-	fmt.Printf("\tpassword:  %s\n", opts.Password)
-	fmt.Printf("\ttopic:     %s\n", opts.Topic)
-	fmt.Printf("\tmessage:   %s\n", opts.Payload)
-	fmt.Printf("\tqos:       %d\n", opts.Qos)
-	fmt.Printf("\tcleansess: %v\n", opts.Cleansess)
-	fmt.Printf("\tnum:       %d\n", opts.Num)
-	fmt.Printf("\tstore:     %s\n", opts.Store)
+	log.Printf("Sample Info:\n")
+	log.Printf("\taction:    %s\n", opts.Action)
+	log.Printf("\tbroker:    %s\n", opts.Broker)
+	log.Printf("\tclientid:  %s\n", opts.Id)
+	log.Printf("\tuser:      %s\n", opts.User)
+	log.Printf("\tpassword:  %s\n", opts.Password)
+	log.Printf("\ttopic:     %s\n", opts.Topic)
+	log.Printf("\tmessage:   %s\n", opts.Payload)
+	log.Printf("\tqos:       %d\n", opts.Qos)
+	log.Printf("\tcleansess: %v\n", opts.Cleansess)
+	log.Printf("\tnum:       %d\n", opts.Num)
+	log.Printf("\tstore:     %s\n", opts.Store)
 
 	mqttopts := mqtt.NewClientOptions()
 	mqttopts.AddBroker(opts.Broker)
@@ -99,7 +98,10 @@ func main() {
 		mqttopts.SetStore(mqtt.NewFileStore(opts.Store))
 	}
 
-	certFile := "../../server.crt"
+	// openssl req -new -newkey rsa:2048 -nodes -keyout server.key -out server.csr
+	// openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+
+	certFile := "server.crt"
 
 	rootCAs, _ := x509.SystemCertPool()
 	if rootCAs == nil {
@@ -132,22 +134,24 @@ func main() {
 		})
 
 		client := mqtt.NewClient(mqttopts)
-		if token := client.Connect(); token.Wait() && token.Error() != nil {
+		token := client.Connect()
+		if token.Wait() && token.Error() != nil {
 			panic(token.Error())
 		}
 
-		if token := client.Subscribe(opts.Topic, byte(opts.Qos), nil); token.Wait() && token.Error() != nil {
-			fmt.Println(token.Error())
+		token = client.Subscribe(opts.Topic, byte(opts.Qos), nil)
+		if token.Wait() && token.Error() != nil {
+			log.Println(token.Error())
 			os.Exit(1)
 		}
 
 		for receiveCount < opts.Num {
 			incoming := <-choke
-			fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
+			log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 			receiveCount++
 		}
 
 		client.Disconnect(250)
-		fmt.Println("Sample Subscriber Disconnected")
+		log.Println("Sample Subscriber Disconnected")
 	}
 }
