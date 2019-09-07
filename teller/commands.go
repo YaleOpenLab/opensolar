@@ -5,7 +5,6 @@ import (
 	"log"
 
 	utils "github.com/Varunram/essentials/utils"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	"github.com/fatih/color"
 )
 
@@ -64,7 +63,7 @@ func ParseInput(input []string) {
 			fmt.Println("USAGE: receive xlm")
 			return
 		}
-		err := xlm.GetXLM(RecpPublicKey)
+		err := askXLM() // the rpc allows people to only ask for coins to their publickey, so we should be okay here
 		if err != nil {
 			log.Println(err)
 		}
@@ -88,9 +87,9 @@ func ParseInput(input []string) {
 
 			switch subsubcommand {
 			case "xlm":
-				balance, err = xlm.GetNativeBalance(RecpPublicKey)
+				balance, err = getNativeBalance()
 			default:
-				balance, err = xlm.GetAssetBalance(RecpPublicKey, subcommand)
+				balance, err = getAssetBalance(subcommand)
 			}
 
 			if err != nil {

@@ -14,17 +14,10 @@ import (
 
 	ipfs "github.com/Varunram/essentials/ipfs"
 	utils "github.com/Varunram/essentials/utils"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	//	rpc "github.com/YaleOpenLab/openx/rpc"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
-
-// BlockStamp gets the latest block hash
-func blockStamp() (string, error) {
-	hash, err := xlm.GetLatestBlockHash()
-	return hash, err
-}
 
 // refreshLogin runs once every 5 minutes in order to fetch the latest recipient details
 // for eg, if the recipient loads his balance on the platform, we need it to be reflected on
@@ -46,7 +39,7 @@ func endHandler() error {
 	log.Println("Gracefully shutting down, please do not press any button in the process")
 	var err error
 
-	NowHash, err = blockStamp()
+	NowHash, err = getLatestBlockHash()
 	if err != nil {
 		log.Println(err)
 	}
@@ -84,11 +77,11 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 	// 10 padding chars + 46 (ipfs hash length) characters
 	firstHalf := memo[:28]
 	secondHalf := memo[28:]
-	_, tx1, err := xlm.SendXLM(RecpPublicKey, 1, RecpSeed, firstHalf)
+	tx1, err := sendXLM(RecpPublicKey, 1, firstHalf)
 	if err != nil {
 		return "", "", err
 	}
-	_, tx2, err := xlm.SendXLM(RecpPublicKey, 1, RecpSeed, secondHalf)
+	tx2, err := sendXLM(RecpPublicKey, 1, secondHalf)
 	if err != nil {
 		return "", "", err
 	}
@@ -143,12 +136,12 @@ func updateState(trigger bool) {
 		// But we do need to track this somehow, so maybe hash the device id and "STATUPS: "
 		// so we can track if but others viewing the blockchain can't (since the deviceId is assumed
 		// to be unique)
-		_, hash1, err := xlm.SendXLM(RecpPublicKey, float64(utils.Unix()), RecpSeed, ipfsHash[:28])
+		hash1, err := sendXLM(RecpPublicKey, float64(utils.Unix()), ipfsHash[:28])
 		if err != nil {
 			log.Println(err)
 		}
 
-		_, hash2, err := xlm.SendXLM(RecpPublicKey, float64(utils.Unix()), RecpSeed, ipfsHash[29:])
+		hash2, err := sendXLM(RecpPublicKey, float64(utils.Unix()), ipfsHash[29:])
 		if err != nil {
 			log.Println(err)
 		}

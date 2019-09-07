@@ -422,3 +422,102 @@ func testSwytch() {
 
 	log.Println("Energy Attribute data: ", x6)
 }
+
+func sendXLM(publickey string, amountx float64, memo string) (string, error) {
+	amount, err := utils.ToString(amountx)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	body := ApiUrl + "/user/sendxlm?username=" + Username + "&token=" + Token + "&destination=" +
+		publickey + "&amount=" + amount + "&seedpwd=" + LocalSeedPwd
+
+	data, err := erpc.GetRequest(body)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	var txhash string
+	err = json.Unmarshal(data, &txhash)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return txhash, err
+}
+
+func getLatestBlockHash() (string, error) {
+	data, err := erpc.GetRequest(ApiUrl + "/user/latestblockhash?username=" + Username + "&token=" + Token)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	var blockhash string
+	err = json.Unmarshal(data, &blockhash)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	return blockhash, err
+}
+
+func askXLM() error {
+	data, err := erpc.GetRequest(ApiUrl + "/user/askxlm?username=" + Username + "&token=" + Token)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	var status erpc.StatusResponse
+	err = json.Unmarshal(data, &status)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if status.Code == 200 {
+		return nil
+	}
+
+	return err
+}
+
+func getNativeBalance() (float64, error) {
+	data, err := erpc.GetRequest(ApiUrl + "/user/balance/xlm?username=" + Username + "&token=" + Token)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	var balance float64
+	err = json.Unmarshal(data, &balance)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	return balance, err
+}
+
+func getAssetBalance(asset string) (float64, error) {
+	data, err := erpc.GetRequest(ApiUrl + "/user/balance/asset?username=" + Username + "&token=" + Token +
+		"asset=" + asset)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	var balance float64
+	err = json.Unmarshal(data, &balance)
+	if err != nil {
+		log.Println(err)
+		return -1, err
+	}
+
+	return balance, err
+}
