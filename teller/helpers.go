@@ -81,6 +81,7 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+	time.Sleep(2 * time.Second)
 	tx2, err := sendXLM(RecpPublicKey, 1, secondHalf)
 	if err != nil {
 		return "", "", err
