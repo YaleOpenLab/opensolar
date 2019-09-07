@@ -15,69 +15,90 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"log"
 	"os"
+	"crypto/x509"
+	"io/ioutil"
+	"crypto/tls"
 
-	// "crypto/x509"
-	// "io/ioutil"
-	// "log"
-	// "crypto/tls"
-
-	MQTT "github.com/eclipse/paho.mqtt.golang"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	flags "github.com/jessevdk/go-flags"
 )
 
-// ./mqtt -broker 0.0.0.0:1883 -action pub -message cool -topic topic -user user -id 1
-// ./mqtt -action sub -topic topic -broker 0.0.0.0:1883 -user user -id blah
+func sub(mqttopts *mqtt.ClientOptions) {
+	client := mqtt.NewClient(mqttopts)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		panic(token.Error())
+	}
+	fmt.Println("Sample Publisher Started")
+	for i := 0; i < opts.Num; i++ {
+		fmt.Println("---- doing publish ----")
+		token := client.Publish(opts.Topic, byte(opts.Qos), false, opts.Payload)
+		token.Wait()
+	}
+
+	client.Disconnect(250)
+	fmt.Println("Sample Publisher Disconnected")
+}
+
+var opts struct {
+	Topic     string `long:"topic" description:"The topic name to/from which to publish/subscribe"`
+	Broker    string `long:"broker" description:"The broker URI" default:"localhost:1883"`
+	Password  string `long:"password" description:"The password"`
+	User      string `long:"user" description:"the user" default:"username"`
+	Id        string `long:"id" description:"the clientid" default:"id"`
+	Cleansess bool   `long:"cleansess" description:"set clean seession"`
+	Qos       int    `long:"qos" description:"quality of service"`
+	Num       int    `long:"num" description:"number of messages to subscribe to" default:"1"`
+	Payload   string `long:"message" description:"message text to publish"`
+	Action    string `long:"action" description:"pub/sub" required:"true"`
+	Store     string `long:"store" description:"store directory" default:":memory:"`
+}
+
+// ./mqtt --broker 0.0.0.0:1883 --action pub --message cool --topic topic --user user --id 1
+// ./mqtt --action sub --topic topic --broker 0.0.0.0:1883 --user user --id blah
 
 func main() {
-	topic := flag.String("topic", "", "The topic name to/from which to publish/subscribe")
-	broker := flag.String("broker", "tcp://iot.eclipse.org:1883", "The broker URI. ex: tcp://10.10.1.1:1883")
-	password := flag.String("password", "", "The password (optional)")
-	user := flag.String("user", "", "The User (optional)")
-	id := flag.String("id", "testgoid", "The ClientID (optional)")
-	cleansess := flag.Bool("clean", false, "Set Clean Session (default false)")
-	qos := flag.Int("qos", 0, "The Quality of Service 0,1,2 (default 0)")
-	num := flag.Int("num", 1, "The number of messages to publish or subscribe (default 1)")
-	payload := flag.String("message", "", "The message text to publish (default empty)")
-	action := flag.String("action", "", "Action publish or subscribe (required)")
-	store := flag.String("store", ":memory:", "The Store Directory (default use memory store)")
-	flag.Parse()
+	var err error
+	_, err = flags.ParseArgs(&opts, os.Args)
+	if err != nil {
+		log.Fatal("Failed to parse arguments / Help command")
+	}
 
-	if *action != "pub" && *action != "sub" {
+	if !(opts.Action == "pub" || opts.Action == "sub") {
 		fmt.Println("Invalid setting for -action, must be pub or sub")
 		return
 	}
 
-	if *topic == "" {
+	if opts.Topic == "" {
 		fmt.Println("Invalid setting for -topic, must not be empty")
 		return
 	}
 
 	fmt.Printf("Sample Info:\n")
-	fmt.Printf("\taction:    %s\n", *action)
-	fmt.Printf("\tbroker:    %s\n", *broker)
-	fmt.Printf("\tclientid:  %s\n", *id)
-	fmt.Printf("\tuser:      %s\n", *user)
-	fmt.Printf("\tpassword:  %s\n", *password)
-	fmt.Printf("\ttopic:     %s\n", *topic)
-	fmt.Printf("\tmessage:   %s\n", *payload)
-	fmt.Printf("\tqos:       %d\n", *qos)
-	fmt.Printf("\tcleansess: %v\n", *cleansess)
-	fmt.Printf("\tnum:       %d\n", *num)
-	fmt.Printf("\tstore:     %s\n", *store)
+	fmt.Printf("\taction:    %s\n", opts.Action)
+	fmt.Printf("\tbroker:    %s\n", opts.Broker)
+	fmt.Printf("\tclientid:  %s\n", opts.Id)
+	fmt.Printf("\tuser:      %s\n", opts.User)
+	fmt.Printf("\tpassword:  %s\n", opts.Password)
+	fmt.Printf("\ttopic:     %s\n", opts.Topic)
+	fmt.Printf("\tmessage:   %s\n", opts.Payload)
+	fmt.Printf("\tqos:       %d\n", opts.Qos)
+	fmt.Printf("\tcleansess: %v\n", opts.Cleansess)
+	fmt.Printf("\tnum:       %d\n", opts.Num)
+	fmt.Printf("\tstore:     %s\n", opts.Store)
 
-	opts := MQTT.NewClientOptions()
-	opts.AddBroker(*broker)
-	opts.SetClientID(*id)
-	opts.SetUsername(*user)
-	opts.SetPassword(*password)
-	opts.SetCleanSession(*cleansess)
-	if *store != ":memory:" {
-		opts.SetStore(MQTT.NewFileStore(*store))
+	mqttopts := mqtt.NewClientOptions()
+	mqttopts.AddBroker(opts.Broker)
+	mqttopts.SetClientID(opts.Id)
+	mqttopts.SetUsername(opts.User)
+	mqttopts.SetPassword(opts.Password)
+	mqttopts.SetCleanSession(opts.Cleansess)
+	if opts.Store != ":memory:" {
+		mqttopts.SetStore(mqtt.NewFileStore(opts.Store))
 	}
 
-	/*
 	certFile := "../../server.crt"
 
 	rootCAs, _ := x509.SystemCertPool()
@@ -99,41 +120,28 @@ func main() {
 		RootCAs: rootCAs,
 	}
 
-	opts.SetTLSConfig(config)
-	*/
-	if *action == "pub" {
-		client := MQTT.NewClient(opts)
-		if token := client.Connect(); token.Wait() && token.Error() != nil {
-			panic(token.Error())
-		}
-		fmt.Println("Sample Publisher Started")
-		for i := 0; i < *num; i++ {
-			fmt.Println("---- doing publish ----")
-			token := client.Publish(*topic, byte(*qos), false, *payload)
-			token.Wait()
-		}
-
-		client.Disconnect(250)
-		fmt.Println("Sample Publisher Disconnected")
+	mqttopts.SetTLSConfig(config)
+	if opts.Action == "pub" {
+		sub(mqttopts)
 	} else {
 		receiveCount := 0
 		choke := make(chan [2]string)
 
-		opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+		mqttopts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
 			choke <- [2]string{msg.Topic(), string(msg.Payload())}
 		})
 
-		client := MQTT.NewClient(opts)
+		client := mqtt.NewClient(mqttopts)
 		if token := client.Connect(); token.Wait() && token.Error() != nil {
 			panic(token.Error())
 		}
 
-		if token := client.Subscribe(*topic, byte(*qos), nil); token.Wait() && token.Error() != nil {
+		if token := client.Subscribe(opts.Topic, byte(opts.Qos), nil); token.Wait() && token.Error() != nil {
 			fmt.Println(token.Error())
 			os.Exit(1)
 		}
 
-		for receiveCount < *num {
+		for receiveCount < opts.Num {
 			incoming := <-choke
 			fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 			receiveCount++
