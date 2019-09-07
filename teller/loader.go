@@ -3,14 +3,24 @@ package main
 import (
 	"github.com/pkg/errors"
 	"log"
+	"os"
 
 	utils "github.com/Varunram/essentials/utils"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	erpc "github.com/Varunram/essentials/rpc"
 )
 
 // StartTeller starts the teller
 func StartTeller() error {
 	var err error
+
+	// don't allow login before this since that becomes an attack vector where a person can guess
+	// multiple passwords
+	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME") + "/go/src/github.com/YaleOpenLab/opensolar/server.crt")
+	err = login(Username, Pwhash)
+	if err != nil {
+		return errors.Wrap(err, "Error while logging on to the platform")
+	}
 
 	projIndex, err := getProjectIndex(AssetName)
 	if err != nil {
@@ -24,13 +34,6 @@ func StartTeller() error {
 	if projIndexS != LocalProjIndex {
 		log.Println("Project indices don't match, quitting!")
 		return errors.New("Project indices don't match, quitting!")
-	}
-
-	// don't allow login before this since that becomes an attack vector where a person can guess
-	// multiple passwords
-	err = login(Username, Pwhash)
-	if err != nil {
-		return errors.Wrap(err, "Error while logging on to the platform")
 	}
 
 	go refreshLogin(Username, Pwhash) // update local copy of the recipient every 5 minutes
