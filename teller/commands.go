@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"

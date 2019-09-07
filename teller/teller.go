@@ -4,15 +4,18 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 
+	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/opensolar/core"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
+	"github.com/spf13/viper"
 )
 
 // package teller contains the remote client code that would be run on the client's
@@ -39,9 +42,10 @@ import (
 // on the platform
 
 var opts struct {
-	Daemon     bool `short:"d" description:"Run the teller in daemon mode"`
-	Port       int  `short:"p" description:"The port on which the teller runs on (default: 443)"`
-	TestSwytch bool `long:"ts" description:"Test swytch API workflow"`
+	Daemon     bool   `short:"d" description:"Run the teller in daemon mode"`
+	Port       int    `short:"p" description:"The port on which the teller runs on (default: 443)"`
+	TestSwytch bool   `long:"ts" description:"Test swytch API workflow"`
+	Url        string `short:"u" description:"The URL of the remote opensolar instance"`
 }
 
 var (
@@ -87,6 +91,12 @@ var (
 	AssetName string
 	// Token is the access token used to logon to the platform
 	Token string
+	// Username is the Username used to logon to any openx based platform
+	Username string
+	// Pwhash is the Pwhash used to logon to any openx based platform
+	Pwhash string
+	// Mapskey is the API key of google maps needed to store the location of the teller
+	Mapskey string
 )
 
 var cleanupDone chan struct{}
@@ -112,18 +122,66 @@ func autoComplete() readline.AutoCompleter {
 	)
 }
 
-func main() {
+func ParseConfig() error {
 	var err error
-	xlm.SetConsts(10, false)
 	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {
 		log.Fatal("Failed to parse arguments / Help command")
 	}
+
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		return errors.Wrap(err, "Error while reading email values from config file")
+	}
+
+	requiredParams := []string{"platformPublicKey", "seedpwd", "username", "password", "apiurl", "mapskey", "projIndex", "assetName"}
+
+	for _, param := range requiredParams {
+		if !viper.IsSet(param) {
+			return errors.New("required param: " + param + " not found")
+		}
+	}
+
+	PlatformPublicKey = viper.GetString("platformPublicKey")
+	LocalSeedPwd = viper.GetString("seedpwd")
+	Username = viper.GetString("username")
+	Pwhash = utils.SHA3hash(viper.GetString("password"))
+	ApiUrl = viper.GetString("apiurl")
+	Mapskey = viper.GetString("mapskey")
+	AssetName = viper.GetString("assetName")
+	SwytchUsername = viper.GetString("susername")
+	SwytchPassword = viper.GetString("spassword")
+	SwytchClientid = viper.GetString("sclientid")
+	SwytchClientSecret = viper.GetString("sclientsecret")
+
+	LocalProjIndex, err = utils.ToString(viper.GetInt("projIndex"))
+	if err != nil {
+		return err
+	}
+
 	if opts.Port == 0 {
 		opts.Port = consts.Tlsport
 	}
 	if opts.TestSwytch {
 		testSwytch()
+	}
+	if opts.Url != "" {
+		ApiUrl = opts.Url
+	}
+
+	return nil
+}
+
+func main() {
+	var err error
+	xlm.SetConsts(10, false)
+	err = ParseConfig()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	log.Println("---------------WELCOME TO THE TELLER INTERFACE---------------")
@@ -134,9 +192,7 @@ func main() {
 	}
 	colorOutput("TELLER PUBKEY: "+RecpPublicKey, GreenColor)
 	colorOutput("DEVICE ID: "+DeviceId, GreenColor)
-	// testSwytch() tests the endpoints associated with the swytch platform
-	// channels for preventing immediate sigint. Need this so that the action of any party which attempts
-	// to close the teller would still be reported to the platform and emailed to the recipient
+
 	signalChan := make(chan os.Signal, 1)
 	cleanupDone = make(chan struct{})
 	signal.Notify(signalChan, os.Interrupt)
@@ -145,6 +201,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	// run goroutines in the background to routinely check for payback, state updates and stuff
 	go checkPayback()
 	// go updateState()
@@ -187,6 +244,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer rl.Close()
 
 	for {
