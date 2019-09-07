@@ -10,11 +10,11 @@ import (
 	"os/signal"
 	"strings"
 
+	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/opensolar/core"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	"github.com/spf13/viper"
 )
 
@@ -178,7 +178,8 @@ func ParseConfig() error {
 
 func main() {
 	var err error
-	xlm.SetConsts(10, false)
+	erpc.SetConsts(30) // set rpc timeout to 30s to allow for slow connections wrt the blockchain and stuff.
+	// might even need to extend it given some transactions like payback take longer
 	err = ParseConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -197,11 +198,18 @@ func main() {
 	cleanupDone = make(chan struct{})
 	signal.Notify(signalChan, os.Interrupt)
 
-	StartHash, err = blockStamp()
+	StartHash, err = getLatestBlockHash()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	balance, err := getNativeBalance()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("BALANCE: ", balance)
+	log.Println("START HASH: ", StartHash)
 	// run goroutines in the background to routinely check for payback, state updates and stuff
 	go checkPayback()
 	// go updateState()
