@@ -12,7 +12,7 @@
  *    Mike Robertson
  */
 
-package main
+package mqtt
 
 import (
 	"crypto/tls"
@@ -25,7 +25,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 )
 
-func publishMessage(mqttopts *mqtt.ClientOptions) error {
+func PublishMessage(mqttopts *mqtt.ClientOptions) error {
 	client := mqtt.NewClient(mqttopts)
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil { // token.Wait() returns a bool
@@ -43,7 +43,7 @@ func publishMessage(mqttopts *mqtt.ClientOptions) error {
 	return nil
 }
 
-func subscribeMessage(mqttopts *mqtt.ClientOptions) error {
+func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
 	receiveCount := 0
 	receiver := make(chan [2]string)
 	var messages []string
@@ -57,12 +57,12 @@ func subscribeMessage(mqttopts *mqtt.ClientOptions) error {
 		return token.Error()
 	}
 
-	token := client.Subscribe(opts.Topic, byte(opts.Qos), nil)
+	token := client.Subscribe(topic, byte(qos), nil)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 
-	for receiveCount < opts.Num {
+	for receiveCount < num {
 		incoming := <-receiver
 		messages = append(messages, incoming[1])
 		log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
@@ -90,10 +90,10 @@ var opts struct {
 	Https     bool   `long:"secure" description:"start https"`
 }
 
-// ./mqtt --broker 0.0.0.0:1883 --action pub --message cool --topic topic  --id pub --user publisher
-// ./mqtt --action sub --topic topic --broker 0.0.0.0:1883 --id sub --user subscriber
+// ./mqtt --broker 0.0.0.0:1883 --action pub --message cool --topic test --id pub --user publisher
+// ./mqtt --action sub --topic test --broker 0.0.0.0:1883 --id sub --user subscriber
 
-func main() {
+func test() {
 	var err error
 	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {
@@ -161,13 +161,14 @@ func main() {
 		mqttopts.SetTLSConfig(config)
 	}
 
+	log.Println("THIS IS COOL")
 	if opts.Action == "pub" {
-		err = publishMessage(mqttopts)
+		err = PublishMessage(mqttopts)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		err = subscribeMessage(mqttopts)
+		err = SubscribeMessage(mqttopts, opts.Topic, opts.Qos, opts.Num)
 		if err != nil {
 			log.Fatal(err)
 		}

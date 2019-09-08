@@ -146,6 +146,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	/*
+		errs := make(chan error, 1)
+		go core.TrackProject(1, "localhost:1883", "test", errs)
+		err = <-errs
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
 	// rpc.KillCode = "NUKE" // compile time nuclear code
 	// run this only when you need to monitor the tellers. Not required for local testing.
 	// go core.MonitorTeller(1, "https://localhost:80")
