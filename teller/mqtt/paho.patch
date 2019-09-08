@@ -1,0 +1,26 @@
+diff --git a/trace.go b/trace.go
+index 195c817..ddf9f9b 100644
+--- a/trace.go
++++ b/trace.go
+@@ -14,6 +14,10 @@
+ 
+ package mqtt
+ 
++import (
++	"log"
++)
++
+ type (
+ 	// Logger interface allows implementations to provide to this package any
+ 	// object that implements the methods defined in it.
+@@ -27,8 +31,8 @@ type (
+ 	NOOPLogger struct{}
+ )
+ 
+-func (NOOPLogger) Println(v ...interface{}) {}
+-func (NOOPLogger) Printf(format string, v ...interface{}) {}
++func (NOOPLogger) Println(v ...interface{}) {log.Println(v)}
++func (NOOPLogger) Printf(format string, v ...interface{}) {log.Println(format, v)}
+ 
+ // Internal levels of library output that are initialised to not print
+ // anything but can be overridden by programmer
