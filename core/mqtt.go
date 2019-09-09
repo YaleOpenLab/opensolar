@@ -2,16 +2,19 @@ package core
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"log"
 
+	utils "github.com/Varunram/essentials/utils"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	mqttlib "github.com/YaleOpenLab/opensolar/teller/mqtt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	// "github.com/sparrc/go-ping"
+	"github.com/sparrc/go-ping"
 )
 
-func TrackProject(projIndex int, brokerurl string, topic string, errs chan error){
+func TrackProject(projIndex int, errs chan error) {
 	go func() {
-		err := trackProject(projIndex, brokerurl, topic)
+		err := track(projIndex)
 		if err != nil {
 			errs <- fmt.Errorf("track project error: %s", err.Error())
 		}
@@ -19,9 +22,13 @@ func TrackProject(projIndex int, brokerurl string, topic string, errs chan error
 	}()
 }
 
-func trackProject(projIndex int, brokerurl string, topic string) error {
-	/*
-	pinger, err := ping.NewPinger(brokerurl)
+func track(projIndex int) error {
+	project, err := RetrieveProject(projIndex)
+	if err != nil {
+		return errors.Wrap(err, "could not retrieve project")
+	}
+
+	pinger, err := ping.NewPinger(project.BrokerUrl)
 	if err != nil {
 		return err
 	}
@@ -40,24 +47,22 @@ func trackProject(projIndex int, brokerurl string, topic string) error {
 
 	fmt.Printf("PING %s (%s):\n", pinger.Addr(), pinger.IPAddr())
 	pinger.Run()
-	*/
-	project, err := RetrieveProject(projIndex)
-	if err != nil {
-		return err
-	}
-	log.Println(project.Index)
+
+	log.Println("tracking project by starting an MQTT client: ", projIndex)
 	// start a subscriber connected to a specific topic
+	projectString, err := utils.ToString(projIndex)
+	if err != nil {
+		return errors.Wrap(err, "could not convert to string")
+	}
 
 	mqttopts := mqtt.NewClientOptions()
-	mqttopts.AddBroker(brokerurl)
-	mqttopts.SetClientID("platformID")
-	mqttopts.SetUsername("platform")
-	qos := 0
-	num := 1
+	mqttopts.AddBroker(project.BrokerUrl)
+	mqttopts.SetClientID("platformID" + projectString)
+	mqttopts.SetUsername("platform" + projectString)
 
-	err = mqttlib.SubscribeMessage(mqttopts, topic, qos, num)
+	err = mqttlib.SubscribeMessage(mqttopts, project.TellerPublishTopic, consts.TellerQos, consts.TellerListenNum)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "could not subscribe to topic / broker")
 	}
 
 	return nil

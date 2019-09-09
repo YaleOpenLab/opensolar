@@ -39,3 +39,4 @@ go build
 cp dummyconfig.yaml config.yaml
 alias teller = ./$PWD/teller
 ## start teller, openx and opensolar
+# env GOOS=linux GOARCH=arm GOARM=5 go build

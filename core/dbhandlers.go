@@ -400,3 +400,16 @@ func UserMarkFlagged(projIndex int, userIndex int) error {
 	a.Reports += 1
 	return a.Save()
 }
+
+func AddTellerDetails(projIndex int, url string, brokerurl string, topic string) error {
+	a, err := RetrieveProject(projIndex)
+	if err != nil {
+		return errors.Wrap(err, "couldn't retrieve project")
+	}
+
+	a.TellerUrl = url
+	a.BrokerUrl = brokerurl
+	a.TellerPublishTopic = topic
+
+	return a.Save()
+}
