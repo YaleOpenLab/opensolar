@@ -39,25 +39,25 @@ func setupRecipientRPCs() {
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
 var RecpRPC = map[int][]string{
-	1:  []string{"/recipient/all"},
-	2:  []string{"/recipient/register"},
-	3:  []string{"/recipient/validate"},
-	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},
-	5:  []string{"/recipient/deviceId", "deviceId"},
-	6:  []string{"/recipient/startdevice", "start"},
-	7:  []string{"/recipient/storelocation", "location"},
-	8:  []string{"/recipient/auction/choose/blind"},
-	9:  []string{"/recipient/auction/choose/vickrey"},
-	10: []string{"/recipient/auction/choose/time"},
-	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},
-	12: []string{"/recipient/addemail", "email"},
-	13: []string{"/recipient/finalize", "projIndex"},
-	14: []string{"/recipient/originate", "projIndex"},
-	15: []string{"/recipient/trustlimit", "assetName"},
-	16: []string{"/recipient/ssh", "hash"},
-	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
-	18: []string{"/recipient/register/teller", "url", "projIndex"},
-	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"},
+	1:  []string{"/recipient/all"},                                                      // GET
+	2:  []string{"/recipient/register"},                                                 // POST
+	3:  []string{"/recipient/validate"},                                                 // GET
+	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},   // POST
+	5:  []string{"/recipient/deviceId", "deviceId"},                                     // POST
+	6:  []string{"/recipient/startdevice", "start"},                                     // POST
+	7:  []string{"/recipient/storelocation", "location"},                                // POST
+	8:  []string{"/recipient/auction/choose/blind"},                                     // GET
+	9:  []string{"/recipient/auction/choose/vickrey"},                                   // GET
+	10: []string{"/recipient/auction/choose/time"},                                      // GET
+	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},                 // POST
+	12: []string{"/recipient/addemail", "email"},                                        // POST
+	13: []string{"/recipient/finalize", "projIndex"},                                    // POST
+	14: []string{"/recipient/originate", "projIndex"},                                   // POST
+	15: []string{"/recipient/trustlimit", "assetName"},                                  // GET
+	16: []string{"/recipient/ssh", "hash"},                                              // POST
+	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},                    // POST
+	18: []string{"/recipient/register/teller", "url", "projIndex"},                      // POST
+	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"}, // POST
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -117,22 +117,22 @@ func getAllRecipients() {
 // registerRecipient creates and stores a new recipient on the platform
 func registerRecipient() {
 	http.HandleFunc(RecpRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		if r.URL.Query()["name"] == nil || r.URL.Query()["username"] == nil || r.URL.Query()["pwd"] == nil || r.URL.Query()["seedpwd"] == nil {
-			log.Println("missing basic set of params that can be used ot validate a user")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		err = checkReqdParams(w, r, RecpRPC[2][1:])
+		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		name := r.URL.Query()["name"][0]
-		username := r.URL.Query()["username"][0]
-		pwhash := r.URL.Query()["pwhash"][0]
-		seedpwd := r.URL.Query()["seedpwd"][0]
+		name := r.FormValue("name")
+		username := r.FormValue("username")
+		pwhash := r.FormValue("pwhash")
+		seedpwd := r.FormValue("seedpwd")
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
@@ -142,10 +142,6 @@ func registerRecipient() {
 				return
 			}
 
-			err = checkReqdParams(w, r, RecpRPC[2][1:])
-			if err != nil {
-				return
-			}
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
 			if err != nil {
@@ -203,7 +199,7 @@ func validateRecipient() {
 // payback pays back towards an  invested order
 func payback() {
 	http.HandleFunc(RecpRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -214,15 +210,18 @@ func payback() {
 			return
 		}
 
+		projIndexx := r.FormValue("projIndex")
+		assetName := r.FormValue("assetName")
+		seedpwd := r.FormValue("seedpwd")
+		amountx := r.FormValue("amount")
+
 		recpIndex := prepRecipient.U.Index
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
-		assetName := r.URL.Query()["assetName"][0]
-		seedpwd := r.URL.Query()["seedpwd"][0]
-		amount, err := utils.ToFloat(r.URL.Query()["amount"][0])
+		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -235,7 +234,6 @@ func payback() {
 			return
 		}
 
-		log.Println(recpIndex, projIndex, assetName, amount, recipientSeed)
 		err = core.Payback(recpIndex, projIndex, assetName, amount, recipientSeed)
 		if err != nil {
 			log.Println("did not payback", err)
@@ -250,7 +248,7 @@ func payback() {
 func storeDeviceId() {
 	http.HandleFunc(RecpRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -260,8 +258,10 @@ func storeDeviceId() {
 		if err != nil {
 			return
 		}
+
+		deviceId := r.FormValue("deviceId")
 		// we have the recipient ready. Now set the device id
-		prepRecipient.DeviceId = r.URL.Query()["deviceId"][0]
+		prepRecipient.DeviceId = deviceId
 		err = prepRecipient.Save()
 		if err != nil {
 			log.Println("did not save recipient", err)
@@ -276,7 +276,7 @@ func storeDeviceId() {
 // invested project. Called by the teller
 func storeStartTime() {
 	http.HandleFunc(RecpRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -288,7 +288,9 @@ func storeStartTime() {
 			return
 		}
 
-		prepRecipient.DeviceStarts = append(prepRecipient.DeviceStarts, r.URL.Query()["start"][0])
+		start := r.FormValue("start")
+
+		prepRecipient.DeviceStarts = append(prepRecipient.DeviceStarts, start)
 		err = prepRecipient.Save()
 		if err != nil {
 			log.Println("did not save recipient", err)
@@ -302,7 +304,7 @@ func storeStartTime() {
 // storeDeviceLocation stores the location of the remote device when it starts up. Called by the teller
 func storeDeviceLocation() {
 	http.HandleFunc(RecpRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -313,7 +315,9 @@ func storeDeviceLocation() {
 			return
 		}
 
-		prepRecipient.DeviceLocation = r.URL.Query()["location"][0]
+		location := r.FormValue("location")
+
+		prepRecipient.DeviceLocation = location
 		err = prepRecipient.Save()
 		if err != nil {
 			log.Println("did not save recipient", err)
@@ -447,7 +451,7 @@ func chooseTimeAuction() {
 // has accepted the investment.
 func unlockOpenSolar() {
 	http.HandleFunc(RecpRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -458,8 +462,10 @@ func unlockOpenSolar() {
 			return
 		}
 
-		seedpwd := r.URL.Query()["seedpwd"][0]
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		seedpwd := r.FormValue("seedpwd")
+		projIndexx := r.FormValue("projIndex")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -480,7 +486,7 @@ func unlockOpenSolar() {
 // addEmail adds an email address to the recipient's profile
 func addEmail() {
 	http.HandleFunc(RecpRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -491,7 +497,8 @@ func addEmail() {
 			return
 		}
 
-		email := r.URL.Query()["email"][0]
+		email := r.FormValue("email")
+
 		err = recipient.U.AddEmail(email)
 		if err != nil {
 			log.Println("did not add email", err)
@@ -505,7 +512,7 @@ func addEmail() {
 // finalizeProject finalizes (ie moves from stage 2 to 3) a specific project
 func finalizeProject() {
 	http.HandleFunc(RecpRPC[13][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -516,7 +523,9 @@ func finalizeProject() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndexx := r.FormValue("projIndex")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -544,7 +553,7 @@ func finalizeProject() {
 // originateProject originates (ie moves from stage 0 to 1) a project
 func originateProject() {
 	http.HandleFunc(RecpRPC[14][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -555,7 +564,9 @@ func originateProject() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndexx := r.FormValue("projIndex")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -603,7 +614,7 @@ func calculateTrustLimit() {
 // Called by the teller
 func storeStateHash() {
 	http.HandleFunc(RecpRPC[16][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -615,7 +626,9 @@ func storeStateHash() {
 			return
 		}
 
-		prepRecipient.StateHashes = append(prepRecipient.StateHashes, r.URL.Query()["hash"][0])
+		hash := r.FormValue("hash")
+
+		prepRecipient.StateHashes = append(prepRecipient.StateHashes, hash)
 		err = prepRecipient.Save()
 		if err != nil {
 			log.Println("did not save recipient", err)
@@ -628,7 +641,7 @@ func storeStateHash() {
 
 func setOneTimeUnlock() {
 	http.HandleFunc(RecpRPC[17][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -640,13 +653,14 @@ func setOneTimeUnlock() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndexx := r.FormValue("projIndex")
+		seedpwd := r.FormValue("seedpwd")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
-
-		seedpwd := r.URL.Query()["seedpwd"][0]
 
 		err = prepRecipient.SetOneTimeUnlock(projIndex, seedpwd)
 		if err != nil {
@@ -678,7 +692,10 @@ func storeTellerURL() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.FormValue("projIndex"))
+		projIndexx := r.FormValue("projIndex")
+		url := r.FormValue("url")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
@@ -696,7 +713,6 @@ func storeTellerURL() {
 			return
 		}
 
-		url := r.FormValue("url")
 		project.TellerUrl = url
 		err = project.Save()
 		if err != nil {
@@ -728,7 +744,12 @@ func storeTellerDetails() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.FormValue("projIndex"))
+		projIndexx := r.FormValue("projIndex")
+		url := r.FormValue("url")
+		brokerurl := r.FormValue("brokerurl")
+		topic := r.FormValue("topic")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
@@ -739,7 +760,7 @@ func storeTellerDetails() {
 			return
 		}
 
-		err = core.AddTellerDetails(projIndex, r.FormValue("url"), r.FormValue("brokerurl"), r.FormValue("topic"))
+		err = core.AddTellerDetails(projIndex, url, brokerurl, topic)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
