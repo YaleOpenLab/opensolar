@@ -8,6 +8,20 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
+func setupPublicRoutes() {
+	getAllInvestorsPublic()
+	getAllRecipientsPublic()
+	getInvTopReputationPublic()
+	getRecpTopReputationPublic()
+}
+
+var PublicRpc = map[int][]string {
+	1: []string{"/public/investor/all"},
+	2: []string{"/public/recipient/all"},
+	3: []string{"/public/recipient/reputation/top"},
+	4: []string{"/public/investor/reputation/top"},
+}
+
 // SnInvestor defines a sanitized investor
 type SnInvestor struct {
 	Name                  string
@@ -32,13 +46,6 @@ type SnUser struct {
 	Name       string
 	PublicKey  string
 	Reputation float64
-}
-
-func setupPublicRoutes() {
-	getAllInvestorsPublic()
-	getAllRecipientsPublic()
-	getInvTopReputationPublic()
-	getRecpTopReputationPublic()
 }
 
 // sanitizeInvestor removes sensitive fields from the investor struct
@@ -82,7 +89,7 @@ func sanitizeAllRecipients(recipients []core.Recipient) []SnRecipient {
 
 // getAllInvestors gets a list of all the investors in the database
 func getAllInvestorsPublic() {
-	http.HandleFunc("/public/investor/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -101,7 +108,7 @@ func getAllInvestorsPublic() {
 
 // getAllRecipients gets a list of all the investors in the database
 func getAllRecipientsPublic() {
-	http.HandleFunc("/public/recipient/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -120,7 +127,7 @@ func getAllRecipientsPublic() {
 
 // getRecpTopReputationPublic gets a list of the recipients sorted by descending order of reputation
 func getRecpTopReputationPublic() {
-	http.HandleFunc("/public/recipient/reputation/top", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -139,7 +146,7 @@ func getRecpTopReputationPublic() {
 
 // getInvTopReputationPublic gets a list of the investors sorted by descending order of reputation
 func getInvTopReputationPublic() {
-	http.HandleFunc("/public/investor/reputation/top", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)

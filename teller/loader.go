@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
-	erpc "github.com/Varunram/essentials/rpc"
 )
 
 // StartTeller starts the teller

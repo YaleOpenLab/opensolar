@@ -6,10 +6,10 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"github.com/pkg/errors"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
-	"net/http"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"

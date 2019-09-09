@@ -15,18 +15,6 @@ import (
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
-// InvRPC contains a list of all investor related endpoints
-var InvRPC = map[int][]string{
-	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},
-	2: []string{"/investor/validate"},
-	3: []string{"/investor/all"},
-	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},
-	5: []string{"/investor/vote", "votes", "projIndex"},
-	6: []string{"/investor/localasset", "assetName"},
-	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"},
-	8: []string{"/investor/sendemail", "message", "to"},
-}
-
 // setupInvestorRPCs sets up all investor related RPCs
 func setupInvestorRPCs() {
 	registerInvestor()
@@ -37,6 +25,18 @@ func setupInvestorRPCs() {
 	addLocalAssetInv()
 	invAssetInv()
 	sendEmail()
+}
+
+// InvRPC contains a list of all investor related endpoints
+var InvRPC = map[int][]string{
+	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},
+	2: []string{"/investor/validate"},
+	3: []string{"/investor/all"},
+	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},
+	5: []string{"/investor/vote", "votes", "projIndex"},
+	6: []string{"/investor/localasset", "assetName"},
+	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"},
+	8: []string{"/investor/sendemail", "message", "to"},
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
@@ -62,7 +62,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string)
 
 func registerInvestor() {
 	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -74,11 +74,11 @@ func registerInvestor() {
 			return
 		}
 
-		name := r.URL.Query()["name"][0]
-		username := r.URL.Query()["username"][0]
-		pwhash := r.URL.Query()["pwhash"][0]
-		token := r.URL.Query()["token"][0]
-		seedpwd := r.URL.Query()["seedpwd"][0]
+		name := r.FormValue("name")
+		username := r.FormValue("username")
+		pwhash := r.FormValue("pwhash")
+		token := r.FormValue("token")
+		seedpwd := r.FormValue("seedpwd")
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
@@ -167,19 +167,22 @@ func getAllInvestors() {
 // Invest invests in a project of the investor's choice
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		log.Println("In invest RPC")
+
 		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
-		seedpwd := r.URL.Query()["seedpwd"][0]
+		seedpwd := r.FormValue("seedpwd")
+		projIndexx := r.FormValue("projIndex")
+		amountx := r.FormValue("amount")
+
 		investorSeed, err := wallet.DecryptSeed(investor.U.StellarWallet.EncryptedSeed, seedpwd)
 		if err != nil {
 			log.Println("did not decrypt seed", err)
@@ -187,14 +190,14 @@ func invest() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("error while converting project index to int: ", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
-		amount, err := utils.ToFloat(r.URL.Query()["amount"][0])
+		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -226,19 +229,28 @@ func invest() {
 // voteTowardsProject votes towards a proposed project of the user's choice.
 func voteTowardsProject() {
 	http.HandleFunc(InvRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		investor, err := InvValidateHelper(w, r, InvRPC[5][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
-		votes, err := utils.ToFloat(r.URL.Query()["votes"][0])
+		votesx := r.FormValue("votes")
+		projIndexx := r.FormValue("projIndex")
+
+		votes, err := utils.ToFloat(votesx)
 		if err != nil {
 			log.Println("votes not float, quitting")
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("error while converting project index to int: ", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -259,6 +271,11 @@ func voteTowardsProject() {
 // from the platform
 func addLocalAssetInv() {
 	http.HandleFunc(InvRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][1:])
 		if err != nil {
@@ -266,7 +283,8 @@ func addLocalAssetInv() {
 			return
 		}
 
-		assetName := r.URL.Query()["assetName"][0]
+		assetName := r.FormValue("assetName")
+
 		prepInvestor.U.LocalAssets = append(prepInvestor.U.LocalAssets, assetName)
 		err = prepInvestor.Save()
 		if err != nil {
@@ -282,15 +300,23 @@ func addLocalAssetInv() {
 // invAssetInv sends a local asset to a remote peer
 func invAssetInv() {
 	http.HandleFunc(InvRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
-		assetName := r.URL.Query()["assetName"][0]
+		assetName := r.FormValue("assetName")
+		seedpwd := r.FormValue("seedpwd")
+		destination := r.FormValue("desination")
+		amountx := r.FormValue("amount")
 
-		seedpwd := r.URL.Query()["seedpwd"][0]
 		seed, err := wallet.DecryptSeed(prepInvestor.U.StellarWallet.EncryptedSeed, seedpwd)
 		if err != nil {
 			log.Println("did not decrypt seed", err)
@@ -298,8 +324,7 @@ func invAssetInv() {
 			return
 		}
 
-		destination := r.URL.Query()["destination"][0]
-		amount, err := utils.ToFloat(r.URL.Query()["amount"][0])
+		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -330,14 +355,21 @@ func invAssetInv() {
 // sendEmail sends an email to a specific entity
 func sendEmail() {
 	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][1:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
-		message := r.URL.Query()["message"][0]
-		to := r.URL.Query()["to"][0]
+		message := r.FormValue("message")
+		to := r.FormValue("to")
+
 		err = notif.SendEmail(message, to, prepInvestor.U.Name)
 		if err != nil {
 			log.Println("did not send email", err)

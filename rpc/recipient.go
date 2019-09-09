@@ -13,29 +13,6 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
-// RecpRPC is a collection of all recipient RPC endpoints and their required params
-var RecpRPC = map[int][]string{
-	1:  []string{"/recipient/all"},
-	2:  []string{"/recipient/register"},
-	3:  []string{"/recipient/validate"},
-	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},
-	5:  []string{"/recipient/deviceId", "deviceId"},
-	6:  []string{"/recipient/startdevice", "start"},
-	7:  []string{"/recipient/storelocation", "location"},
-	8:  []string{"/recipient/auction/choose/blind"},
-	9:  []string{"/recipient/auction/choose/vickrey"},
-	10: []string{"/recipient/auction/choose/time"},
-	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},
-	12: []string{"/recipient/addemail", "email"},
-	13: []string{"/recipient/finalize", "projIndex"},
-	14: []string{"/recipient/originate", "projIndex"},
-	15: []string{"/recipient/trustlimit", "assetName"},
-	16: []string{"/recipient/ssh", "hash"},
-	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
-	18: []string{"/recipient/register/teller", "url", "projIndex"},
-	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"},
-}
-
 // setupRecipientRPCs sets up all RPCs related to the recipient
 func setupRecipientRPCs() {
 	registerRecipient()
@@ -58,6 +35,29 @@ func setupRecipientRPCs() {
 	setOneTimeUnlock()
 	storeTellerURL()
 	storeTellerDetails()
+}
+
+// RecpRPC is a collection of all recipient RPC endpoints and their required params
+var RecpRPC = map[int][]string{
+	1:  []string{"/recipient/all"},
+	2:  []string{"/recipient/register"},
+	3:  []string{"/recipient/validate"},
+	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},
+	5:  []string{"/recipient/deviceId", "deviceId"},
+	6:  []string{"/recipient/startdevice", "start"},
+	7:  []string{"/recipient/storelocation", "location"},
+	8:  []string{"/recipient/auction/choose/blind"},
+	9:  []string{"/recipient/auction/choose/vickrey"},
+	10: []string{"/recipient/auction/choose/time"},
+	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},
+	12: []string{"/recipient/addemail", "email"},
+	13: []string{"/recipient/finalize", "projIndex"},
+	14: []string{"/recipient/originate", "projIndex"},
+	15: []string{"/recipient/trustlimit", "assetName"},
+	16: []string{"/recipient/ssh", "hash"},
+	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
+	18: []string{"/recipient/register/teller", "url", "projIndex"},
+	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"},
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes

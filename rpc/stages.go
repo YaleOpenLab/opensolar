@@ -17,10 +17,16 @@ func setupStagesHandlers() {
 	promoteStage()
 }
 
+var StagesRPC = map[int][]string{
+	1: []string{"/stages/all"},
+	2: []string{"/stages", "index"},
+	3: []string{"/stages/promote"},
+}
+
 // returnAllStages returns all the defined stages for this specific platform.  Opensolar
 // has 9 stages defined in stages.go
 func returnAllStages() {
-	http.HandleFunc("/stages/all", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(StagesRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -37,20 +43,22 @@ func returnAllStages() {
 
 // returnSpecificStage returns details on a specific stage defined in the opensolar platform
 func returnSpecificStage() {
-	http.HandleFunc("/stages", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(StagesRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		if r.URL.Query()["index"] == nil {
-			log.Println("User did not pass index to retrieve stage for, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		err = checkReqdParams(w, r, StagesRPC[2][1:])
+		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		index, err := utils.ToInt(r.URL.Query()["index"][0])
+		indexx := r.URL.Query()["index"][0]
+
+		index, err := utils.ToInt(indexx)
 		if err != nil {
 			log.Println("Passed index not an integer, quitting!")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -88,25 +96,28 @@ func returnSpecificStage() {
 
 // promoteStage returns details on a specific stage defined in the opensolar platform
 func promoteStage() {
-	http.HandleFunc("/stages/promote", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(StagesRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		if r.URL.Query()["index"] == nil {
-			log.Println("some fields missing to promote from stage x to y, quitting!")
+		err = checkReqdParams(w, r, StagesRPC[2][1:])
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		indexx := r.URL.Query()["index"][0]
+
+		index, err := utils.ToInt(indexx)
+		if err != nil {
+			log.Println("Passed index not an integer, quitting!")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
-		index, err := utils.ToInt(r.URL.Query()["index"][0])
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
 		err = core.StageXtoY(index)
 		if err != nil {
 			log.Println(err)
