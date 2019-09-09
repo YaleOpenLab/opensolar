@@ -9,13 +9,13 @@ import (
 )
 
 func setupPublicRoutes() {
-	getAllInvestorsPublic()
-	getAllRecipientsPublic()
-	getInvTopReputationPublic()
-	getRecpTopReputationPublic()
+	getAllInvestorsPublic()      // GET
+	getAllRecipientsPublic()     // GET
+	getInvTopReputationPublic()  // GET
+	getRecpTopReputationPublic() // GET
 }
 
-var PublicRpc = map[int][]string {
+var PublicRpc = map[int][]string{
 	1: []string{"/public/investor/all"},
 	2: []string{"/public/recipient/all"},
 	3: []string{"/public/recipient/reputation/top"},

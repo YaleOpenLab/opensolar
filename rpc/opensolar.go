@@ -18,11 +18,11 @@ func setupProjectRPCs() {
 	getProjectsAtIndex()
 }
 
-var ProjRpc = map[int][]string {
-	1: []string{"/project/insert", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"},
-	2: []string{"/project/all"},
-	3: []string{"/project/get", "index"},
-	4: []string{"/projects", "index"},
+var ProjRpc = map[int][]string{
+	1: []string{"/project/insert", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
+	2: []string{"/project/all"},                                                                // GET
+	3: []string{"/project/get", "index"},                                                       // GET
+	4: []string{"/projects", "index"},                                                          // GET
 }
 
 // insertProject inserts a project into the database.

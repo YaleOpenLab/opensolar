@@ -29,14 +29,14 @@ func setupInvestorRPCs() {
 
 // InvRPC contains a list of all investor related endpoints
 var InvRPC = map[int][]string{
-	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},
-	2: []string{"/investor/validate"},
-	3: []string{"/investor/all"},
-	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},
-	5: []string{"/investor/vote", "votes", "projIndex"},
-	6: []string{"/investor/localasset", "assetName"},
-	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"},
-	8: []string{"/investor/sendemail", "message", "to"},
+	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},      // POST
+	2: []string{"/investor/validate"},                                                        // GET
+	3: []string{"/investor/all"},                                                             // GET
+	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},                        // POST
+	5: []string{"/investor/vote", "votes", "projIndex"},                                      // POST
+	6: []string{"/investor/localasset", "assetName"},                                         // POST
+	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"}, // POST
+	8: []string{"/investor/sendemail", "message", "to"},                                      // POST
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
