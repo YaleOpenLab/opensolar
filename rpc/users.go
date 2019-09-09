@@ -12,16 +12,16 @@ import (
 	// openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
 
-// UserRPC is a collection of all user RPC endpoints and their required params
-var UserRPC = map[int][]string{
-	1: []string{"/user/update"},
-	2: []string{"/user/report", "projIndex"},
-}
-
 // setupUserRpcs sets up user related RPCs
 func setupUserRpcs() {
 	updateUser()
 	reportProject()
+}
+
+// UserRPC is a collection of all user RPC endpoints and their required params
+var UserRPC = map[int][]string{
+	1: []string{"/user/update"},              // POST
+	2: []string{"/user/report", "projIndex"}, // POST
 }
 
 func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (openx.User, error) {
@@ -55,7 +55,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 // updateUser updates credentials of the user
 func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -66,32 +66,32 @@ func updateUser() {
 			return
 		}
 
-		if r.URL.Query()["name"] != nil {
-			user.Name = r.URL.Query()["name"][0]
+		if r.FormValue("name") != "" {
+			user.Name = r.FormValue("name")
 		}
-		if r.URL.Query()["city"] != nil {
-			user.City = r.URL.Query()["city"][0]
+		if r.FormValue("city") != "" {
+			user.City = r.FormValue("city")
 		}
-		if r.URL.Query()["zipcode"] != nil {
-			user.ZipCode = r.URL.Query()["zipcode"][0]
+		if r.FormValue("zipcode") != "" {
+			user.ZipCode = r.FormValue("zipcode")
 		}
-		if r.URL.Query()["country"] != nil {
-			user.Country = r.URL.Query()["country"][0]
+		if r.FormValue("country") != "" {
+			user.Country = r.FormValue("country")
 		}
-		if r.URL.Query()["recoveryphone"] != nil {
-			user.RecoveryPhone = r.URL.Query()["recoveryphone"][0]
+		if r.FormValue("recoveryphone") != "" {
+			user.RecoveryPhone = r.FormValue("recoveryphone")
 		}
-		if r.URL.Query()["address"] != nil {
-			user.Address = r.URL.Query()["address"][0]
+		if r.FormValue("address") != "" {
+			user.Address = r.FormValue("address")
 		}
-		if r.URL.Query()["description"] != nil {
-			user.Description = r.URL.Query()["description"][0]
+		if r.FormValue("description") != "" {
+			user.Description = r.FormValue("description")
 		}
-		if r.URL.Query()["email"] != nil {
-			user.Email = r.URL.Query()["email"][0]
+		if r.FormValue("email") != "" {
+			user.Email = r.FormValue("email")
 		}
-		if r.URL.Query()["notification"] != nil {
-			if r.URL.Query()["notification"][0] != "true" {
+		if r.FormValue("notification") != "" {
+			if r.FormValue("notification") != "true" {
 				user.Notification = false
 			} else {
 				user.Notification = true
@@ -130,7 +130,7 @@ func updateUser() {
 // reportProject updates credentials of the user
 func reportProject() {
 	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -141,7 +141,9 @@ func reportProject() {
 			return
 		}
 
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		projIndexx := r.FormValue("projIndex")
+
+		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)

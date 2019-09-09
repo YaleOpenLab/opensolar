@@ -21,30 +21,48 @@ func setupEntityRPCs() {
 	proposeOpensolarProject()
 }
 
+var EntityRpc = map[int][]string{
+	1: []string{"/entity/validate"},                                     // GET
+	2: []string{"/entity/stage0"},                                       // GET
+	3: []string{"/entity/stage1"},                                       // GET
+	4: []string{"/entity/stage2"},                                       // GET
+	5: []string{"/entity/addcollateral", "amount", "collateral"},        // POST
+	6: []string{"/entity/proposeproject/opensolar", "projIndex", "fee"}, // POST
+	7: []string{"/entity/newproject/opensolar"},                         // GET
+}
+
 // EntityValidateHelper is a helper that helps validate an entity
 func EntityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, error) {
-	var prepInvestor core.Entity
-	err := erpc.CheckGet(w, r)
-	if err != nil {
-		log.Println(err)
-		return prepInvestor, err
-	}
-	if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
-		len(r.URL.Query()["token"][0]) != 32 {
-		return prepInvestor, errors.New("Invalid params passed")
-	}
+	var prepEntity core.Entity
+	if r.Method == "GET" {
+		if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
+			len(r.URL.Query()["token"][0]) != 32 {
+			return prepEntity, errors.New("Invalid params passed")
+		}
 
-	prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
-	if err != nil {
-		return prepEntity, errors.Wrap(err, "Error while validating entity")
-	}
+		prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
+		if err != nil {
+			return prepEntity, errors.Wrap(err, "Error while validating entity")
+		}
 
-	return prepEntity, nil
+		return prepEntity, nil
+	} else if r.Method == "POST" {
+		if r.FormValue("username") == "" || r.FormValue("password") == "" {
+			return prepEntity, errors.New("Invalid params passed")
+		}
+
+		prepEntity, err := core.ValidateEntity(r.FormValue("username"), r.FormValue("token"))
+		if err != nil {
+			return prepEntity, errors.Wrap(err, "Error while validating entity")
+		}
+		return prepEntity, nil
+	}
+	return prepEntity, errors.New("invalid method type")
 }
 
 // validateEntity is an endpoint that vlaidates is a specific entity is registered on the platform
 func validateEntity() {
-	http.HandleFunc("/entity/validate", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -62,7 +80,7 @@ func validateEntity() {
 
 // getStage0Contracts gets a list of all the pre origianted contracts on the platform
 func getStage0Contracts() {
-	http.HandleFunc("/entity/stage0", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -87,7 +105,7 @@ func getStage0Contracts() {
 
 // getStage1Contracts gets a list of all the originated contracts on the platform
 func getStage1Contracts() {
-	http.HandleFunc("/entity/stage1", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -112,7 +130,7 @@ func getStage1Contracts() {
 
 // getStage2Contracts gets a list of all the proposed contracts on the platform
 func getStage2Contracts() {
-	http.HandleFunc("/entity/stage2", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -137,8 +155,8 @@ func getStage2Contracts() {
 
 // addCollateral is a route that a contractor can use to add collateral
 func addCollateral() {
-	http.HandleFunc("/entity/addcollateral", func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+	http.HandleFunc(EntityRpc[5][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
@@ -148,21 +166,24 @@ func addCollateral() {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
-		if r.URL.Query()["amount"] == nil || r.URL.Query()["collateral"] == nil {
-			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+
+		err = checkReqdParams(w, r, EntityRpc[5][1:])
+		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		collateralAmount, err := utils.ToFloat(r.URL.Query()["amount"][0])
+		amountx := r.FormValue("amount")
+		collateral := r.FormValue("collateral")
+
+		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			log.Println("Error while converting string to float", err)
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
-		collateralData := r.URL.Query()["collateral"][0]
-		err = prepEntity.AddCollateral(collateralAmount, collateralData)
+		err = prepEntity.AddCollateral(amount, collateral)
 		if err != nil {
 			log.Println("Error while adding collateral", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
@@ -173,10 +194,68 @@ func addCollateral() {
 	})
 }
 
+// proposeOpensolarProject creates a contract which the contractor proposes towards a particular project
+func proposeOpensolarProject() {
+	http.HandleFunc(EntityRpc[6][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		prepEntity, err := EntityValidateHelper(w, r)
+		if err != nil {
+			log.Println("Error while validating entity", err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		err = checkReqdParams(w, r, EntityRpc[6][1:])
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		projIndexx := r.FormValue("projIndex")
+		feex := r.FormValue("fee")
+
+		projIndex, err := utils.ToInt(projIndexx)
+		if err != nil {
+			log.Println("project idnex not int, quitting!")
+			return
+		}
+
+		x, err := core.RetrieveProject(projIndex)
+		if err != nil {
+			log.Println("couldn't retrieve project with index")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		}
+
+		fee, err := utils.ToFloat(feex)
+		if err != nil {
+			log.Println("fee passed not integer, quitting!")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		}
+
+		x.TotalValue += fee
+		x.OriginatorFee = fee
+		x.OriginatorIndex = prepEntity.U.Index
+		x.Stage = 2
+
+		err = x.Save()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
 // createOpensolarProject creates a contract which the originator can take to the recipient in order to be validated
 // as a level 1 project.
 func createOpensolarProject() {
-	http.HandleFunc("/entity/newproject/opensolar", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRpc[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -276,61 +355,6 @@ func createOpensolarProject() {
 		x.Reputation = x.TotalValue
 		x.InvestmentType = "munibond" // hardcode for now, expand if we have other investment models later down the road
 		x.DateInitiated = utils.Timestamp()
-
-		err = x.Save()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		erpc.MarshalSend(w, x)
-	})
-}
-
-// proposeOpensolarProject creates a contract which the contractor proposes towards a particular project
-func proposeOpensolarProject() {
-	http.HandleFunc("/entity/proposeproject/opensolar", func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		prepEntity, err := EntityValidateHelper(w, r)
-		if err != nil {
-			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return
-		}
-
-		if r.URL.Query()["projIndex"] == nil || r.URL.Query()["fee"] == nil {
-			log.Println("missing required params, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println("project idnex not int, quitting!")
-			return
-		}
-
-		x, err := core.RetrieveProject(projIndex)
-		if err != nil {
-			log.Println("couldn't retrieve project with index")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-		}
-
-		fee, err := utils.ToFloat(r.URL.Query()["fee"][0])
-		if err != nil {
-			log.Println("fee passed not integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-		}
-
-		x.TotalValue += fee
-		x.OriginatorFee = fee
-		x.OriginatorIndex = prepEntity.U.Index
-		x.Stage = 2
 
 		err = x.Save()
 		if err != nil {
