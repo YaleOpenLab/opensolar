@@ -33,6 +33,7 @@ var RecpRPC = map[int][]string{
 	16: []string{"/recipient/ssh", "hash"},
 	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},
 	18: []string{"/recipient/register/teller", "url", "projIndex"},
+	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"},
 }
 
 // setupRecipientRPCs sets up all RPCs related to the recipient
@@ -56,6 +57,7 @@ func setupRecipientRPCs() {
 	storeStateHash()
 	setOneTimeUnlock()
 	storeTellerURL()
+	storeTellerDetails()
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -651,7 +653,6 @@ func setOneTimeUnlock() {
 			log.Println("did not set one time unlock", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
-
 		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -662,17 +663,15 @@ func storeTellerURL() {
 	http.HandleFunc(RecpRPC[18][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
-			log.Println("THIS IS THER ERROR")
+			log.Println(err)
 			return
 		}
 
-		log.Println("check this")
 		recipient, err := recpValidateHelper(w, r, RecpRPC[18][1:])
 		if err != nil {
 			return
 		}
 
-		log.Println("redcp validate helpr doesn't run")
 		err = r.ParseForm()
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -692,7 +691,7 @@ func storeTellerURL() {
 		}
 
 		if project.RecipientIndex != recipient.U.Index {
-			log.Println("receipient indices don't match, quitting")
+			log.Println("recipient indices don't match, quitting")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
@@ -706,6 +705,46 @@ func storeTellerURL() {
 		}
 
 		go core.MonitorTeller(projIndex, url)
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func storeTellerDetails() {
+	http.HandleFunc(RecpRPC[19][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		recipient, err := recpValidateHelper(w, r, RecpRPC[19][1:])
+		if err != nil {
+			return
+		}
+
+		err = r.ParseForm()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		projIndex, err := utils.ToInt(r.FormValue("projIndex"))
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		if recipient.U.Index != projIndex {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		err = core.AddTellerDetails(projIndex, r.FormValue("url"), r.FormValue("brokerurl"), r.FormValue("topic"))
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

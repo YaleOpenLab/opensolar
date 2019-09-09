@@ -242,7 +242,12 @@ func storeDataLocal() {
 			// the first line in a new file. This whole construction is like a blockchain so we could say
 			// we have a blockchain within a blockchain
 			// log.Println("size limit reached, taking action")
-			file.Close()
+			err = file.Close()
+			if err != nil {
+				log.Println("couldn't close file, trying again")
+				time.Sleep(2 * time.Second)
+				continue
+			}
 			fileHash, err := ipfs.IpfsAddBytes([]byte(path))
 			if err != nil {
 				log.Println("Couldn't hash file: ", err)
@@ -254,13 +259,14 @@ func storeDataLocal() {
 			_, err = os.Create(path)
 			if err != nil {
 				log.Println("error while opening file", err)
-				return
+				time.Sleep(2 * time.Second)
+				continue
 			}
-
 			file, err = os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 			if err != nil {
 				log.Println("error while opening file", err)
-				return
+				time.Sleep(2 * time.Second)
+				continue
 			}
 			file.Write([]byte(fileHash))
 		}

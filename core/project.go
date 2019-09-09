@@ -57,6 +57,8 @@ type Project struct {
 	UserFlaggedBy        []int              // the indices of the users who flagged the project
 	Reports              int                // the number of reports against htis particular project
 	TellerUrl            string             // the url of the teller installed as part of the project
+	BrokerUrl            string             // the url of the MQTT broker that is associated with the project
+	TellerPublishTopic   string             // the topic using which the publisher / subscriber must post / subscribe messages from
 
 	// below are all the non critical params
 	Name                        string     // the name of the project / the identifier by which its referred to
