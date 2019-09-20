@@ -1,0 +1,15 @@
+Source: opensolar
+Section: utils
+Priority: optional
+Maintainer: "Varunram Ganesh" <varunramganesh@gmail.com>
+Homepage: https://openx.solar
+
+Package: opensolar
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: The official openx package
+  Opensolar is a platform powered by openx
+  for funding smart solar infrastructure using
+  the Stellar blockchain developed at the MIT
+  Media Lab and Yale OpenLab.
