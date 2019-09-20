@@ -108,7 +108,7 @@ func getAllInvestorsPublic() {
 
 // getAllRecipients gets a list of all the investors in the database
 func getAllRecipientsPublic() {
-	http.HandleFunc(ProjRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -127,7 +127,7 @@ func getAllRecipientsPublic() {
 
 // getRecpTopReputationPublic gets a list of the recipients sorted by descending order of reputation
 func getRecpTopReputationPublic() {
-	http.HandleFunc(ProjRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -146,7 +146,7 @@ func getRecpTopReputationPublic() {
 
 // getInvTopReputationPublic gets a list of the investors sorted by descending order of reputation
 func getInvTopReputationPublic() {
-	http.HandleFunc(ProjRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
