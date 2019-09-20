@@ -8,6 +8,7 @@ import (
 	utils "github.com/Varunram/essentials/utils"
 
 	core "github.com/YaleOpenLab/opensolar/core"
+	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
 // setupProjectRPCs sets up all project related RPC calls
@@ -16,6 +17,9 @@ func setupProjectRPCs() {
 	getProject()
 	getAllProjects()
 	getProjectsAtIndex()
+	addContractHash()
+	sendTellerShutdownEmail()
+	sendTellerFailedPaybackEmail()
 }
 
 var ProjRpc = map[int][]string{
@@ -23,6 +27,9 @@ var ProjRpc = map[int][]string{
 	2: []string{"/project/all"},                                                                // GET
 	3: []string{"/project/get", "index"},                                                       // GET
 	4: []string{"/projects", "index"},                                                          // GET
+	5: []string{"/utils/addhash", "projIndex", "choice", "choicestr"},                          // GET
+	6: []string{"/tellershutdown", "projIndex", "deviceId", "tx1", "tx2"},                      // GET
+	7: []string{"/tellerpayback", "deviceId", "projIndex"},                                     // GET
 }
 
 // insertProject inserts a project into the database.
@@ -180,5 +187,121 @@ func getProjectsAtIndex() {
 		}
 
 		erpc.MarshalSend(w, allProjects)
+	})
+}
+
+// addContractHash adds a specific contract hash to the database
+func addContractHash() {
+	http.HandleFunc(ProjRpc[5][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		_, err = userValidateHelper(w, r, ProjRpc[5][1:])
+		if err != nil {
+			return
+		}
+
+		choice := r.URL.Query()["choice"][0]
+		hashString := r.URL.Query()["choicestr"][0]
+		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
+		if err != nil {
+			log.Println("passed project index not int, quitting!")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		project, err := core.RetrieveProject(projIndex)
+		if err != nil {
+			log.Println("couldn't retrieve prject index from database")
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+		// there are in total 5 types of hashes: OriginatorMoUHash, ContractorContractHash,
+		// InvPlatformContractHash, RecPlatformContractHash, SpecSheetHash
+		// lets have a fixed set of strings that we can map on here so we have a single endpoint for storing all these hashes
+
+		// TODO: read from the pending docs map here and store this only if we need to.
+		switch choice {
+		case "omh":
+			if project.Stage == 0 {
+				project.StageData = append(project.StageData, hashString)
+			}
+		case "cch":
+			if project.Stage == 2 {
+				project.StageData = append(project.StageData, hashString)
+			}
+		case "ipch":
+			if project.Stage == 4 {
+				project.StageData = append(project.StageData, hashString)
+			}
+		case "rpch":
+			if project.Stage == 4 {
+				project.StageData = append(project.StageData, hashString)
+			}
+		case "ssh":
+			if project.Stage == 5 {
+				project.StageData = append(project.StageData, hashString)
+			}
+		default:
+			log.Println("invalid choice passed, quitting!")
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		err = project.Save()
+		if err != nil {
+			log.Println("error while saving project to db, quitting!")
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+// sendTellerShutdownEmail sends a teller shutdown email
+func sendTellerShutdownEmail() {
+	http.HandleFunc(UserRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		prepUser, err := userValidateHelper(w, r, UserRPC[6][1:])
+		if err != nil {
+			return
+		}
+
+		projIndex := r.URL.Query()["projIndex"][0]
+		deviceId := r.URL.Query()["deviceId"][0]
+		tx1 := r.URL.Query()["tx1"][0]
+		tx2 := r.URL.Query()["tx2"][0]
+		notif.SendTellerShutdownEmail(prepUser.Email, projIndex, deviceId, tx1, tx2)
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+// sendTellerFailedPaybackEmail sends a teller failed payback email
+func sendTellerFailedPaybackEmail() {
+	http.HandleFunc(UserRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		prepUser, err := userValidateHelper(w, r, UserRPC[7][1:])
+		if err != nil {
+			return
+		}
+
+		projIndex := r.URL.Query()["projIndex"][0]
+		deviceId := r.URL.Query()["deviceId"][0]
+		notif.SendTellerPaymentFailedEmail(prepUser.Email, projIndex, deviceId)
+		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

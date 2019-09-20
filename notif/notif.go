@@ -304,41 +304,6 @@ func SendTellerDownEmail(projIndex int, recpIndex int) error {
 	return email.SendMail(body, consts.PlatformEmail)
 }
 
-// SendSecretsEmail is an email to trusted social contacts notifying that a user has shared a secret with them
-func SendSecretsEmail(userEmail string, email1 string, email2 string, email3 string, secret1 string, secret2 string, secret3 string) error {
-	bodyBase := "Greetings from the opensolar platform! \n\nWe're writing to let you know that user with email: " + userEmail +
-		" has designated you as a trusted entity. Towards this, we request that you keep the attached secret in a safe and secure place and provide " +
-		"it to the above user in case they request for it. \n\n" + "SECRET:\n\n"
-	body1 := bodyBase + secret1 + "\n\n\n" + footerString
-	err := email.SendMail(body1, email1)
-	if err != nil {
-		return err
-	}
-
-	body2 := bodyBase + secret2 + "\n\n\n" + footerString
-	err = email.SendMail(body2, email2)
-	if err != nil {
-		return err
-	}
-
-	body3 := bodyBase + secret3 + "\n\n\n" + footerString
-	err = email.SendMail(body3, email3)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SendPasswordResetEmail sends a password reset email to the email address of the user
-func SendPasswordResetEmail(to string, vCode string) error {
-	body := "Greetings from the opensolar platform! \n\nWe're writing to let you know that you requested a password reset recently\n\n" +
-		"Please use this given code along with the link attached in order to reset your password\n\n" +
-		"VERIFICATION CODE: " + vCode + "\n\n\n" + footerString
-
-	return email.SendMail(body, to)
-}
-
 func SendRecpNotFoundEmail(projIndex int, recpIndex int) error {
 	projIndexString, err := utils.ToString(projIndex)
 	if err != nil {
