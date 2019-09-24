@@ -1,4 +1,4 @@
-package main
+package legal
 
 import (
 	"code.sajari.com/docconv/client"
