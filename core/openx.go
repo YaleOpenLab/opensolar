@@ -39,10 +39,12 @@ func ValidateUser(name string, token string) (openx.User, error) {
 	log.Println(body)
 	data, err := erpc.GetRequest(body)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 	err = json.Unmarshal(data, &user)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 	return user, nil

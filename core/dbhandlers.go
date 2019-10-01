@@ -186,6 +186,9 @@ func ValidateInvestor(name string, token string) (Investor, error) {
 	if err != nil {
 		return rec, errors.Wrap(err, "failed to validate user")
 	}
+	if user.Index == 0 {
+		return rec, errors.New("Error while validating user")
+	}
 	return RetrieveInvestor(user.Index)
 }
 
@@ -195,6 +198,9 @@ func ValidateRecipient(name string, token string) (Recipient, error) {
 	user, err := ValidateUser(name, token)
 	if err != nil {
 		return rec, errors.Wrap(err, "Error while validating user")
+	}
+	if user.Index == 0 {
+		return rec, errors.New("Error while validating user")
 	}
 	return RetrieveRecipient(user.Index)
 }
