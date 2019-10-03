@@ -264,14 +264,14 @@ func addContractHash() {
 
 // sendTellerShutdownEmail sends a teller shutdown email
 func sendTellerShutdownEmail() {
-	http.HandleFunc(UserRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjRpc[6][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, UserRPC[6][1:])
+		prepUser, err := userValidateHelper(w, r, ProjRpc[6][1:])
 		if err != nil {
 			return
 		}
@@ -287,14 +287,14 @@ func sendTellerShutdownEmail() {
 
 // sendTellerFailedPaybackEmail sends a teller failed payback email
 func sendTellerFailedPaybackEmail() {
-	http.HandleFunc(UserRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjRpc[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, UserRPC[7][1:])
+		prepUser, err := userValidateHelper(w, r, ProjRpc[7][1:])
 		if err != nil {
 			return
 		}
