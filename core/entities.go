@@ -133,17 +133,15 @@ func RetrieveEntity(key int) (Entity, error) {
 }
 
 // newEntity creates a new entity based on the role passed
-func newEntity(uname string, pwd string, seedpwd string, Name string, Address string, Description string, role string) (Entity, error) {
+func newEntity(uname string, pwhash string, seedpwd string, name string, role string) (Entity, error) {
 	var a Entity
 	var err error
-	user, err := NewUser(uname, utils.SHA3hash(pwd), seedpwd, Name)
+	user, err := NewUser(uname, pwhash, seedpwd, name)
 	if err != nil {
 		return a, errors.Wrap(err, "couldn't retrieve new user from db")
 	}
 
-	user.Address = Address
-	user.Description = Description
-
+	user.Name = name
 	err = user.Save()
 	if err != nil {
 		return a, err
