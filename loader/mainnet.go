@@ -56,12 +56,12 @@ func Mainnet() error {
 			return err
 		}
 
-		orig, err := core.NewOriginator("martin", "p", "x", "MartinWainstein", "California", "Project Originator")
+		orig, err := core.NewOriginator("martin", "p", "x", "MartinWainstein")
 		if err != nil {
 			return err
 		}
 
-		contractor, err := core.NewContractor("samuel", "p", "x", "SamuelVisscher", "Georgia", "Project Contractor")
+		contractor, err := core.NewContractor("samuel", "p", "x", "SamuelVisscher")
 		if err != nil {
 			return err
 		}

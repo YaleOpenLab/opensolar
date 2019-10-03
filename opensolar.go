@@ -15,6 +15,7 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
+	sandbox "github.com/YaleOpenLab/opensolar/sandboxv2"
 
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -94,6 +95,7 @@ func ParseConsts() error {
 
 func main() {
 	var err error
+	log.Fatal(sandbox.Test())
 	insecure, port, err := ParseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
 	if err != nil {
 		log.Fatal(err)

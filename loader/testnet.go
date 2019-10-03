@@ -70,12 +70,12 @@ func Testnet() error {
 			return err
 		}
 
-		originator, err := core.NewOriginator("samuel", "p", "x", "SamuelOriginator", "ABC Street, London", "I am an originator")
+		originator, err := core.NewOriginator("samuel", "p", "x", "SamuelOriginator")
 		if err != nil {
 			return err
 		}
 
-		contractor, err := core.NewContractor("sam", "p", "x", "SamuelContractor", "14 ABC Street London", "This is a competing contractor")
+		contractor, err := core.NewContractor("sam", "p", "x", "SamuelContractor")
 		if err != nil {
 			return err
 		}

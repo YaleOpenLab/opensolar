@@ -10,27 +10,23 @@ import (
 )
 
 // NewOriginator creates a new originator
-func NewOriginator(uname string, pwd string, seedpwd string, Name string,
-	Address string, Description string) (Entity, error) {
-	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "originator")
+func NewOriginator(uname string, pwd string, seedpwd string, Name string) (Entity, error) {
+	return newEntity(uname, pwd, seedpwd, Name, "originator")
 }
 
 // NewDeveloper creates a new developer
-func NewDeveloper(uname string, pwd string, seedpwd string, Name string,
-	Address string, Description string) (Entity, error) {
-	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "developer")
+func NewDeveloper(uname string, pwd string, seedpwd string, Name string) (Entity, error) {
+	return newEntity(uname, pwd, seedpwd, Name, "developer")
 }
 
 // NewGuarantor returns a new guarantor
-func NewGuarantor(uname string, pwd string, seedpwd string, Name string,
-	Address string, Description string) (Entity, error) {
-	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "guarantor")
+func NewGuarantor(uname string, pwd string, seedpwd string, Name string) (Entity, error) {
+	return newEntity(uname, pwd, seedpwd, Name, "guarantor")
 }
 
 // NewContractor creates a new contractor
-func NewContractor(uname string, pwd string, seedpwd string, Name string,
-	Address string, Description string) (Entity, error) {
-	return newEntity(uname, pwd, seedpwd, Name, Address, Description, "contractor")
+func NewContractor(uname string, pwd string, seedpwd string, Name string) (Entity, error) {
+	return newEntity(uname, pwd, seedpwd, Name, "contractor")
 }
 
 // Save saves a Project's details
