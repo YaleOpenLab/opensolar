@@ -60,7 +60,8 @@ func Mainnet() bool {
 		log.Fatal(err)
 	}
 
-	return data[0] == byte(0)
+	log.Println("MAINNET BOOL: ", data[0] == byte(1))
+	return data[0] == byte(1)
 }
 
 // ParseConsts parses consts by receiving consts from the openx API
@@ -73,8 +74,8 @@ func ParseConsts() error {
 
 	var x openxrpc.OpensolarConstReturn
 	err = json.Unmarshal(data, &x)
-	if err != nil {
-		return err
+	if err != nil || len(string(data)) < 100 { // weird hack to catch 400s
+		return errors.New("request to get consts failed")
 	}
 
 	consts.PlatformPublicKey = x.PlatformPublicKey
@@ -88,6 +89,7 @@ func ParseConsts() error {
 	consts.AnchorUSDTrustLimit = x.AnchorUSDTrustLimit
 	consts.AnchorAPI = x.AnchorAPI
 	consts.Mainnet = x.Mainnet
+	log.Println("X MAINNET: ", x.Mainnet)
 	openxconsts.DbDir = x.DbDir // for our retrieve methods
 
 	return nil
@@ -115,7 +117,6 @@ func main() {
 	}
 
 	if Mainnet() {
-		consts.Mainnet = true
 		openxconsts.SetConsts(true)
 		// set mainnet db to open in spearate folder, no other way to do it than changing it here
 		log.Println("initializing mainnet")
@@ -125,6 +126,7 @@ func main() {
 			log.Fatal(err)
 		}
 
+		consts.Mainnet = true
 		err = loader.Mainnet()
 		if err != nil {
 			log.Fatal(err)
