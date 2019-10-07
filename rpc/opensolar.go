@@ -291,6 +291,7 @@ func sendTellerFailedPaybackEmail() {
 
 		prepUser, err := userValidateHelper(w, r, ProjRpc[7][1:])
 		if err != nil {
+			log.Println(err)
 			return
 		}
 

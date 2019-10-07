@@ -322,7 +322,7 @@ func sendDevicePaybackFailedEmail() error {
 		return err
 	}
 
-	data, err := erpc.HttpsGet(client, baseUrl("/tellerpayback?")+"&projIndex="+projIndex+"&deviceId="+DeviceId)
+	data, err := erpc.HttpsGet(client, baseUrl("tellerpayback")+"&projIndex="+projIndex+"&deviceId="+DeviceId)
 	if err != nil {
 		log.Println(err)
 		return err
