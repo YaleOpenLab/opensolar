@@ -11,9 +11,14 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
-func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) error {
+func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, method string) error {
+	if method == "GET" {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
 
-	if r.Method == "GET" {
 		if r.URL.Query() == nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return errors.New("url query can't be empty")
@@ -32,8 +37,14 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) e
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return errors.New("token length not 32, quitting")
 		}
-	} else if r.Method == "POST" {
-		err := r.ParseForm()
+	} else if method == "POST" {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		err = r.ParseForm()
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return err
@@ -55,6 +66,8 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string) e
 				return errors.New("required param: " + option + " not specified, quitting")
 			}
 		}
+	} else {
+		return errors.New("invalid method (not GET/POST)")
 	}
 	return nil
 }

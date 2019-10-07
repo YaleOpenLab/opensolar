@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	utils "github.com/Varunram/essentials/utils"
 	opensolarconsts "github.com/YaleOpenLab/opensolar/consts"
 	xlm "github.com/YaleOpenLab/openx/chains/xlm"
 	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
@@ -16,7 +17,6 @@ import (
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxdb "github.com/YaleOpenLab/openx/database"
 	build "github.com/stellar/go/txnbuild"
-	utils "github.com/Varunram/essentials/utils"
 )
 
 // go test --tags="all" -coverprofile=test.txt .

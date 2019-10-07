@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 
-	core "github.com/YaleOpenLab/opensolar/core"
 	utils "github.com/Varunram/essentials/utils"
+	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 type TestStruct struct {
