@@ -56,6 +56,8 @@ var (
 	loginUsername string
 	// Pwhash is the Pwhash used to logon to any openx based platform
 	loginPwhash string
+
+	loginProjIndex int
 	// LocalRecipient is the recipient struct associated with the project the teller is installed for
 	LocalRecipient core.Recipient
 	// LocalProject is the project that the teller is associated with
@@ -148,6 +150,7 @@ func ParseConfig() error {
 	LocalSeedPwd = viper.GetString("seedpwd")
 	loginUsername = viper.GetString("username")
 	loginPwhash = utils.SHA3hash(viper.GetString("password"))
+	loginProjIndex = viper.GetInt("projIndex")
 	ApiUrl = viper.GetString("apiurl")
 	Mapskey = viper.GetString("mapskey")
 	AssetName = viper.GetString("assetName")
@@ -155,12 +158,6 @@ func ParseConfig() error {
 	SwytchPassword = viper.GetString("spassword")
 	SwytchClientid = viper.GetString("sclientid")
 	SwytchClientSecret = viper.GetString("sclientsecret")
-
-	LocalProject, err = getLocalProjectDetails(viper.GetInt("projIndex"))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
 
 	if opts.Port == 0 {
 		opts.Port = consts.Tlsport
@@ -209,6 +206,9 @@ func main() {
 
 	log.Println("BALANCE: ", balance)
 	log.Println("START HASH: ", StartHash)
+
+	// log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
+	// log.Fatal(putIpfsData([]byte("hello")))
 	// run goroutines in the background to routinely check for payback, state updates and stuff
 	go checkPayback()
 	// go updateState()

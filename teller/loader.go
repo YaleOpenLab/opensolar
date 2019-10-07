@@ -21,6 +21,15 @@ func StartTeller() error {
 		return errors.Wrap(err, "Error while logging on to the platform")
 	}
 
+	LocalProject, err = getLocalProjectDetails(loginProjIndex)
+	if err != nil {
+		return errors.Wrap(err, "couldn't get local project details")
+	}
+
+	if LocalProject.Index == 0 {
+		return errors.New("couldn't retrieve project from the database, quitting")
+	}
+
 	projIndex, err := getProjectIndex(AssetName)
 	if err != nil {
 		return errors.Wrap(err, "couldn't get project index")
@@ -46,11 +55,6 @@ func StartTeller() error {
 	if pubkey != LocalRecipient.U.StellarWallet.PublicKey {
 		log.Println("PUBLIC KEYS DON'T MATCH, QUITTING!")
 		return errors.New("PUBLIC KEYS DON'T MATCH, QUITTING!")
-	}
-
-	LocalProject, err = getLocalProjectDetails(LocalProject.Index)
-	if err != nil {
-		return errors.Wrap(err, "couldn't get local project details")
 	}
 
 	if LocalProject.Stage < 4 {

@@ -17,7 +17,7 @@ import (
 )
 
 func baseUrl(url string) string {
-	return ApiUrl + "/ " + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
+	return ApiUrl + "/" + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
 }
 
 // GetLocation gets the teller's location
@@ -185,7 +185,13 @@ func storeStartTime() error {
 	if err != nil {
 		return err
 	}
-	data, err := erpc.HttpsGet(client, baseUrl("recipient/startdevice")+"&start="+unixString+"&code=OPENSOLARTEST")
+
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	postdata.Set("start", unixString)
+
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[6][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -206,15 +212,17 @@ func storeStartTime() error {
 // StoreLocation stores the location of the teller
 func storeLocation(mapskey string) error {
 	location := getLocation(mapskey) // this happens to return null
-	log.Println("MAPSKEY: ", mapskey, location)
 
-	data, err := erpc.HttpsGet(client, baseUrl("/recipient/storelocation")+"&location="+location)
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	postdata.Set("location", "l" + location) // handle google API failures this funky way
+
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[7][0], postdata)
 	if err != nil {
-		log.Println("RPC ERROR IN STORELOCATION ENDPOINT")
 		return err
 	}
 
-	log.Println("DATA: ", data)
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
@@ -290,6 +298,7 @@ func getLocalProjectDetails(projIndexx int) (opensolar.Project, error) {
 	}
 
 	body := ApiUrl + "/project/get?index=" + projIndex // don't need auth
+	log.Println(body)
 	data, err := erpc.HttpsGet(client, body)
 	if err != nil {
 		log.Println(err)
@@ -548,4 +557,29 @@ func getAssetBalance(asset string) (float64, error) {
 	}
 
 	return balance, err
+}
+
+func putIpfsData(data []byte) (string, error) {
+	// retrieve project index
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	postdata.Set("data", string(data))
+
+	data, err := erpc.HttpsPost(client, ApiUrl+"/ipfs/putdata", postdata)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), err // return the hash
+}
+
+
+func getIpfsData(hash string) (string, error) {
+	data, err := erpc.HttpsGet(client, baseUrl("/ipfs/getdata") + "&hash=" + hash)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), err
 }
