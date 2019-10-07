@@ -6,7 +6,6 @@ import (
 	"os"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	utils "github.com/Varunram/essentials/utils"
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 )
 
@@ -17,7 +16,7 @@ func StartTeller() error {
 	// don't allow login before this since that becomes an attack vector where a person can guess
 	// multiple passwords
 	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME") + "/go/src/github.com/YaleOpenLab/opensolar/server.crt")
-	err = login(Username, Pwhash)
+	err = login(loginUsername, loginPwhash)
 	if err != nil {
 		return errors.Wrap(err, "Error while logging on to the platform")
 	}
@@ -27,33 +26,29 @@ func StartTeller() error {
 		return errors.Wrap(err, "couldn't get project index")
 	}
 
-	projIndexS, err := utils.ToString(projIndex)
-	if err != nil {
-		return err
-	}
-	if projIndexS != LocalProjIndex {
+	if projIndex != LocalProject.Index {
 		log.Println("Project indices don't match, quitting!")
 		return errors.New("Project indices don't match, quitting!")
 	}
 
-	go refreshLogin(Username, Pwhash) // update local copy of the recipient every 5 minutes
+	go refreshLogin(loginUsername, loginPwhash) // update local copy of the recipient every 5 minutes
 
-	RecpSeed, err = wallet.DecryptSeed(LocalRecipient.U.StellarWallet.EncryptedSeed, LocalSeedPwd)
+	seed, err := wallet.DecryptSeed(LocalRecipient.U.StellarWallet.EncryptedSeed, LocalSeedPwd)
 	if err != nil {
 		return errors.Wrap(err, "Error while decrypting seed")
 	}
 
-	RecpPublicKey, err = wallet.ReturnPubkey(RecpSeed)
+	pubkey, err := wallet.ReturnPubkey(seed)
 	if err != nil {
 		return errors.Wrap(err, "Error while returning publickey")
 	}
 
-	if RecpPublicKey != LocalRecipient.U.StellarWallet.PublicKey {
+	if pubkey != LocalRecipient.U.StellarWallet.PublicKey {
 		log.Println("PUBLIC KEYS DON'T MATCH, QUITTING!")
 		return errors.New("PUBLIC KEYS DON'T MATCH, QUITTING!")
 	}
 
-	LocalProject, err = getLocalProjectDetails(LocalProjIndex)
+	LocalProject, err = getLocalProjectDetails(LocalProject.Index)
 	if err != nil {
 		return errors.Wrap(err, "couldn't get local project details")
 	}

@@ -77,12 +77,12 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 	// 10 padding chars + 46 (ipfs hash length) characters
 	firstHalf := memo[:28]
 	secondHalf := memo[28:]
-	tx1, err := sendXLM(RecpPublicKey, 1, firstHalf)
+	tx1, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, firstHalf)
 	if err != nil {
 		return "", "", err
 	}
 	time.Sleep(2 * time.Second)
-	tx2, err := sendXLM(RecpPublicKey, 1, secondHalf)
+	tx2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, secondHalf)
 	if err != nil {
 		return "", "", err
 	}
@@ -137,12 +137,12 @@ func updateState(trigger bool) {
 		// But we do need to track this somehow, so maybe hash the device id and "STATUPS: "
 		// so we can track if but others viewing the blockchain can't (since the deviceId is assumed
 		// to be unique)
-		hash1, err := sendXLM(RecpPublicKey, float64(utils.Unix()), ipfsHash[:28])
+		hash1, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[:28])
 		if err != nil {
 			log.Println(err)
 		}
 
-		hash2, err := sendXLM(RecpPublicKey, float64(utils.Unix()), ipfsHash[29:])
+		hash2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[29:])
 		if err != nil {
 			log.Println(err)
 		}

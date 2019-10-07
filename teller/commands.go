@@ -104,12 +104,6 @@ func ParseInput(input []string) {
 			}
 			colorOutput(balanceS, MagentaColor)
 		case "info":
-			var err error
-			LocalProject, err = getLocalProjectDetails(LocalProjIndex)
-			if err != nil {
-				log.Println(err)
-				break
-			}
 			fmt.Println("          PROJECT INDEX: ", LocalProject.Index)
 			fmt.Println("          Panel Size: ", LocalProject.PanelSize)
 			fmt.Println("          Total Value: ", LocalProject.TotalValue)

@@ -16,6 +16,10 @@ import (
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
 )
 
+func baseUrl(url string) string {
+	return ApiUrl + "/ " + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
+}
+
 // GetLocation gets the teller's location
 func getLocation(mapskey string) string {
 	// see https://developers.google.com/maps/documentation/geolocation/intro on how
@@ -88,7 +92,7 @@ func login(username string, pwhash string) error {
 	postdata.Set("pwhash", pwhash)
 
 	// Read in the cert file
-	data, err := erpc.HttpsPost(client, ApiUrl+"/token?"+"username="+username+"&pwhash="+pwhash, postdata)
+	data, err := erpc.HttpsPost(client, ApiUrl+"/token", postdata)
 	if err != nil {
 		return errors.Wrap(err, "did not make request")
 	}
@@ -123,16 +127,25 @@ func projectPayback(assetName string, amountx float64) error {
 	if err != nil {
 		return err
 	}
-	// retrieve project index
-	log.Println("PAYMENT BODY: ", ApiUrl+"/recipient/payback?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&projIndex="+LocalProjIndex+"&assetName="+LocalProject.DebtAssetCode+"&seedpwd="+
-		LocalSeedPwd+"&amount="+amount)
-	data, err := erpc.HttpsGet(client, ApiUrl+"/recipient/payback?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&projIndex="+LocalProjIndex+"&assetName="+LocalProject.DebtAssetCode+"&seedpwd="+
-		LocalSeedPwd+"&amount="+amount)
+
+	projIndex, err := utils.ToString(LocalProject.Index)
 	if err != nil {
 		return err
 	}
+	// retrieve project index
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	postdata.Set("projIndex", projIndex)
+	postdata.Set("assetName", assetName)
+	postdata.Set("seedpwd", LocalSeedPwd)
+	postdata.Set("amount", amount)
+
+	data, err := erpc.HttpsPost(client, ApiUrl+"/recipient/payback", postdata)
+	if err != nil {
+		return err
+	}
+
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
@@ -149,8 +162,7 @@ func projectPayback(assetName string, amountx float64) error {
 
 // SetDeviceId sets the device id of the teller
 func setDeviceId(username string, deviceId string) error {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/recipient/deviceId?"+"username="+username+
-		"&token="+Token+"&deviceid="+deviceId)
+	data, err := erpc.HttpsGet(client, baseUrl("recipient/deviceId")+"&deviceid="+deviceId)
 	if err != nil {
 		return err
 	}
@@ -173,8 +185,7 @@ func storeStartTime() error {
 	if err != nil {
 		return err
 	}
-	data, err := erpc.HttpsGet(client, ApiUrl+"/recipient/startdevice?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&start="+unixString+"&code=OPENSOLARTEST")
+	data, err := erpc.HttpsGet(client, baseUrl("recipient/startdevice")+"&start="+unixString+"&code=OPENSOLARTEST")
 	if err != nil {
 		return err
 	}
@@ -196,10 +207,8 @@ func storeStartTime() error {
 func storeLocation(mapskey string) error {
 	location := getLocation(mapskey) // this happens to return null
 	log.Println("MAPSKEY: ", mapskey, location)
-	log.Println(ApiUrl + "/recipient/storelocation?" + "username=" + LocalRecipient.U.Username +
-		"&token=" + Token + "&location=" + location)
-	data, err := erpc.HttpsGet(client, ApiUrl+"/recipient/storelocation?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&location="+location)
+
+	data, err := erpc.HttpsGet(client, baseUrl("/recipient/storelocation")+"&location="+location)
 	if err != nil {
 		log.Println("RPC ERROR IN STORELOCATION ENDPOINT")
 		return err
@@ -226,8 +235,7 @@ type PlatformEmailResponse struct {
 
 // GetPlatformEmail gets the email of the platform
 func getPlatformEmail() error {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/platformemail?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token)
+	data, err := erpc.HttpsGet(client, baseUrl("/platformemail"))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -239,17 +247,21 @@ func getPlatformEmail() error {
 		log.Println(string(data), err)
 		return err
 	}
-	PlatformEmail = x.Email
-	colorOutput("PLATFORMEMAIL: "+PlatformEmail, GreenColor)
+
+	colorOutput("PLATFORMEMAIL: "+x.Email, GreenColor)
 	return nil
 }
 
 // SendDeviceShutdownEmail sends a shutdown notice to the platform
 func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 
-	data, err := erpc.HttpsGet(client, ApiUrl+"/tellershutdown?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&projIndex="+LocalProjIndex+"&deviceId="+DeviceId+
-		"&tx1="+tx1+"&tx2="+tx2)
+	projIndex, err := utils.ToString(LocalProject.Index)
+	if err != nil {
+		return err
+	}
+
+	data, err := erpc.HttpsGet(client, baseUrl("/tellershutdown?")+"&projIndex="+projIndex+
+		"&deviceId="+DeviceId+"&tx1="+tx1+"&tx2="+tx2)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -269,10 +281,15 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 }
 
 // GetLocalProjectDetails gets the details of the local project
-func getLocalProjectDetails(projIndex string) (opensolar.Project, error) {
-
+func getLocalProjectDetails(projIndexx int) (opensolar.Project, error) {
 	var x opensolar.Project
-	body := ApiUrl + "/project/get?index=" + projIndex
+
+	projIndex, err := utils.ToString(projIndexx)
+	if err != nil {
+		return x, err
+	}
+
+	body := ApiUrl + "/project/get?index=" + projIndex // don't need auth
 	data, err := erpc.HttpsGet(client, body)
 	if err != nil {
 		log.Println(err)
@@ -291,8 +308,12 @@ func getLocalProjectDetails(projIndex string) (opensolar.Project, error) {
 // sendDevicePaybackFailedEmail sends a notification if the payback routine breaks in its execution
 func sendDevicePaybackFailedEmail() error {
 
-	data, err := erpc.HttpsGet(client, ApiUrl+"/tellerpayback?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&projIndex="+LocalProjIndex+"&deviceId="+DeviceId)
+	projIndex, err := utils.ToString(LocalProject.Index)
+	if err != nil {
+		return err
+	}
+
+	data, err := erpc.HttpsGet(client, baseUrl("/tellerpayback?")+"&projIndex="+projIndex+"&deviceId="+DeviceId)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -313,8 +334,7 @@ func sendDevicePaybackFailedEmail() error {
 
 // storeStateHistory stores state history in the data file
 func storeStateHistory(hash string) error {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/recipient/ssh?"+"username="+LocalRecipient.U.Username+
-		"&token="+Token+"&hash="+hash)
+	data, err := erpc.HttpsGet(client, baseUrl("/recipient/ssh?")+"&hash="+hash)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -336,11 +356,8 @@ func storeStateHistory(hash string) error {
 
 // testSwytch tests whether the swytch workflow works correctly
 func testSwytch() {
-	body := ApiUrl + ApiUrl + "/swytch/accessToken?" +
-		"clientId=" + SwytchClientid + "&clientSecret=" + SwytchPassword + "&username=" + SwytchPassword +
-		"&password=" + SwytchPassword
-	log.Println(body)
-	data, err := erpc.HttpsGet(client, body)
+	data, err := erpc.HttpsGet(client, baseUrl("/swytch/accessToken"+"&clientId="+SwytchClientid+
+		"&clientSecret="+SwytchClientSecret+"&username="+SwytchUsername+"&password="+SwytchPassword))
 	if err != nil {
 		log.Println(err)
 		return
@@ -443,10 +460,9 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 		return "", err
 	}
 
-	body := ApiUrl + "/user/sendxlm?username=" + Username + "&token=" + Token + "&destination=" +
-		publickey + "&amount=" + amount + "&seedpwd=" + LocalSeedPwd
+	data, err := erpc.HttpsGet(client, baseUrl("/user/sendxlm")+"&destination="+
+		publickey+"&amount="+amount+"&seedpwd="+LocalSeedPwd)
 
-	data, err := erpc.HttpsGet(client, body)
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -463,7 +479,7 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 }
 
 func getLatestBlockHash() (string, error) {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/user/latestblockhash?username="+Username+"&token="+Token)
+	data, err := erpc.HttpsGet(client, baseUrl("/user/latestblockhash"))
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -480,7 +496,7 @@ func getLatestBlockHash() (string, error) {
 }
 
 func askXLM() error {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/user/askxlm?username="+Username+"&token="+Token)
+	data, err := erpc.HttpsGet(client, baseUrl("/user/askxlm?username="))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -501,7 +517,7 @@ func askXLM() error {
 }
 
 func getNativeBalance() (float64, error) {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/user/balance/xlm?username="+Username+"&token="+Token)
+	data, err := erpc.HttpsGet(client, baseUrl("/user/balance/xlm"))
 	if err != nil {
 		log.Println(err)
 		return -1, err
@@ -518,8 +534,7 @@ func getNativeBalance() (float64, error) {
 }
 
 func getAssetBalance(asset string) (float64, error) {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/user/balance/asset?username="+Username+"&token="+Token+
-		"asset="+asset)
+	data, err := erpc.HttpsGet(client, baseUrl("/user/balance/asset")+"&asset="+asset)
 	if err != nil {
 		log.Println(err)
 		return -1, err
