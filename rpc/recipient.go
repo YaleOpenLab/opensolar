@@ -68,7 +68,6 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	err = checkReqdParams(w, r, options)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return prepRecipient, errors.New("reqd params not present can't be empty")
 	}
 
@@ -312,6 +311,7 @@ func storeDeviceLocation() {
 
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[7][1:])
 		if err != nil {
+			log.Println(err)
 			return
 		}
 

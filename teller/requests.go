@@ -268,7 +268,7 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 		return err
 	}
 
-	data, err := erpc.HttpsGet(client, baseUrl("/tellershutdown?")+"&projIndex="+projIndex+
+	data, err := erpc.HttpsGet(client, baseUrl("tellershutdown")+"&projIndex="+projIndex+
 		"&deviceId="+DeviceId+"&tx1="+tx1+"&tx2="+tx2)
 	if err != nil {
 		log.Println(err)
@@ -343,7 +343,12 @@ func sendDevicePaybackFailedEmail() error {
 
 // storeStateHistory stores state history in the data file
 func storeStateHistory(hash string) error {
-	data, err := erpc.HttpsGet(client, baseUrl("/recipient/ssh?")+"&hash="+hash)
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	postdata.Set("hash", hash)
+
+	data, err := erpc.HttpsPost(client, ApiUrl + "/recipient/ssh", postdata)
 	if err != nil {
 		log.Println(err)
 		return err

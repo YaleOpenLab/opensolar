@@ -123,12 +123,7 @@ func getProject() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ProjRpc[3][1:])
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
+		// no authorization required to get projects
 		index := r.URL.Query()["index"][0]
 
 		uKey, err := utils.ToInt(index)

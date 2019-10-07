@@ -57,14 +57,15 @@ func endHandler() error {
 
 	tx1, tx2, err := splitAndSend2Tx(memo)
 	if err != nil {
-		log.Println(err)
+		log.Fatal("could not split and send 2tx: ", err)
 	}
 
 	err = sendDeviceShutdownEmail(tx1, tx2)
 	if err != nil {
-		log.Println(err)
+		log.Fatal("could not send device shutdown email: ", err)
 	}
 
+	log.Println("sent device shutdown notice")
 	commitDataShutdown()
 	// save last known state of the system in the recipient's list of known hashes
 	// Call this last since there would still be data that we want ot measure when the above commands
@@ -276,6 +277,7 @@ func storeDataLocal() {
 // commitDataShutdown is called when the teller errors out and goes down
 func commitDataShutdown() {
 	// retrieve data from local storage
+	log.Println("printing data before shutdown")
 	path := consts.TellerHomeDir + "/data.txt"
 
 	fileHash, err := ipfs.IpfsAddBytes([]byte(path))

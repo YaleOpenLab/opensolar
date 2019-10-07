@@ -501,7 +501,7 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 		return errors.Wrap(err, "Error while paying back the issuer")
 	}
 
-	project.BalLeft -= (1 - pct) * amount // the balance left should be the percenteage paid towards the asset, which is the monthly bill. THe re st goes into  ownership
+	project.BalLeft -= (1 - pct) * amount // the balance left should be the percentage paid towards the asset, which is the monthly bill. The rest goes into  ownership
 	project.AmountOwed -= amount          // subtract the amount owed so we can track progress of payments in the monitorPaybacks loop
 	project.OwnershipShift += pct
 	project.DateLastPaid = utils.Unix()
