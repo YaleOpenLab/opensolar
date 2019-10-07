@@ -62,7 +62,7 @@ func getProjectIndex(assetName string) (int, error) {
 		return -1, err
 	}
 
-	var x opensolar.SolarProjectArray
+	var x []opensolar.Project
 	err = json.Unmarshal(data, &x)
 	if err != nil {
 		log.Println(string(data), err)

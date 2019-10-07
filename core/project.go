@@ -158,41 +158,6 @@ type Project struct {
 	MapLink               string                 // the google maps link to the installation site
 }
 
-// ExplorePageSummaryHelper defines the params that will appear on the frontend's explore page
-type ExplorePageSummaryHelper struct {
-}
-
-// InvestmentHelper defines the investment specifics of the project
-type InvestmentHelper struct {
-	Capex              string
-	Hardware           float64
-	FirstLossEscrow    string
-	CertificationCosts string
-}
-
-// FinancialHelper defines the financial specifics of the project
-type FinancialHelper struct {
-	Return    float64
-	Insurance string
-	Tariff    string
-	Maturity  string
-}
-
-// ProjectSizeHelper defines size, storage and other params that are part of the project size section
-type ProjectSizeHelper struct {
-	PVSolar          string
-	Storage          string
-	Critical         float64
-	InverterCapacity string
-}
-
-// SustainabilityHelper defines parameters relevant to sustainability that ae important to the project
-type SustainabilityHelper struct {
-	CarbonDrawdown string
-	CommunityValue string
-	LCA            string
-}
-
 // Feedback defines a structure that can be used for providing feedback about entities
 type Feedback struct {
 	Content string
@@ -257,9 +222,6 @@ const (
 	// DisconnectionThreshold is the threshold above which the user gets a notification telling that services have been disconnected.
 	DisconnectionThreshold = 6
 )
-
-// SolarProjectArray is an array of Projects
-type SolarProjectArray []Project
 
 // InitializePlatform imports handlers from the main platform struct that are necessary for starting the platform
 func InitializePlatform() error {
