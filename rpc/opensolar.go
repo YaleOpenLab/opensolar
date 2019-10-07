@@ -22,26 +22,26 @@ func setupProjectRPCs() {
 	sendTellerFailedPaybackEmail()
 }
 
-var ProjRpc = map[int][]string{
-	1: []string{"/project/insert", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
-	2: []string{"/project/all"},                                                                // GET
-	3: []string{"/project/get", "index"},                                                       // GET
-	4: []string{"/projects", "index"},                                                          // GET
-	5: []string{"/utils/addhash", "projIndex", "choice", "choicestr"},                          // GET
-	6: []string{"/tellershutdown", "projIndex", "deviceId", "tx1", "tx2"},                      // GET
-	7: []string{"/tellerpayback", "deviceId", "projIndex"},                                     // GET
+var ProjectRPC = map[int][]string{
+	1: []string{"/project/insert", "POST", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
+	2: []string{"/project/all", "GET"},                                                                 // GET
+	3: []string{"/project/get", "GET", "index"},                                                        // GET
+	4: []string{"/projects", "GET", "index"},                                                           // GET
+	5: []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
+	6: []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
+	7: []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
 }
 
 // insertProject inserts a project into the database.
 func insertProject() {
-	http.HandleFunc(ProjRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		err = checkReqdParams(w, r, ProjRpc[1][1:])
+		err = checkReqdParams(w, r, ProjectRPC[1][2:])
 		if err != nil {
 			log.Println(err)
 			return
@@ -97,7 +97,7 @@ func insertProject() {
 
 // getAllProjects gets a list of all the projects in the database
 func getAllProjects() {
-	http.HandleFunc(ProjRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -116,7 +116,7 @@ func getAllProjects() {
 
 // getProject gets the details of a specific project.
 func getProject() {
-	http.HandleFunc(ProjRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -147,7 +147,7 @@ func projectHandler(w http.ResponseWriter, r *http.Request, stage int) {
 
 // getProjectsAtIndex gets projects at a specific stage
 func getProjectsAtIndex() {
-	http.HandleFunc(ProjRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 
 		err := erpc.CheckGet(w, r)
 		if err != nil {
@@ -155,7 +155,7 @@ func getProjectsAtIndex() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ProjRpc[4][1:])
+		err = checkReqdParams(w, r, ProjectRPC[4][2:])
 		if err != nil {
 			log.Println(err)
 			return
@@ -187,14 +187,14 @@ func getProjectsAtIndex() {
 
 // addContractHash adds a specific contract hash to the database
 func addContractHash() {
-	http.HandleFunc(ProjRpc[5][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		_, err = userValidateHelper(w, r, ProjRpc[5][1:])
+		_, err = userValidateHelper(w, r, ProjectRPC[5][2:])
 		if err != nil {
 			return
 		}
@@ -259,14 +259,14 @@ func addContractHash() {
 
 // sendTellerShutdownEmail sends a teller shutdown email
 func sendTellerShutdownEmail() {
-	http.HandleFunc(ProjRpc[6][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, ProjRpc[6][1:])
+		prepUser, err := userValidateHelper(w, r, ProjectRPC[6][2:])
 		if err != nil {
 			return
 		}
@@ -282,14 +282,14 @@ func sendTellerShutdownEmail() {
 
 // sendTellerFailedPaybackEmail sends a teller failed payback email
 func sendTellerFailedPaybackEmail() {
-	http.HandleFunc(ProjRpc[7][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, ProjRpc[7][1:])
+		prepUser, err := userValidateHelper(w, r, ProjectRPC[7][2:])
 		if err != nil {
 			log.Println(err)
 			return

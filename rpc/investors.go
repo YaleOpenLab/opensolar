@@ -29,14 +29,14 @@ func setupInvestorRPCs() {
 
 // InvRPC contains a list of all investor related endpoints
 var InvRPC = map[int][]string{
-	1: []string{"/investor/register", "name", "username", "pwhash", "token", "seedpwd"},      // POST
-	2: []string{"/investor/validate"},                                                        // GET
-	3: []string{"/investor/all"},                                                             // GET
-	4: []string{"/investor/invest", "seedpwd", "projIndex", "amount"},                        // POST
-	5: []string{"/investor/vote", "votes", "projIndex"},                                      // POST
-	6: []string{"/investor/localasset", "assetName"},                                         // POST
-	7: []string{"/investor/sendlocalasset", "assetName", "seedpwd", "destination", "amount"}, // POST
-	8: []string{"/investor/sendemail", "message", "to"},                                      // POST
+	1: []string{"/investor/register", "POST", "name", "username", "pwhash", "token", "seedpwd"},      // POST
+	2: []string{"/investor/validate", "GET"},                                                        // GET
+	3: []string{"/investor/all", "GET"},                                                             // GET
+	4: []string{"/investor/invest", "POST", "seedpwd", "projIndex", "amount"},                        // POST
+	5: []string{"/investor/vote", "POST", "votes", "projIndex"},                                      // POST
+	6: []string{"/investor/localasset", "POST", "assetName"},                                         // POST
+	7: []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
+	8: []string{"/investor/sendemail", "POST", "message", "to"},                                      // POST
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
@@ -68,7 +68,7 @@ func registerInvestor() {
 			return
 		}
 
-		err = checkReqdParams(w, r, InvRPC[1][1:])
+		err = checkReqdParams(w, r, InvRPC[1][2:])
 		if err != nil {
 			log.Println(err)
 			return
@@ -133,7 +133,7 @@ func validateInvestor() {
 			log.Println(err)
 			return
 		}
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][1:])
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][2:])
 		if err != nil {
 			return
 		}
@@ -149,7 +149,7 @@ func getAllInvestors() {
 			log.Println(err)
 			return
 		}
-		_, err = InvValidateHelper(w, r, InvRPC[3][1:])
+		_, err = InvValidateHelper(w, r, InvRPC[3][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -173,7 +173,7 @@ func invest() {
 			return
 		}
 
-		investor, err := InvValidateHelper(w, r, InvRPC[4][1:])
+		investor, err := InvValidateHelper(w, r, InvRPC[4][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -235,7 +235,7 @@ func voteTowardsProject() {
 			return
 		}
 
-		investor, err := InvValidateHelper(w, r, InvRPC[5][1:])
+		investor, err := InvValidateHelper(w, r, InvRPC[5][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -277,7 +277,7 @@ func addLocalAssetInv() {
 			return
 		}
 
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][1:])
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -306,7 +306,7 @@ func invAssetInv() {
 			return
 		}
 
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][1:])
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -361,7 +361,7 @@ func sendEmail() {
 			return
 		}
 
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][1:])
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][2:])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return

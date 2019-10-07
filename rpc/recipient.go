@@ -39,25 +39,25 @@ func setupRecipientRPCs() {
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
 var RecpRPC = map[int][]string{
-	1:  []string{"/recipient/all"},                                                      // GET
-	2:  []string{"/recipient/register"},                                                 // POST
-	3:  []string{"/recipient/validate"},                                                 // GET
-	4:  []string{"/recipient/payback", "assetName", "amount", "seedpwd", "projIndex"},   // POST
-	5:  []string{"/recipient/deviceId", "deviceId"},                                     // POST
-	6:  []string{"/recipient/startdevice", "start"},                                     // POST
-	7:  []string{"/recipient/storelocation", "location"},                                // POST
-	8:  []string{"/recipient/auction/choose/blind"},                                     // GET
-	9:  []string{"/recipient/auction/choose/vickrey"},                                   // GET
-	10: []string{"/recipient/auction/choose/time"},                                      // GET
-	11: []string{"/recipient/unlock/opensolar", "seedpwd", "projIndex"},                 // POST
-	12: []string{"/recipient/addemail", "email"},                                        // POST
-	13: []string{"/recipient/finalize", "projIndex"},                                    // POST
-	14: []string{"/recipient/originate", "projIndex"},                                   // POST
-	15: []string{"/recipient/trustlimit", "assetName"},                                  // GET
-	16: []string{"/recipient/ssh", "hash"},                                              // POST
-	17: []string{"/recipient/onetimeunlock", "projIndex", "seedpwd"},                    // POST
-	18: []string{"/recipient/register/teller", "url", "projIndex"},                      // POST
-	19: []string{"/recipient/teller/details", "projIndex", "url", "brokerurl", "topic"}, // POST
+	1:  []string{"/recipient/all", "GET"},                                                      // GET
+	2:  []string{"/recipient/register", "POST"},                                                 // POST
+	3:  []string{"/recipient/validate", "GET"},                                                 // GET
+	4:  []string{"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},   // POST
+	5:  []string{"/recipient/deviceId", "POST", "deviceId"},                                     // POST
+	6:  []string{"/recipient/startdevice", "POST", "start"},                                     // POST
+	7:  []string{"/recipient/storelocation", "POST", "location"},                                // POST
+	8:  []string{"/recipient/auction/choose/blind", "GET"},                                     // GET
+	9:  []string{"/recipient/auction/choose/vickrey", "GET"},                                   // GET
+	10: []string{"/recipient/auction/choose/time", "GET"},                                      // GET
+	11: []string{"/recipient/unlock/opensolar", "POST", "seedpwd", "projIndex"},                 // POST
+	12: []string{"/recipient/addemail", "POST", "email"},                                        // POST
+	13: []string{"/recipient/finalize", "POST", "projIndex"},                                    // POST
+	14: []string{"/recipient/originate", "POST", "projIndex"},                                   // POST
+	15: []string{"/recipient/trustlimit", "GET", "assetName"},                                  // GET
+	16: []string{"/recipient/ssh", "POST", "hash"},                                              // POST
+	17: []string{"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                    // POST
+	18: []string{"/recipient/register/teller", "POST", "url", "projIndex"},                      // POST
+	19: []string{"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"}, // POST
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -99,7 +99,7 @@ func getAllRecipients() {
 			return
 		}
 
-		_, err = recpValidateHelper(w, r, RecpRPC[1][1:])
+		_, err = recpValidateHelper(w, r, RecpRPC[1][2:])
 		if err != nil {
 			return
 		}
@@ -122,7 +122,7 @@ func registerRecipient() {
 			return
 		}
 
-		err = checkReqdParams(w, r, RecpRPC[2][1:])
+		err = checkReqdParams(w, r, RecpRPC[2][2:])
 		if err != nil {
 			log.Println(err)
 			return
@@ -187,7 +187,7 @@ func validateRecipient() {
 			return
 		}
 
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[3][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[3][2:])
 		if err != nil {
 			return
 		}
@@ -204,7 +204,7 @@ func payback() {
 			return
 		}
 
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[4][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[4][2:])
 		if err != nil {
 			return
 		}
@@ -253,7 +253,7 @@ func storeDeviceId() {
 			return
 		}
 
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[5][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[5][2:])
 		if err != nil {
 			return
 		}
@@ -281,7 +281,7 @@ func storeStartTime() {
 			return
 		}
 
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][2:])
 		if err != nil {
 			log.Println("COULDN'T VALIDATE THIS GUY")
 			return
@@ -309,7 +309,7 @@ func storeDeviceLocation() {
 			return
 		}
 
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[7][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[7][2:])
 		if err != nil {
 			log.Println(err)
 			return
@@ -338,7 +338,7 @@ func chooseBlindAuction() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[8][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[8][2:])
 		if err != nil {
 			return
 		}
@@ -378,7 +378,7 @@ func chooseVickreyAuction() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[9][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[9][2:])
 		if err != nil {
 			return
 		}
@@ -417,7 +417,7 @@ func chooseTimeAuction() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[10][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[10][2:])
 		if err != nil {
 			return
 		}
@@ -457,7 +457,7 @@ func unlockOpenSolar() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[11][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[11][2:])
 		if err != nil {
 			return
 		}
@@ -492,7 +492,7 @@ func addEmail() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[12][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[12][2:])
 		if err != nil {
 			return
 		}
@@ -518,7 +518,7 @@ func finalizeProject() {
 			return
 		}
 
-		_, err = recpValidateHelper(w, r, RecpRPC[13][1:])
+		_, err = recpValidateHelper(w, r, RecpRPC[13][2:])
 		if err != nil {
 			return
 		}
@@ -559,7 +559,7 @@ func originateProject() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[14][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[14][2:])
 		if err != nil {
 			return
 		}
@@ -593,7 +593,7 @@ func calculateTrustLimit() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[15][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[15][2:])
 		if err != nil {
 			return
 		}
@@ -621,7 +621,7 @@ func storeStateHash() {
 		}
 
 		// first validate the recipient or anyone would be able to set device ids
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[16][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[16][2:])
 		if err != nil {
 			return
 		}
@@ -648,7 +648,7 @@ func setOneTimeUnlock() {
 		}
 
 		// first validate the recipient or anyone would be able to set device ids
-		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[17][1:])
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[17][2:])
 		if err != nil {
 			return
 		}
@@ -681,7 +681,7 @@ func storeTellerURL() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[18][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[18][2:])
 		if err != nil {
 			return
 		}
@@ -733,7 +733,7 @@ func storeTellerDetails() {
 			return
 		}
 
-		recipient, err := recpValidateHelper(w, r, RecpRPC[19][1:])
+		recipient, err := recpValidateHelper(w, r, RecpRPC[19][2:])
 		if err != nil {
 			return
 		}

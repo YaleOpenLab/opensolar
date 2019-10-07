@@ -207,7 +207,7 @@ func main() {
 	log.Println("BALANCE: ", balance)
 	log.Println("START HASH: ", StartHash)
 
-	// log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
+	log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
 	// log.Fatal(putIpfsData([]byte("hello")))
 	// run goroutines in the background to routinely check for payback, state updates and stuff
 	go checkPayback()

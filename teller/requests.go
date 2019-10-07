@@ -14,10 +14,35 @@ import (
 	core "github.com/YaleOpenLab/opensolar/core"
 	opensolar "github.com/YaleOpenLab/opensolar/core"
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
+	orpc "github.com/YaleOpenLab/openx/rpc"
 )
 
 func baseUrl(url string) string {
 	return ApiUrl + "/" + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
+}
+
+func basePostData() url.Values {
+	postdata := url.Values{}
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	return postdata
+}
+
+func httpsGet(request []string, xparams ...string) ([]byte, error) {
+	endpoint := request[0]
+	reqParams := request[2:len(request)]
+
+	if len(reqParams) != len(xparams) {
+		log.Println("length of required params not equal to passed params: ", endpoint, reqParams, xparams)
+		return nil, errors.New("length of required params not equal to passed params, quitting")
+	}
+
+	var params string
+	params += baseUrl(endpoint)
+	for _, elem := range xparams {
+		params += elem
+	}
+	return erpc.HttpsGet(client, params)
 }
 
 // GetLocation gets the teller's location
@@ -60,7 +85,7 @@ func ping() error {
 
 // GetProjectIndex gets a specific project's index
 func getProjectIndex(assetName string) (int, error) {
-	data, err := erpc.HttpsGet(client, ApiUrl+"/project/all")
+	data, err := httpsGet(rpc.ProjectRPC[2])
 	if err != nil {
 		log.Println("Error while making get request: ", err)
 		return -1, err
@@ -92,7 +117,7 @@ func login(username string, pwhash string) error {
 	postdata.Set("pwhash", pwhash)
 
 	// Read in the cert file
-	data, err := erpc.HttpsPost(client, ApiUrl+"/token", postdata)
+	data, err := erpc.HttpsPost(client, ApiUrl+orpc.UserRPC[0][0], postdata)
 	if err != nil {
 		return errors.Wrap(err, "did not make request")
 	}
@@ -105,7 +130,7 @@ func login(username string, pwhash string) error {
 
 	// validate that the user is indeed a recipient
 	Token = LoginReturn.Token
-	data, err = erpc.HttpsGet(client, ApiUrl+"/recipient/validate?"+"username="+username+"&token="+LoginReturn.Token)
+	data, err = erpc.HttpsGet(client, ApiUrl+rpc.RecpRPC[3][0]+"?username="+username+"&token="+LoginReturn.Token)
 	if err != nil {
 		return err
 	}
@@ -116,6 +141,11 @@ func login(username string, pwhash string) error {
 		log.Println(string(data), err)
 		return err
 	}
+
+	if x.U.Index == 0 {
+		return errors.New("couldn't validate recipient")
+	}
+
 	colorOutput("AUTHENTICATED RECIPIENT", GreenColor)
 	LocalRecipient = x
 	return nil
@@ -133,15 +163,13 @@ func projectPayback(assetName string, amountx float64) error {
 		return err
 	}
 	// retrieve project index
-	postdata := url.Values{}
-	postdata.Set("username", LocalRecipient.U.Username)
-	postdata.Set("token", Token)
+	postdata := basePostData()
 	postdata.Set("projIndex", projIndex)
 	postdata.Set("assetName", assetName)
 	postdata.Set("seedpwd", LocalSeedPwd)
 	postdata.Set("amount", amount)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+"/recipient/payback", postdata)
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[4][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -162,7 +190,7 @@ func projectPayback(assetName string, amountx float64) error {
 
 // SetDeviceId sets the device id of the teller
 func setDeviceId(username string, deviceId string) error {
-	data, err := erpc.HttpsGet(client, baseUrl("recipient/deviceId")+"&deviceid="+deviceId)
+	data, err := httpsGet(rpc.RecpRPC[5], "&deviceid="+deviceId)
 	if err != nil {
 		return err
 	}
@@ -186,9 +214,7 @@ func storeStartTime() error {
 		return err
 	}
 
-	postdata := url.Values{}
-	postdata.Set("username", LocalRecipient.U.Username)
-	postdata.Set("token", Token)
+	postdata := basePostData()
 	postdata.Set("start", unixString)
 
 	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[6][0], postdata)
@@ -213,10 +239,8 @@ func storeStartTime() error {
 func storeLocation(mapskey string) error {
 	location := getLocation(mapskey) // this happens to return null
 
-	postdata := url.Values{}
-	postdata.Set("username", LocalRecipient.U.Username)
-	postdata.Set("token", Token)
-	postdata.Set("location", "l" + location) // handle google API failures this funky way
+	postdata := basePostData()
+	postdata.Set("location", "l"+location) // handle google API failures this funky way
 
 	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[7][0], postdata)
 	if err != nil {
@@ -243,7 +267,7 @@ type PlatformEmailResponse struct {
 
 // GetPlatformEmail gets the email of the platform
 func getPlatformEmail() error {
-	data, err := erpc.HttpsGet(client, baseUrl("/platformemail"))
+	data, err := httpsGet(orpc.UserRPC[13])
 	if err != nil {
 		log.Println(err)
 		return err
@@ -268,8 +292,8 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 		return err
 	}
 
-	data, err := erpc.HttpsGet(client, baseUrl("tellershutdown")+"&projIndex="+projIndex+
-		"&deviceId="+DeviceId+"&tx1="+tx1+"&tx2="+tx2)
+	data, err := httpsGet(rpc.ProjectRPC[6], "&projIndex="+projIndex,
+		"&deviceId="+DeviceId, "&tx1="+tx1, "&tx2="+tx2)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -297,9 +321,7 @@ func getLocalProjectDetails(projIndexx int) (opensolar.Project, error) {
 		return x, err
 	}
 
-	body := ApiUrl + "/project/get?index=" + projIndex // don't need auth
-	log.Println(body)
-	data, err := erpc.HttpsGet(client, body)
+	data, err := httpsGet(rpc.ProjectRPC[3], "&index="+projIndex)
 	if err != nil {
 		log.Println(err)
 		return x, err
@@ -322,7 +344,7 @@ func sendDevicePaybackFailedEmail() error {
 		return err
 	}
 
-	data, err := erpc.HttpsGet(client, baseUrl("tellerpayback")+"&projIndex="+projIndex+"&deviceId="+DeviceId)
+	data, err := httpsGet(rpc.ProjectRPC[7], "&projIndex="+projIndex, "&deviceId="+DeviceId)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -343,12 +365,10 @@ func sendDevicePaybackFailedEmail() error {
 
 // storeStateHistory stores state history in the data file
 func storeStateHistory(hash string) error {
-	postdata := url.Values{}
-	postdata.Set("username", LocalRecipient.U.Username)
-	postdata.Set("token", Token)
+	postdata := basePostData()
 	postdata.Set("hash", hash)
 
-	data, err := erpc.HttpsPost(client, ApiUrl + "/recipient/ssh", postdata)
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[16][0], postdata)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -370,8 +390,8 @@ func storeStateHistory(hash string) error {
 
 // testSwytch tests whether the swytch workflow works correctly
 func testSwytch() {
-	data, err := erpc.HttpsGet(client, baseUrl("/swytch/accessToken"+"&clientId="+SwytchClientid+
-		"&clientSecret="+SwytchClientSecret+"&username="+SwytchUsername+"&password="+SwytchPassword))
+	data, err := erpc.HttpsGet(client, baseUrl("swytch/accessToken")+"&clientId="+SwytchClientid+
+		"&clientSecret="+SwytchClientSecret+"&username="+SwytchUsername+"&password="+SwytchPassword)
 	if err != nil {
 		log.Println(err)
 		return
@@ -474,8 +494,8 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 		return "", err
 	}
 
-	data, err := erpc.HttpsGet(client, baseUrl("/user/sendxlm")+"&destination="+
-		publickey+"&amount="+amount+"&seedpwd="+LocalSeedPwd)
+	data, err := httpsGet(orpc.UserRPC[7], "&destination="+
+		publickey, "&amount="+amount, "&seedpwd="+LocalSeedPwd)
 
 	if err != nil {
 		log.Println(err)
@@ -493,7 +513,7 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 }
 
 func getLatestBlockHash() (string, error) {
-	data, err := erpc.HttpsGet(client, baseUrl("/user/latestblockhash"))
+	data, err := httpsGet(orpc.UserRPC[33])
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -510,7 +530,7 @@ func getLatestBlockHash() (string, error) {
 }
 
 func askXLM() error {
-	data, err := erpc.HttpsGet(client, baseUrl("/user/askxlm?username="))
+	data, err := httpsGet(orpc.UserRPC[10])
 	if err != nil {
 		log.Println(err)
 		return err
@@ -531,7 +551,7 @@ func askXLM() error {
 }
 
 func getNativeBalance() (float64, error) {
-	data, err := erpc.HttpsGet(client, baseUrl("/user/balance/xlm"))
+	data, err := httpsGet(orpc.UserRPC[3])
 	if err != nil {
 		log.Println(err)
 		return -1, err
@@ -548,7 +568,7 @@ func getNativeBalance() (float64, error) {
 }
 
 func getAssetBalance(asset string) (float64, error) {
-	data, err := erpc.HttpsGet(client, baseUrl("/user/balance/asset")+"&asset="+asset)
+	data, err := httpsGet(orpc.UserRPC[4], "&asset="+asset)
 	if err != nil {
 		log.Println(err)
 		return -1, err
@@ -566,12 +586,10 @@ func getAssetBalance(asset string) (float64, error) {
 
 func putIpfsData(data []byte) (string, error) {
 	// retrieve project index
-	postdata := url.Values{}
-	postdata.Set("username", LocalRecipient.U.Username)
-	postdata.Set("token", Token)
+	postdata := basePostData()
 	postdata.Set("data", string(data))
 
-	data, err := erpc.HttpsPost(client, ApiUrl+"/ipfs/putdata", postdata)
+	data, err := erpc.HttpsPost(client, ApiUrl+orpc.UserRPC[34][0], postdata)
 	if err != nil {
 		return "", err
 	}
@@ -579,9 +597,9 @@ func putIpfsData(data []byte) (string, error) {
 	return string(data), err // return the hash
 }
 
-
 func getIpfsData(hash string) (string, error) {
-	data, err := erpc.HttpsGet(client, baseUrl("/ipfs/getdata") + "&hash=" + hash)
+
+	data, err := httpsGet(orpc.UserRPC[5], "&hash="+hash)
 	if err != nil {
 		return "", err
 	}

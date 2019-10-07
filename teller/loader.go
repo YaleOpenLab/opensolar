@@ -16,7 +16,7 @@ func StartTeller() error {
 
 	// don't allow login before this since that becomes an attack vector where a person can guess
 	// multiple passwords
-	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME") + "/go/src/github.com/YaleOpenLab/opensolar/server.crt", 60 * time.Second)
+	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME")+"/go/src/github.com/YaleOpenLab/opensolar/server.crt", 60*time.Second)
 
 	err = login(loginUsername, loginPwhash)
 	if err != nil {
