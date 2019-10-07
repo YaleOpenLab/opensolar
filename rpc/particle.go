@@ -12,16 +12,16 @@ import (
 
 // ParticleRPC contains a list of all particle related endpoints
 var ParticleRPC = map[int][]string{
-	1:  []string{"/particle/devices", "accessToken"},
-	2:  []string{"/particle/productinfo", "accessToken", "productInfo"},
-	3:  []string{"/particle/deviceinfo", "accessToken", "deviceId"},
-	4:  []string{"/particle/deviceping", "accessToken", "deviceId"},
-	5:  []string{"/particle/devicesignal", "signal", "accessToken"},
-	6:  []string{"/particle/getdeviceid", "serialNumber", "accessToken"},
-	7:  []string{"/particle/diag/last", "accessToken", "deviceId"},
-	8:  []string{"/particle/diag/all", "accessToken", "deviceId"},
-	9:  []string{"/particle/user/info", "accessToken"},
-	10: []string{"/particle/sims", "accessToken"},
+	1:  []string{"/particle/devices", "GET", "accessToken"},
+	2:  []string{"/particle/productinfo", "GET", "accessToken", "productInfo"},
+	3:  []string{"/particle/deviceinfo", "GET", "accessToken", "deviceId"},
+	4:  []string{"/particle/deviceping", "GET", "accessToken", "deviceId"},
+	5:  []string{"/particle/devicesignal", "GET", "signal", "accessToken"},
+	6:  []string{"/particle/getdeviceid", "GET", "serialNumber", "accessToken"},
+	7:  []string{"/particle/diag/last", "GET", "accessToken", "deviceId"},
+	8:  []string{"/particle/diag/all", "GET", "accessToken", "deviceId"},
+	9:  []string{"/particle/user/info", "GET", "accessToken"},
+	10: []string{"/particle/sims", "GET", "accessToken"},
 }
 
 // setupParticleHandlers sets up all the particle related endpoints
@@ -136,7 +136,7 @@ func listAllDevices() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[1][1:])
+		err = checkReqdParams(w, r, ParticleRPC[1][2:], ParticleRPC[1][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -158,7 +158,7 @@ func listProductInfo() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[2][1:])
+		err = checkReqdParams(w, r, ParticleRPC[2][2:], ParticleRPC[2][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -183,7 +183,7 @@ func getDeviceInfo() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[3][1:])
+		err = checkReqdParams(w, r, ParticleRPC[3][2:], ParticleRPC[3][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -208,7 +208,7 @@ func pingDevice() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[4][1:])
+		err = checkReqdParams(w, r, ParticleRPC[4][2:], ParticleRPC[4][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -234,7 +234,7 @@ func signalDevice() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[5][1:])
+		err = checkReqdParams(w, r, ParticleRPC[5][2:], ParticleRPC[5][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -271,7 +271,7 @@ func serialNumberInfo() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[6][1:])
+		err = checkReqdParams(w, r, ParticleRPC[6][2:], ParticleRPC[6][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -295,7 +295,7 @@ func getDiagnosticsLast() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[7][1:])
+		err = checkReqdParams(w, r, ParticleRPC[7][2:], ParticleRPC[7][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -319,7 +319,7 @@ func getAllDiagnostics() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[8][1:])
+		err = checkReqdParams(w, r, ParticleRPC[8][2:], ParticleRPC[8][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -342,7 +342,7 @@ func getParticleUserInfo() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[9][1:])
+		err = checkReqdParams(w, r, ParticleRPC[9][2:], ParticleRPC[9][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -364,7 +364,7 @@ func getAllSims() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ParticleRPC[10][1:])
+		err = checkReqdParams(w, r, ParticleRPC[10][2:], ParticleRPC[10][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return

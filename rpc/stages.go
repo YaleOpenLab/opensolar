@@ -50,7 +50,7 @@ func returnSpecificStage() {
 			return
 		}
 
-		err = checkReqdParams(w, r, StagesRPC[2][1:])
+		err = checkReqdParams(w, r, StagesRPC[2][2:], StagesRPC[2][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -103,7 +103,7 @@ func promoteStage() {
 			return
 		}
 
-		err = checkReqdParams(w, r, StagesRPC[2][1:])
+		err = checkReqdParams(w, r, StagesRPC[2][2:], StagesRPC[2][1])
 		if err != nil {
 			log.Println(err)
 			return

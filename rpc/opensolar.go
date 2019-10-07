@@ -41,7 +41,7 @@ func insertProject() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ProjectRPC[1][2:])
+		err = checkReqdParams(w, r, ProjectRPC[1][2:], ProjectRPC[1][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -141,10 +141,6 @@ func getProject() {
 	})
 }
 
-// projectHandler gets proejcts at a specific stage from the database
-func projectHandler(w http.ResponseWriter, r *http.Request, stage int) {
-}
-
 // getProjectsAtIndex gets projects at a specific stage
 func getProjectsAtIndex() {
 	http.HandleFunc(ProjectRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
@@ -155,7 +151,7 @@ func getProjectsAtIndex() {
 			return
 		}
 
-		err = checkReqdParams(w, r, ProjectRPC[4][2:])
+		err = checkReqdParams(w, r, ProjectRPC[4][2:], ProjectRPC[4][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -194,7 +190,7 @@ func addContractHash() {
 			return
 		}
 
-		_, err = userValidateHelper(w, r, ProjectRPC[5][2:])
+		_, err = userValidateHelper(w, r, ProjectRPC[5][2:], ProjectRPC[5][1])
 		if err != nil {
 			return
 		}
@@ -266,7 +262,7 @@ func sendTellerShutdownEmail() {
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, ProjectRPC[6][2:])
+		prepUser, err := userValidateHelper(w, r, ProjectRPC[6][2:], ProjectRPC[6][1])
 		if err != nil {
 			return
 		}
@@ -289,7 +285,7 @@ func sendTellerFailedPaybackEmail() {
 			return
 		}
 
-		prepUser, err := userValidateHelper(w, r, ProjectRPC[7][2:])
+		prepUser, err := userValidateHelper(w, r, ProjectRPC[7][2:], ProjectRPC[7][1])
 		if err != nil {
 			log.Println(err)
 			return

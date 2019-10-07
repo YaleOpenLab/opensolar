@@ -23,13 +23,13 @@ func setupUserRpcs() {
 var UserRPC = map[int][]string{
 	1: []string{"/user/update", "POST"},              // POST
 	2: []string{"/user/report", "POST", "projIndex"}, // POST
-	3: []string{"/user/info", "GET"},                // GET
+	3: []string{"/user/info", "GET"},                 // GET
 }
 
-func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string) (openx.User, error) {
+func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (openx.User, error) {
 	var user openx.User
 
-	err := checkReqdParams(w, r, options)
+	err := checkReqdParams(w, r, options, method)
 	if err != nil {
 		log.Println(err)
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -63,7 +63,7 @@ func updateUser() {
 			return
 		}
 
-		user, err := userValidateHelper(w, r, UserRPC[1][2:])
+		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
 		}
@@ -107,7 +107,7 @@ func updateUser() {
 		}
 
 		// check whether given user is an investor or recipient
-		investor, err := InvValidateHelper(w, r, UserRPC[1][2:])
+		investor, err := InvValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err == nil {
 			investor.U = &user
 			err = investor.Save()
@@ -116,7 +116,7 @@ func updateUser() {
 				return
 			}
 		}
-		recipient, err := recpValidateHelper(w, r, UserRPC[1][2:])
+		recipient, err := recpValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err == nil {
 			recipient.U = &user
 			err = recipient.Save()
@@ -138,7 +138,7 @@ func reportProject() {
 			return
 		}
 
-		user, err := userValidateHelper(w, r, UserRPC[1][2:])
+		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
 		}
@@ -181,7 +181,7 @@ func userInfo() {
 		}
 
 		// need to pass the pwhash param here
-		prepUser, err := userValidateHelper(w, r, UserRPC[3][2:])
+		prepUser, err := userValidateHelper(w, r, UserRPC[3][2:], UserRPC[3][1])
 		if err != nil {
 			return
 		}

@@ -22,13 +22,13 @@ func setupEntityRPCs() {
 }
 
 var EntityRpc = map[int][]string{
-	1: []string{"/entity/validate", "GET"},                                     // GET
-	2: []string{"/entity/stage0", "GET"},                                       // GET
-	3: []string{"/entity/stage1", "GET"},                                       // GET
-	4: []string{"/entity/stage2", "GET"},                                       // GET
+	1: []string{"/entity/validate", "GET"},                                      // GET
+	2: []string{"/entity/stage0", "GET"},                                        // GET
+	3: []string{"/entity/stage1", "GET"},                                        // GET
+	4: []string{"/entity/stage2", "GET"},                                        // GET
 	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},        // POST
 	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"}, // POST
-	7: []string{"/entity/newproject/opensolar", "GET"},                         // GET
+	7: []string{"/entity/newproject/opensolar", "GET"},                          // GET
 }
 
 // EntityValidateHelper is a helper that helps validate an entity
@@ -167,7 +167,7 @@ func addCollateral() {
 			return
 		}
 
-		err = checkReqdParams(w, r, EntityRpc[5][2:])
+		err = checkReqdParams(w, r, EntityRpc[5][2:], EntityRpc[5][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -210,7 +210,7 @@ func proposeOpensolarProject() {
 			return
 		}
 
-		err = checkReqdParams(w, r, EntityRpc[6][2:])
+		err = checkReqdParams(w, r, EntityRpc[6][2:], EntityRpc[6][1])
 		if err != nil {
 			log.Println(err)
 			return
