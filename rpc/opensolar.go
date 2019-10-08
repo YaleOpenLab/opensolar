@@ -26,7 +26,7 @@ var ProjectRPC = map[int][]string{
 	1: []string{"/project/insert", "POST", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
 	2: []string{"/project/all", "GET"},                                                                 // GET
 	3: []string{"/project/get", "GET", "index"},                                                        // GET
-	4: []string{"/projects", "GET", "index"},                                                           // GET
+	4: []string{"/projects", "GET", "stage"},                                                           // GET
 	5: []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
 	6: []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
 	7: []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
@@ -157,20 +157,20 @@ func getProjectsAtIndex() {
 			return
 		}
 
-		indexx := r.URL.Query()["index"][0]
+		stagex := r.URL.Query()["stage"][0]
 
-		index, err := utils.ToInt(indexx)
+		stage, err := utils.ToInt(stagex)
 		if err != nil {
 			log.Println("Passed index not an integer, quitting!")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
-		if index > 9 || index < 0 {
-			index = 0
+		if stage > 9 || stage < 0 {
+			stage = 0
 		}
 
-		allProjects, err := core.RetrieveProjectsAtStage(index)
+		allProjects, err := core.RetrieveProjectsAtStage(stage)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)

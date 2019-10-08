@@ -40,7 +40,7 @@ func setupRecipientRPCs() {
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
 var RecpRPC = map[int][]string{
 	1:  []string{"/recipient/all", "GET"},                                                       // GET
-	2:  []string{"/recipient/register", "POST"},                                                 // POST
+	2:  []string{"/recipient/register", "POST", "name", "username", "pwhash", "seedpwd"},        // POST
 	3:  []string{"/recipient/validate", "GET"},                                                  // GET
 	4:  []string{"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},   // POST
 	5:  []string{"/recipient/deviceId", "POST", "deviceId"},                                     // POST

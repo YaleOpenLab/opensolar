@@ -18,9 +18,9 @@ func setupStagesHandlers() {
 }
 
 var StagesRPC = map[int][]string{
-	1: []string{"/stages/all"},
-	2: []string{"/stages", "index"},
-	3: []string{"/stages/promote"},
+	1: []string{"/stages/all"},              // GET
+	2: []string{"/stages", "index"},         // GET
+	3: []string{"/stages/promote", "index"}, // GET
 }
 
 // returnAllStages returns all the defined stages for this specific platform.  Opensolar
