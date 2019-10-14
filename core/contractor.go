@@ -49,9 +49,7 @@ func (contractor *Entity) Slash(contractValue float64) error {
 	return contractor.Save()
 }
 
-// RepInstalledProject adds reputatuon to the contractor on completion of installation of a project. By default,
-// we add reputation to the entity. In case the recipient wants to dispute this claim, we review and
-// change the reputation accordingly
+// RepInstalledProject automatically adds reputation to the contractor on installation of a project.
 func RepInstalledProject(contrIndex int, projIndex int) error {
 	contractor, err := RetrieveEntity(contrIndex)
 	if err != nil {

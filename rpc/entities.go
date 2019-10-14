@@ -4,11 +4,9 @@ import (
 	"github.com/pkg/errors"
 	"log"
 	"net/http"
-	"time"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -19,7 +17,6 @@ func setupEntityRPCs() {
 	getStage1Contracts()
 	getStage2Contracts()
 	addCollateral()
-	createOpensolarProject()
 	proposeOpensolarProject()
 }
 
@@ -30,7 +27,6 @@ var EntityRPC = map[int][]string{
 	4: []string{"/entity/stage2", "GET"},                                        // GET
 	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},        // POST
 	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"}, // POST
-	7: []string{"/entity/newproject/opensolar", "GET"},                          // GET
 }
 
 // entityValidateHelper is a helper that helps validate an entity
@@ -224,115 +220,6 @@ func proposeOpensolarProject() {
 		x.OriginatorFee = fee
 		x.OriginatorIndex = prepEntity.U.Index
 		x.Stage = 2
-
-		err = x.Save()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		erpc.MarshalSend(w, x)
-	})
-}
-
-// createOpensolarProject creates a contract which the originator can take to the recipient in order to be validated
-// as a level 1 project.
-func createOpensolarProject() {
-	http.HandleFunc(EntityRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
-		prepEntity, err := entityValidateHelper(w, r, EntityRPC[7][2:], EntityRPC[7][1])
-		if err != nil {
-			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-			return
-		}
-
-		if r.URL.Query()["TotalValue"] == nil || r.URL.Query()["Years"] == nil || r.URL.Query()["InterestRate"] == nil ||
-			r.URL.Query()["Location"] == nil || r.URL.Query()["PanelSize"] == nil || r.URL.Query()["Inverter"] == nil ||
-			r.URL.Query()["ChargeRegulator"] == nil || r.URL.Query()["ControlPanel"] == nil || r.URL.Query()["CommBox"] == nil ||
-			r.URL.Query()["ACTransfer"] == nil || r.URL.Query()["SolarCombiner"] == nil || r.URL.Query()["Batteries"] == nil ||
-			r.URL.Query()["IoTHub"] == nil || r.URL.Query()["Metadata"] == nil || r.URL.Query()["OriginatorFee"] == nil ||
-			r.URL.Query()["recpIndex"] == nil || r.URL.Query()["AuctionType"] == nil || r.URL.Query()["PaybackPeriod"] == nil {
-			log.Println("Bad request, required params missing!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		allProjects, err := core.RetrieveAllProjects()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		var x core.Project
-		x.TotalValue, err = utils.ToFloat(r.URL.Query()["TotalValue"][0])
-		if err != nil {
-			log.Println("param passed not float, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		x.EstimatedAcquisition, err = utils.ToInt(r.URL.Query()["Years"][0])
-		if err != nil {
-			log.Println("param passed not int, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		x.InterestRate, err = utils.ToFloat(r.URL.Query()["InterestRate"][0])
-		if err != nil {
-			log.Println("param passed not int, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-		x.OriginatorFee, err = utils.ToFloat(r.URL.Query()["OriginatorFee"][0])
-		if err != nil {
-			log.Println("ORiginator fee not float, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		x.RecipientIndex, err = utils.ToInt(r.URL.Query()["recpIndex"][0])
-		if err != nil {
-			log.Println("passed recipient index not int, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		_, err = core.RetrieveRecipient(x.RecipientIndex)
-		if err != nil {
-			log.Println("could not retrieve recipient, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		x.AuctionType = r.URL.Query()["AuctionType"][0]
-		paybackPeriodInt, err := utils.ToInt(r.URL.Query()["PaybackPeriod"][0])
-		if err != nil {
-			log.Println("payback period not integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
-			return
-		}
-
-		x.PaybackPeriod = time.Duration(paybackPeriodInt) * consts.OneWeekInSecond
-		x.OriginatorIndex = prepEntity.U.Index
-		x.State = r.URL.Query()["Location"][0]
-		x.PanelSize = r.URL.Query()["PanelSize"][0]
-		x.Inverter = r.URL.Query()["Inverter"][0]
-		x.ChargeRegulator = r.URL.Query()["ChargeRegulator"][0]
-		x.ControlPanel = r.URL.Query()["ControlPanel"][0]
-		x.CommBox = r.URL.Query()["CommBox"][0]
-		x.ACTransfer = r.URL.Query()["ACTransfer"][0]
-		x.SolarCombiner = r.URL.Query()["SolarCombiner"][0]
-		x.Batteries = r.URL.Query()["Batteries"][0]
-		x.IoTHub = r.URL.Query()["IoTHub"][0]
-		x.Metadata = r.URL.Query()["Metadata"][0]
-
-		x.Index = len(allProjects) + 1
-		x.Stage = 0
-		x.MoneyRaised = 0
-		x.BalLeft = x.TotalValue
-		x.Votes = 0
-		x.Reputation = x.TotalValue
-		x.InvestmentType = "munibond" // hardcode for now, expand if we have other investment models later down the road
-		x.DateInitiated = utils.Timestamp()
 
 		err = x.Save()
 		if err != nil {

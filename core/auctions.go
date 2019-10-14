@@ -4,8 +4,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// handlers for auctions in the event someone decides to do auction for their projects
-
 // SelectContractBlind selects the winning bid based on blind auction rules (in a blind auction, the bid with the highest price wins)
 func SelectContractBlind(arr []Project) (Project, error) {
 	var a Project

@@ -12,6 +12,7 @@ import (
 	"github.com/sparrc/go-ping"
 )
 
+// TrackProject tracks a specific project's MQTT brokers and similar
 func TrackProject(projIndex int, errs chan error) {
 	go func() {
 		err := track(projIndex)

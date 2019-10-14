@@ -35,18 +35,6 @@ type Investor struct {
 
 	// InvestedSolarProjectsIndices is an integer list of the projects the investor has invested in
 	SeedInvestedSolarProjectsIndices []int
-
-	// WeightedROI is the weighted ROI that the investor is expected to get for his investments
-	WeightedROI string
-
-	// AllTimeReturns is the all time returns the investor has realized from his investments
-	AllTimeReturns []float64
-
-	// ReceivedRECs is a list of the RECs the recipient has invested in
-	ReceivedRECs string
-
-	// Prorata is the pro rata in all the projects that the investor has invested in
-	Prorata string
 }
 
 // NewInvestor creates a new investor based on params passed

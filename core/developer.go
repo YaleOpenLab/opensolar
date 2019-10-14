@@ -12,6 +12,7 @@ import (
 	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
 )
 
+// RequestWaterfallWithdrawal requests withdrawal of funds from the escrow account
 func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) error {
 	entity, err := RetrieveEntity(entityIndex)
 	if err != nil {

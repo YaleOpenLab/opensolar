@@ -11,8 +11,6 @@ import (
 	openx "github.com/YaleOpenLab/openx/database"
 )
 
-// this file handles interactions with openx. Privileged access due to access code
-
 // RetrieveUser retrieves a user from openx's database
 func RetrieveUser(key int) (openx.User, error) {
 	var user openx.User

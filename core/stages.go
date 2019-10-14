@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-// StageXtoY promtoes a contract from  stage X.Number to stage Y.Number
+// StageXtoY promtoes a contract's stage by one
 func StageXtoY(index int) error {
 	// check for out of bound errors
 	// retrieve the project
