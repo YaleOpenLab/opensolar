@@ -167,6 +167,7 @@ func updateState(trigger bool) {
 
 // storeDataLocal stores the data we observe in real time to a file and st ores the hashchain header
 func storeDataLocal() {
+	log.Println("storing a local copy of data")
 	path := consts.TellerHomeDir + "/data.txt"
 
 	transport := &http.Transport{
@@ -215,7 +216,7 @@ func storeDataLocal() {
 	}
 
 	log.Println("starting to stream data from particle board: ")
-	// this loop waits for inputs (in this case from the particle API) and c ontinually
+	// this loop waits for inputs (in this case from the particle API) and continually
 	// writes it to a data stream
 	for {
 		_, err = reader.Read(x)
@@ -237,6 +238,7 @@ func storeDataLocal() {
 		// comment since this would fill console out and we can't read anything
 		// log.Println("File size is: ", size.Size())
 		if size.Size() >= int64(consts.TellerMaxLocalStorageSize) {
+			log.Println("flushing data to ipfs")
 			// close the file, store in ipfs, get hash, delete file and create same file again
 			// with the previous file's hash (so people can verify)
 			// we need to store this in ipfs, delete this file and then commit the ipfs hash as
