@@ -110,7 +110,6 @@ func promoteStage() {
 		}
 
 		indexx := r.URL.Query()["index"][0]
-
 		index, err := utils.ToInt(indexx)
 		if err != nil {
 			log.Println("Passed index not an integer, quitting!")
@@ -118,12 +117,61 @@ func promoteStage() {
 			return
 		}
 
+		project, err := core.RetrieveProject(index)
+		if err != nil {
+			log.Println("Couldn't retrieve project from the database")
+			return
+		}
+
+		var recpBool, invBool, entityBool bool
+		recpBool, invBool, entityBool = true, true, true
+
+		recp, err := recpValidateHelper(w, r, StagesRPC[2][2:], StagesRPC[2][1])
+		if err != nil {
+			log.Println("stage promoter not a recipient: ", err)
+			recpBool = false
+		}
+
+		inv, err := InvValidateHelper(w, r, StagesRPC[2][2:], StagesRPC[2][1])
+		if err != nil {
+			log.Println("stage promoter not an investor: ", err)
+			invBool = false
+		}
+
+		entity, err := entityValidateHelper(w, r)
+		if err != nil {
+			log.Println("stage promoter not an entity: ", err)
+			entityBool = false
+		}
+
+		if !(recpBool && recp.U.Index != project.RecipientIndex) || !recp.U.Admin {
+			log.Println("not authorized to upgrade stages, quitting")
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		if invBool && !inv.U.Admin {
+			log.Println("investors are not allowed to perform stage migrations, exiting")
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		if !(entityBool && entity.U.Index != project.ContractorIndex &&
+			entity.U.Index != project.GuarantorIndex &&
+			entity.U.Index != project.MainDeveloperIndex) || !entity.U.Admin {
+			log.Println("you are not a registered entity related to the project")
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		// we check whether the person is actually associated with the project in question
 		err = core.StageXtoY(index)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
