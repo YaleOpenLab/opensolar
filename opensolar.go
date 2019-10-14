@@ -28,8 +28,8 @@ var opts struct {
 	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
 }
 
-// ParseConfig parses CLI parameters
-func ParseConfig(args []string) (bool, int, error) {
+// parseConfig parses CLI parameters
+func parseConfig(args []string) (bool, int, error) {
 	_, err := flags.ParseArgs(&opts, args)
 	if err != nil {
 		return false, -1, err
@@ -41,6 +41,23 @@ func ParseConfig(args []string) (bool, int, error) {
 	if opts.OpenxURL != "" {
 		consts.OpenxURL = opts.OpenxURL
 	}
+
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	err = viper.ReadInConfig()
+	if err != nil {
+		log.Println("error while reading openx access code")
+		log.Fatal(err)
+	}
+
+	err = checkViperParams("code")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	consts.TopSecretCode = viper.GetString("code")
+
 	return opts.Insecure, port, nil
 }
 
@@ -54,7 +71,7 @@ func checkViperParams(params ...string) error {
 }
 
 // Mainnet calls openx's API to find out whether its running on testnet or mainnet
-func Mainnet() bool {
+func mainnet() bool {
 	body := consts.OpenxURL + "/mainnet"
 	data, err := erpc.GetRequest(body)
 	if err != nil {
@@ -65,8 +82,8 @@ func Mainnet() bool {
 	return data[0] == byte(1)
 }
 
-// ParseConsts parses consts by receiving consts from the openx API
-func ParseConsts() error {
+// loadOpenxConsts parses consts by receiving consts from the openx API
+func loadOpenxConsts() error {
 	body := consts.OpenxURL + "/platform/getconsts?code=" + consts.TopSecretCode
 	data, err := erpc.GetRequest(body)
 	if err != nil {
@@ -99,69 +116,49 @@ func ParseConsts() error {
 func main() {
 	var err error
 	//log.Fatal(sandbox.Test())
-	insecure, port, err := ParseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
+	insecure, port, err := parseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	err = viper.ReadInConfig()
+	consts.Mainnet = mainnet() // make an API call to openx for the status on this
+	openxconsts.SetConsts(consts.Mainnet)
+
+	err = loadOpenxConsts()
 	if err != nil {
-		log.Println("error while reading openx access code")
 		log.Fatal(err)
 	}
 
-	if viper.IsSet("code") {
-		consts.TopSecretCode = viper.GetString("code")
-	}
-
-	if Mainnet() {
-		openxconsts.SetConsts(true)
+	if consts.Mainnet {
 		// set mainnet db to open in spearate folder, no other way to do it than changing it here
 		log.Println("initializing mainnet")
-
-		err = ParseConsts()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		consts.Mainnet = true
 		err = loader.Mainnet()
 		if err != nil {
 			log.Fatal(err)
 		}
-	} else {
-		openxconsts.SetConsts(false)
-		log.Println("initializing testnet")
 
-		err = ParseConsts()
+		project, err := core.RetrieveProject(1)
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		project.Metadata = "MAINNETTEST"
+		project.InvestorAssetCode = ""
+		project.TotalValue = 1
+		project.MoneyRaised = 0
+		project.InvestmentType = "munibond"
+		project.RecipientIndex = 1
+		project.DebtAssetCode = "TESTTELLER"
+		err = project.Save()
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Println("initializing testnet")
 		err = loader.Testnet()
 		if err != nil {
 			log.Fatal(err)
 		}
-	}
-
-	project, err := core.RetrieveProject(1)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	project.Metadata = "MAINNETTEST"
-	project.InvestorAssetCode = ""
-	project.TotalValue = 1
-	project.MoneyRaised = 0
-	project.InvestmentType = "munibond"
-	project.RecipientIndex = 1
-	project.DebtAssetCode = "TESTTELLER"
-	err = project.Save()
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	/*
