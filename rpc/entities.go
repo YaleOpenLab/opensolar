@@ -33,8 +33,8 @@ var EntityRpc = map[int][]string{
 	7: []string{"/entity/newproject/opensolar", "GET"},                          // GET
 }
 
-// EntityValidateHelper is a helper that helps validate an entity
-func EntityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, error) {
+// entityValidateHelper is a helper that helps validate an entity
+func entityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, error) {
 	var prepEntity core.Entity
 	if r.Method == "GET" {
 		if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
@@ -70,7 +70,7 @@ func validateEntity() {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -88,7 +88,7 @@ func getStage0Contracts() {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -113,7 +113,7 @@ func getStage1Contracts() {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -138,7 +138,7 @@ func getStage2Contracts() {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -163,7 +163,7 @@ func addCollateral() {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
@@ -205,7 +205,7 @@ func proposeOpensolarProject() {
 			return
 		}
 
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -264,7 +264,7 @@ func createOpensolarProject() {
 			return
 		}
 
-		prepEntity, err := EntityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r)
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)

@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"log"
 	"os"
+	"time"
 
 	// edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
@@ -33,7 +34,7 @@ func testSolarProject(index int, panelsize string, totalValue float64, location 
 	project.ContractorIndex = contractor.U.Index
 	project.OriginatorIndex = originator.U.Index
 	project.Stage = stage
-	project.PaybackPeriod = pbperiod
+	project.PaybackPeriod = time.Duration(pbperiod) * consts.OneWeekInSecond
 	project.AuctionType = auctionType
 	project.InvestmentType = "munibond"
 
