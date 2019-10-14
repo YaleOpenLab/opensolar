@@ -19,28 +19,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// package teller contains the remote client code that would be run on the client's
-// side and communicate information with us and with atonomi and other partners.
-// that it belongs, the contract, recipient, and eg. person who installed it.
-// Consider doing this with IoT partners, eg. Atonomi.
-
-// Teller authenticates with the platform using a remote API and then retrieves
-// credentials once authenticated. Both the teller and the project recipient on the
-// platform are the same entity, just that the teller is associated with the hw device.
-// hw device needs an id and stuff, hopefully Atonomi can give us that. Else, we have a deviceId
-// generated using a crypto random soruce,  hopefully should be sufficient.
-
-// Teller tracks whenever the device starts and goes off, so we know when exactly the device was
-// switched off. This is enough as proof that the device was running in between. This also
-// avoids needing to poll the blockchain often and saves on the (minimal, still) tx fee.
-
-// Since we can't compile this directly on the raspberry pi, we need to cross compile the
-// go executable and transfer it over to the raspberry pi:
 // env GOOS=linux GOARCH=arm GOARM=5 go build
-// advisable to build off the pi and transport the executable since I don't think we want to be running
-// go get on a raspberry pi with the stellar dependencies.
-// one should run an ipfs node on the raspberry pi to ensure the teller can commit to ipfs without relying
-// on the platform
 
 var opts struct {
 	Daemon     bool   `short:"d" description:"Run the teller in daemon mode"`
@@ -154,6 +133,8 @@ func ParseConfig() error {
 	ApiUrl = viper.GetString("apiurl")
 	Mapskey = viper.GetString("mapskey")
 	AssetName = viper.GetString("assetName")
+
+	// parse optional params
 	SwytchUsername = viper.GetString("susername")
 	SwytchPassword = viper.GetString("spassword")
 	SwytchClientid = viper.GetString("sclientid")
@@ -174,8 +155,8 @@ func ParseConfig() error {
 
 func main() {
 	var err error
-	erpc.SetConsts(30) // set rpc timeout to 30s to allow for slow connections wrt the blockchain and stuff.
-	// might even need to extend it given some transactions like payback take longer
+	erpc.SetConsts(30) // set rpc timeout to 30s to allow for slower RPC connections
+
 	err = ParseConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -207,11 +188,12 @@ func main() {
 	log.Println("BALANCE: ", balance)
 	log.Println("START HASH: ", StartHash)
 
-	log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
+	// log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
 	// log.Fatal(putIpfsData([]byte("hello")))
+
 	// run goroutines in the background to routinely check for payback, state updates and stuff
-	go checkPayback()
-	// go updateState()
+	// go checkPayback()
+	// go updateState(true)
 	// go storeDataLocal()
 
 	if opts.Daemon {
