@@ -12,16 +12,16 @@ import (
 
 // ParticleRPC contains a list of all particle related endpoints
 var ParticleRPC = map[int][]string{
-	1:  []string{"/particle/devices", "GET", "accessToken"},
-	2:  []string{"/particle/productinfo", "GET", "accessToken", "productInfo"},
-	3:  []string{"/particle/deviceinfo", "GET", "accessToken", "deviceId"},
-	4:  []string{"/particle/deviceping", "GET", "accessToken", "deviceId"},
-	5:  []string{"/particle/devicesignal", "GET", "signal", "accessToken"},
-	6:  []string{"/particle/getdeviceid", "GET", "serialNumber", "accessToken"},
-	7:  []string{"/particle/diag/last", "GET", "accessToken", "deviceId"},
-	8:  []string{"/particle/diag/all", "GET", "accessToken", "deviceId"},
-	9:  []string{"/particle/user/info", "GET", "accessToken"},
-	10: []string{"/particle/sims", "GET", "accessToken"},
+	1:  []string{"/particle/devices", "GET", "accessToken"},                     // GET
+	2:  []string{"/particle/productinfo", "GET", "accessToken", "productInfo"},  // GET
+	3:  []string{"/particle/deviceinfo", "GET", "accessToken", "deviceId"},      // GET
+	4:  []string{"/particle/deviceping", "GET", "accessToken", "deviceId"},      // GET
+	5:  []string{"/particle/devicesignal", "GET", "signal", "accessToken"},      // GET
+	6:  []string{"/particle/getdeviceid", "GET", "serialNumber", "accessToken"}, // GET
+	7:  []string{"/particle/diag/last", "GET", "accessToken", "deviceId"},       // GET
+	8:  []string{"/particle/diag/all", "GET", "accessToken", "deviceId"},        // GET
+	9:  []string{"/particle/user/info", "GET", "accessToken"},                   // GET
+	10: []string{"/particle/sims", "GET", "accessToken"},                        // GET
 }
 
 // setupParticleHandlers sets up all the particle related endpoints

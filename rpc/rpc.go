@@ -130,6 +130,7 @@ func StartServer(portx int, insecure bool) {
 	setupSwytchApis()
 	setupStagesHandlers()
 	setupAdminHandlers()
+	setupDeveloperRPCs()
 
 	port, err := utils.ToString(portx)
 	if err != nil {

@@ -16,10 +16,10 @@ func setupPublicRoutes() {
 }
 
 var PublicRpc = map[int][]string{
-	1: []string{"/public/investor/all"},
-	2: []string{"/public/recipient/all"},
-	3: []string{"/public/recipient/reputation/top"},
-	4: []string{"/public/investor/reputation/top"},
+	1: []string{"/public/investor/all"},             // GET
+	2: []string{"/public/recipient/all"},            // GET
+	3: []string{"/public/recipient/reputation/top"}, // GET
+	4: []string{"/public/investor/reputation/top"},  // GET
 }
 
 // SnInvestor defines a sanitized investor
