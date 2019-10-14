@@ -17,8 +17,6 @@ import (
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
-// contains one of the two main contracts behind opensolar
-
 // VerifyBeforeAuthorizing verifies information on the originator before upgrading the project stage
 func VerifyBeforeAuthorizing(projIndex int) bool {
 	project, err := RetrieveProject(projIndex)

@@ -23,6 +23,7 @@ func (a *Entity) AddFirstLossGuarantee(seedpwd string, amount float64) error {
 	return a.Save()
 }
 
+// RefillEscrowAsset refills the escrow with a specific asset
 func (a *Entity) RefillEscrowAsset(projIndex int, asset string, amount float64, seedpwd string) error {
 	if !a.Guarantor {
 		log.Println("caller not guarantor")
@@ -69,6 +70,7 @@ func (a *Entity) RefillEscrowAsset(projIndex int, asset string, amount float64, 
 	return nil
 }
 
+// RefillEscrowXLM refills the escrow with XLM
 func (a *Entity) RefillEscrowXLM(projIndex int, amount float64, seedpwd string) error {
 	if !a.Guarantor {
 		log.Println("caller not guarantor")

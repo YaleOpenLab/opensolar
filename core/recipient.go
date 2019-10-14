@@ -10,32 +10,30 @@ import (
 
 // Recipient defines the recipient structure
 type Recipient struct {
+
+	// U imports the base User class from openx
 	U *openx.User
-	// user related functions are called as an instance directly
-	ReceivedSolarProjects       []string
+
+	// ReceivedSolarProjects stores the projects that the recipient is receiver of
+	ReceivedSolarProjects []string
+
+	// ReceivedSolarProjectIndices stores the indices of the projects the recipient is part of
 	ReceivedSolarProjectIndices []int
-	ReceivedConstructionBonds   []string
-	// ReceivedProjects denotes the projects that have been received by the recipient
-	// instead of storing the PaybackAssets and the DebtAssets, we store this
+
+	// DeviceId is the device ID of the associated solar hub / IoT device
 	DeviceId string
-	// the device ID of the associated solar hub. We don't do much with it here,
-	// but we need it on the IoT Hub side to check login stuff
+
+	// DeviceStarts contains the start time of the above IoT devices.
 	DeviceStarts []string
-	// the start time of the devices recorded for reference. We could monitor unscheduled
-	// closes on the platform level as well and send email notifications or similar
+
+	// DeviceLocation stores the physical location of the device powered by Google APIs.
 	DeviceLocation string
-	// the location of the device. Teller gets location using google's geolocation
-	// API. Accuracy is of the order ~1km radius. Not great, but enough to detect
-	// theft or something
+
+	// StateHashes stores the list of state updates (ipfs hashes) of the teller
 	StateHashes []string
-	// StateHashes provides the list of state updates (ipfs hashes) that the teller associated with this
-	// particular recipient has communicated.
-	TotalEnergyCP float64
-	// the total energy produced by the recipient's assets in the current period
-	TotalEnergy float64
-	// the total energy produced by the recipient's assets over all billed periods
+
+	// Autoreload is a bool to denote whether the recipient wants to reload balance from their secondary account
 	Autoreload bool
-	// a bool to denote whether the recipient wants to reload balance from his secondary account to pay any dues that are remaining
 }
 
 // NewRecipient creates and returns a new recipient
