@@ -131,6 +131,7 @@ func StartServer(portx int, insecure bool) {
 	setupStagesHandlers()
 	setupAdminHandlers()
 	setupDeveloperRPCs()
+	setupGuarantorRPCs()
 
 	port, err := utils.ToString(portx)
 	if err != nil {
