@@ -385,6 +385,35 @@ func UnlockProject(username string, pwhash string, projIndex int, seedpwd string
 	return nil
 }
 
+// checkSeedPwd checks whether the seedpwd supplied actually unlocks the seed
+func checkSeedPwd(project Project, pwd string) error {
+	// check if the one time unlock actually works
+	recipient, err := RetrieveRecipient(project.RecipientIndex)
+	if err != nil {
+		log.Println("error while retrieving project recipient: ", err)
+		return err
+	}
+
+	recpSeed, err := wallet.DecryptSeed(recipient.U.StellarWallet.EncryptedSeed, pwd)
+	if err != nil { // length of a stelalr seed is 56
+		log.Println("error while decrypting using the given seed: ", err)
+		return err
+	}
+
+	checkPubkey, err := wallet.ReturnPubkey(recpSeed)
+	if err != nil {
+		log.Println("couldn't get recipient's pubkey from seed: ", err)
+		return err
+	}
+
+	if checkPubkey != recipient.U.StellarWallet.PublicKey {
+		log.Println("provided pubkey doesn't match with decrypted pubkey: ", err)
+		return err
+	}
+
+	return nil
+}
+
 // sendRecipientAssets sends a recipient the debt asset and the payback asset associated with
 // the opensolar platform
 func sendRecipientAssets(projIndex int) error {
@@ -394,28 +423,39 @@ func sendRecipientAssets(projIndex int) error {
 		return errors.Wrap(err, "Couldn't retrieve project")
 	}
 
-	if len(project.OneTimeUnlock) == 0 {
-		for utils.Unix()-startTime < consts.LockInterval {
-			log.Printf("WAITING FOR PROJECT %d TO BE UNLOCKED", projIndex)
-			project, err = RetrieveProject(projIndex)
-			if err != nil {
-				return errors.Wrap(err, "Couldn't retrieve project")
-			}
-			if !project.Lock {
-				log.Println("Project UNLOCKED IN LOOP")
-				break
-			}
-			time.Sleep(10 * time.Second)
+	var wait bool
+	if len(project.OneTimeUnlock) != 0 {
+		err := checkSeedPwd(project, project.OneTimeUnlock)
+		if err != nil {
+			wait = true
 		}
-	} else {
 		project.LockPwd = project.OneTimeUnlock
 		project.OneTimeUnlock = "" // set this to nil since this is a one time unlock. LockPwd will be set to nil later
 	}
 
-	// lock is open, retrieve project and transfer assets
-	project, err = RetrieveProject(projIndex)
-	if err != nil {
-		return errors.Wrap(err, "Couldn't retrieve project")
+	if len(project.OneTimeUnlock) == 0 || wait {
+		for utils.Unix()-startTime < consts.LockInterval {
+			log.Printf("CHECKING IF PROJECT %d HAS BEEN UNLOCKED", projIndex)
+			project, err = RetrieveProject(projIndex)
+			if err != nil {
+				log.Println("error while retrieving project index: ", projIndex, " sleeping")
+				time.Sleep(10 * time.Second)
+				continue
+			}
+			if !project.Lock {
+				log.Println("Project UNLOCKED IN LOOP")
+				err := checkSeedPwd(project, project.LockPwd)
+				if err != nil {
+					log.Println("error while unlocking seedpwd, waiting")
+					project.Lock = true
+					time.Sleep(10 * time.Second)
+					continue
+				}
+				// no errors, exit
+				break
+			}
+			time.Sleep(10 * time.Second)
+		}
 	}
 
 	recipient, err := RetrieveRecipient(project.RecipientIndex)
@@ -427,6 +467,8 @@ func sendRecipientAssets(projIndex int) error {
 	if err != nil {
 		return errors.Wrap(err, "couldn't decrypt seed")
 	}
+
+	project.LockPwd = "" // lockpwd set to empty immediately after use
 
 	escrowPubkey, err := escrow.InitEscrow(project.Index, consts.EscrowPwd, recipient.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed)
 	if err != nil {
@@ -443,7 +485,6 @@ func sendRecipientAssets(projIndex int) error {
 	}
 
 	log.Println("Transferred funds to escrow!")
-	project.LockPwd = "" // set lockpwd to nil immediately after retrieving seed
 
 	project.DebtAssetCode = assets.AssetID(consts.DebtAssetPrefix + project.Metadata)
 	project.PaybackAssetCode = assets.AssetID(consts.PaybackAssetPrefix + project.Metadata)
