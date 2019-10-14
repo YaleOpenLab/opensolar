@@ -50,7 +50,14 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 		return prepInvestor, errors.New("reqd params not present can't be empty")
 	}
 
-	prepInvestor, err = core.ValidateInvestor(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
+	var username, token string
+	if method == "GET" {
+		username, token = r.URL.Query()["username"][0], r.URL.Query()["token"][0]
+	} else {
+		username, token = r.FormValue("username"), r.FormValue("token")
+	}
+
+	prepInvestor, err = core.ValidateInvestor(username, token)
 	if err != nil {
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		log.Println("did not validate investor", err)

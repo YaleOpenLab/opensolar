@@ -74,12 +74,11 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	var username, token string
 
 	if r.Method == "GET" {
-		username = r.URL.Query()["username"][0]
-		token = r.URL.Query()["token"][0]
+		username, token = r.URL.Query()["username"][0], r.URL.Query()["token"][0]
 	} else if r.Method == "POST" {
-		username = r.FormValue("username")
-		token = r.FormValue("token")
+		username, token = r.FormValue("username"), r.FormValue("token")
 	}
+
 	prepRecipient, err = core.ValidateRecipient(username, token)
 	if err != nil {
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)

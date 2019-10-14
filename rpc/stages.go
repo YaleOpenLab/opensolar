@@ -18,9 +18,9 @@ func setupStagesHandlers() {
 }
 
 var StagesRPC = map[int][]string{
-	1: []string{"/stages/all"},              // GET
-	2: []string{"/stages", "index"},         // GET
-	3: []string{"/stages/promote", "index"}, // GET
+	1: []string{"/stages/all", "GET"},              // GET
+	2: []string{"/stages", "GET", "index"},         // GET
+	3: []string{"/stages/promote", "GET", "index"}, // GET
 }
 
 // returnAllStages returns all the defined stages for this specific platform.  Opensolar
@@ -138,7 +138,7 @@ func promoteStage() {
 			invBool = false
 		}
 
-		entity, err := entityValidateHelper(w, r)
+		entity, err := entityValidateHelper(w, r, StagesRPC[2][2:], StagesRPC[2][1])
 		if err != nil {
 			log.Println("stage promoter not an entity: ", err)
 			entityBool = false

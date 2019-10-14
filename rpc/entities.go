@@ -23,7 +23,7 @@ func setupEntityRPCs() {
 	proposeOpensolarProject()
 }
 
-var EntityRpc = map[int][]string{
+var EntityRPC = map[int][]string{
 	1: []string{"/entity/validate", "GET"},                                      // GET
 	2: []string{"/entity/stage0", "GET"},                                        // GET
 	3: []string{"/entity/stage1", "GET"},                                        // GET
@@ -34,43 +34,39 @@ var EntityRpc = map[int][]string{
 }
 
 // entityValidateHelper is a helper that helps validate an entity
-func entityValidateHelper(w http.ResponseWriter, r *http.Request) (core.Entity, error) {
+func entityValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (core.Entity, error) {
 	var prepEntity core.Entity
-	if r.Method == "GET" {
-		if r.URL.Query() == nil || r.URL.Query()["username"] == nil ||
-			len(r.URL.Query()["token"][0]) != 32 {
-			return prepEntity, errors.New("Invalid params passed")
-		}
 
-		prepEntity, err := core.ValidateEntity(r.URL.Query()["username"][0], r.URL.Query()["token"][0])
-		if err != nil {
-			return prepEntity, errors.Wrap(err, "Error while validating entity")
-		}
-
-		return prepEntity, nil
-	} else if r.Method == "POST" {
-		if r.FormValue("username") == "" || r.FormValue("password") == "" {
-			return prepEntity, errors.New("Invalid params passed")
-		}
-
-		prepEntity, err := core.ValidateEntity(r.FormValue("username"), r.FormValue("token"))
-		if err != nil {
-			return prepEntity, errors.Wrap(err, "Error while validating entity")
-		}
-		return prepEntity, nil
+	err := checkReqdParams(w, r, options, method)
+	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		return prepEntity, errors.New("reqd params not present can't be empty")
 	}
-	return prepEntity, errors.New("invalid method type")
+
+	var username, token string
+	if method == "GET" {
+		username, token = r.URL.Query()["username"][0], r.URL.Query()["token"][0]
+	} else if method == "POST" {
+		username, token = r.FormValue("username"), r.FormValue("token")
+	} else {
+		log.Println("method not recognized, quitting")
+		return prepEntity, errors.New("invalid method, quitting")
+	}
+
+	prepEntity, err = core.ValidateEntity(username, token)
+	if err != nil {
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		log.Println("did not validate investor", err)
+		return prepEntity, err
+	}
+
+	return prepEntity, nil
 }
 
 // validateEntity is an endpoint that vlaidates is a specific entity is registered on the platform
 func validateEntity() {
-	http.HandleFunc(EntityRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		prepEntity, err := entityValidateHelper(w, r)
+	http.HandleFunc(EntityRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[1][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -82,13 +78,8 @@ func validateEntity() {
 
 // getStage0Contracts gets a list of all the pre origianted contracts on the platform
 func getStage0Contracts() {
-	http.HandleFunc(EntityRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		prepEntity, err := entityValidateHelper(w, r)
+	http.HandleFunc(EntityRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[2][2:], EntityRPC[2][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -107,13 +98,8 @@ func getStage0Contracts() {
 
 // getStage1Contracts gets a list of all the originated contracts on the platform
 func getStage1Contracts() {
-	http.HandleFunc(EntityRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		prepEntity, err := entityValidateHelper(w, r)
+	http.HandleFunc(EntityRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[3][2:], EntityRPC[3][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -132,13 +118,8 @@ func getStage1Contracts() {
 
 // getStage2Contracts gets a list of all the proposed contracts on the platform
 func getStage2Contracts() {
-	http.HandleFunc(EntityRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		prepEntity, err := entityValidateHelper(w, r)
+	http.HandleFunc(EntityRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[4][2:], EntityRPC[4][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -157,19 +138,19 @@ func getStage2Contracts() {
 
 // addCollateral is a route that a contractor can use to add collateral
 func addCollateral() {
-	http.HandleFunc(EntityRpc[5][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		prepEntity, err := entityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[5][2:], EntityRPC[5][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
-		err = checkReqdParams(w, r, EntityRpc[5][2:], EntityRpc[5][1])
+		err = checkReqdParams(w, r, EntityRPC[5][2:], EntityRPC[5][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -198,21 +179,21 @@ func addCollateral() {
 
 // proposeOpensolarProject creates a contract which the contractor proposes towards a particular project
 func proposeOpensolarProject() {
-	http.HandleFunc(EntityRpc[6][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		prepEntity, err := entityValidateHelper(w, r)
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[6][2:], EntityRPC[6][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
-		err = checkReqdParams(w, r, EntityRpc[6][2:], EntityRpc[6][1])
+		err = checkReqdParams(w, r, EntityRPC[6][2:], EntityRPC[6][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -257,14 +238,8 @@ func proposeOpensolarProject() {
 // createOpensolarProject creates a contract which the originator can take to the recipient in order to be validated
 // as a level 1 project.
 func createOpensolarProject() {
-	http.HandleFunc(EntityRpc[7][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		prepEntity, err := entityValidateHelper(w, r)
+	http.HandleFunc(EntityRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, EntityRPC[7][2:], EntityRPC[7][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
