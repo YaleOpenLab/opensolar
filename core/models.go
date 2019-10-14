@@ -89,7 +89,7 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 
 // MunibondReceive sends assets to the recipient
 func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetId string,
-	paybackAssetId string, years int, recpSeed string, totalValue float64, paybackPeriod int) error {
+	paybackAssetId string, years int, recpSeed string, totalValue float64, paybackPeriod time.Duration) error {
 
 	log.Println("Retrieving recipient")
 	recipient, err := RetrieveRecipient(recpIndex)
@@ -161,7 +161,7 @@ func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetI
 }
 
 // sendPaymentNotif sends a notification every payback period to the recipient to remind them to payback towards the project
-func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod int, email string) {
+func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod time.Duration, email string) {
 	paybackTimes := 0
 	for {
 
@@ -184,7 +184,7 @@ func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod int, email str
 		// sleep until the next payment is due
 		paybackTimes += 1
 		log.Println("Sent: ", email, "a notification on payments for payment cycle: ", paybackTimes)
-		time.Sleep(2 * time.Duration(paybackPeriod) * time.Second)
+		time.Sleep(2 * paybackPeriod)
 	}
 }
 

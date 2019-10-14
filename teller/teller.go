@@ -155,7 +155,8 @@ func ParseConfig() error {
 
 func main() {
 	var err error
-	erpc.SetConsts(30) // set rpc timeout to 30s to allow for slower RPC connections
+	erpc.SetConsts(60) // set rpc timeout to 60s to allow for slower RPC connections
+	// this is inline with the https clisent setup f or remote RPC calls
 
 	err = ParseConfig()
 	if err != nil {

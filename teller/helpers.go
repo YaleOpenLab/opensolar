@@ -105,7 +105,7 @@ func checkPayback() {
 			log.Println("Error while paying amount back", err)
 			sendDevicePaybackFailedEmail()
 		}
-		time.Sleep(time.Duration(time.Duration(LocalProject.PaybackPeriod) * consts.OneWeekInSecond))
+		time.Sleep(time.Duration(LocalProject.PaybackPeriod * consts.OneWeekInSecond))
 	}
 }
 
@@ -244,7 +244,7 @@ func storeDataLocal() {
 			// we need to store this in ipfs, delete this file and then commit the ipfs hash as
 			// the first line in a new file. This whole construction is like a blockchain so we could say
 			// we have a blockchain within a blockchain
-			// log.Println("size limit reached, taking action")
+
 			err = file.Close()
 			if err != nil {
 				log.Println("couldn't close file, trying again")

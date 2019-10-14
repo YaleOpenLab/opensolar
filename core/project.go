@@ -2,6 +2,8 @@ package core
 
 import (
 	// "log"
+	"time"
+
 	platforms "github.com/YaleOpenLab/openx/platforms"
 )
 
@@ -38,7 +40,7 @@ type Project struct {
 	DateLastPaid         int64              // int64 ie unix time since we need comparisons on this one
 	AuctionType          string             // the type of the auction in question. Default is blind auction unless explicitly mentioned
 	InvestmentType       string             // the type of investment - equity crowdfunding, municipal bond, normal crowdfunding, etc defined in models
-	PaybackPeriod        int                // the frequency in number of weeks that the recipient has to pay the platform
+	PaybackPeriod        time.Duration      // the frequency in number of weeks that the recipient has to pay the platform
 	Stage                int                // the stage at which the contract is at, float due to potential support of 0.5 state changes in the future
 	InvestorAssetCode    string             // the code of the asset given to investors on investment in the project
 	DebtAssetCode        string             // the code of the asset given to recipients on receiving a project

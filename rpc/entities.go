@@ -4,9 +4,11 @@ import (
 	"github.com/pkg/errors"
 	"log"
 	"net/http"
+	"time"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -327,13 +329,14 @@ func createOpensolarProject() {
 		}
 
 		x.AuctionType = r.URL.Query()["AuctionType"][0]
-		x.PaybackPeriod, err = utils.ToInt(r.URL.Query()["PaybackPeriod"][0])
+		paybackPeriodInt, err := utils.ToInt(r.URL.Query()["PaybackPeriod"][0])
 		if err != nil {
 			log.Println("payback period not integer, quitting!")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
+		x.PaybackPeriod = time.Duration(paybackPeriodInt) * consts.OneWeekInSecond
 		x.OriginatorIndex = prepEntity.U.Index
 		x.State = r.URL.Query()["Location"][0]
 		x.PanelSize = r.URL.Query()["PanelSize"][0]
