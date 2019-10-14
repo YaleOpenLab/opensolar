@@ -14,10 +14,10 @@ func setupDeveloperRPCs() {
 }
 
 var DevRPC = map[int][]string{
-	1: []string{"/developer/withdraw", "POST", "amount", "projIndex"}, // GET
+	1: []string{"/developer/withdraw", "POST", "amount", "projIndex"}, // POST
 }
 
-// getStage1Contracts gets a list of all the originated contracts on the platform
+// withdrawdeveloper can be called by a developer wishing to withdraw funds from the platfomr
 func withdrawdeveloper() {
 	http.HandleFunc(DevRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		prepDev, err := entityValidateHelper(w, r, DevRPC[1][2:], DevRPC[1][1])
