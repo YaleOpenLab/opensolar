@@ -14,8 +14,6 @@ import (
 func StartTeller() error {
 	var err error
 
-	// don't allow login before this since that becomes an attack vector where a person can guess
-	// multiple passwords
 	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME")+"/go/src/github.com/YaleOpenLab/opensolar/server.crt", 60*time.Second)
 
 	err = login(loginUsername, loginPwhash)
@@ -64,7 +62,7 @@ func StartTeller() error {
 		return errors.New("TRYING TO INSTALL A PROJECT THAT HASN'T BEEN FUNDED YET, QUITTING!")
 	}
 
-	// check for device id and set it if none is set
+	// check for device id and set if none is set
 	err = checkDeviceID()
 	if err != nil {
 		return errors.Wrap(err, "could not check device id")

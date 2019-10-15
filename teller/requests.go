@@ -83,7 +83,7 @@ func ping() error {
 	return nil
 }
 
-// GetProjectIndex gets a specific project's index
+// getProjectIndex gets a specific project's index
 func getProjectIndex(assetName string) (int, error) {
 	data, err := httpsGet(rpc.ProjectRPC[2])
 	if err != nil {

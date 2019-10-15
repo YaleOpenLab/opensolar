@@ -35,7 +35,7 @@ var (
 	loginUsername string
 	// Pwhash is the Pwhash used to logon to any openx based platform
 	loginPwhash string
-
+	// loginProjIndex is the project index used for fetching the project initially
 	loginProjIndex int
 	// LocalRecipient is the recipient struct associated with the project the teller is installed for
 	LocalRecipient core.Recipient
@@ -118,7 +118,8 @@ func ParseConfig() error {
 		return errors.Wrap(err, "Error while reading email values from config file")
 	}
 
-	requiredParams := []string{"platformPublicKey", "seedpwd", "username", "password", "apiurl", "mapskey", "projIndex", "assetName"}
+	requiredParams := []string{"platformPublicKey", "seedpwd", "username",
+		"password", "apiurl", "mapskey", "projIndex", "assetName"}
 
 	for _, param := range requiredParams {
 		if !viper.IsSet(param) {
@@ -156,7 +157,7 @@ func ParseConfig() error {
 func main() {
 	var err error
 	erpc.SetConsts(60) // set rpc timeout to 60s to allow for slower RPC connections
-	// this is inline with the https clisent setup f or remote RPC calls
+	// this is inline with the https clisent setup for remote RPC calls
 
 	err = ParseConfig()
 	if err != nil {
@@ -164,7 +165,7 @@ func main() {
 	}
 
 	log.Println("---------------WELCOME TO THE TELLER INTERFACE---------------")
-	defer recoverPanic() // catch any panics that may occur during the teller's runtime
+	defer recoverPanic() // catch any panics that occur during the teller's runtime
 	err = StartTeller()  // login to the platform, set device id, etc
 	if err != nil {
 		log.Fatal(err)
