@@ -5,8 +5,8 @@ import (
 	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
-	tickers "github.com/YaleOpenLab/openx/chains/exchangetickers"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
+	tickers "github.com/Varunram/essentials/exchangetickers"
+	xlm "github.com/Varunram/essentials/xlm"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openx "github.com/YaleOpenLab/openx/database"
 

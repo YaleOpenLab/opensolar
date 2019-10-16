@@ -7,8 +7,8 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	xlm "github.com/Varunram/essentials/xlm"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 
 	core "github.com/YaleOpenLab/opensolar/core"
 )

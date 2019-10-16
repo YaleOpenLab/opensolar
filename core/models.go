@@ -7,11 +7,11 @@ import (
 
 	utils "github.com/Varunram/essentials/utils"
 
-	stablecoin "github.com/YaleOpenLab/openx/chains/stablecoin"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
-	issuer "github.com/YaleOpenLab/openx/chains/xlm/issuer"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
+	xlm "github.com/Varunram/essentials/xlm"
+	assets "github.com/Varunram/essentials/xlm/assets"
+	issuer "github.com/Varunram/essentials/xlm/issuer"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	notif "github.com/YaleOpenLab/opensolar/notif"

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	utils "github.com/Varunram/essentials/utils"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
-	escrow "github.com/YaleOpenLab/openx/chains/xlm/escrow"
-	issuer "github.com/YaleOpenLab/openx/chains/xlm/issuer"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	xlm "github.com/Varunram/essentials/xlm"
+	assets "github.com/Varunram/essentials/xlm/assets"
+	escrow "github.com/Varunram/essentials/xlm/escrow"
+	issuer "github.com/Varunram/essentials/xlm/issuer"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	notif "github.com/YaleOpenLab/opensolar/notif"

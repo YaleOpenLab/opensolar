@@ -11,9 +11,9 @@ import (
 
 	utils "github.com/Varunram/essentials/utils"
 	opensolarconsts "github.com/YaleOpenLab/opensolar/consts"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	xlm "github.com/Varunram/essentials/xlm"
+	assets "github.com/Varunram/essentials/xlm/assets"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxdb "github.com/YaleOpenLab/openx/database"
 	build "github.com/stellar/go/txnbuild"
@@ -24,7 +24,7 @@ func TestDb(t *testing.T) {
 	var err error
 	openxconsts.SetConsts(false)
 	opensolarconsts.SetTnConsts()
-	os.Remove(openxconsts.DbDir + "/openx.db")
+	os.Remove(openxconsts.DbDir + "/opensolar.db")
 	CreateHomeDir() // create home directory if it doesn't exist yet
 	openxdb.CreateHomeDir()
 	db, err := OpenDB()

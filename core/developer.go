@@ -6,10 +6,10 @@ import (
 
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
-	escrow "github.com/YaleOpenLab/openx/chains/xlm/escrow"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	xlm "github.com/Varunram/essentials/xlm"
+	assets "github.com/Varunram/essentials/xlm/assets"
+	escrow "github.com/Varunram/essentials/xlm/escrow"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 )
 
 // RequestWaterfallWithdrawal requests withdrawal of funds from the escrow account

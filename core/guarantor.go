@@ -6,9 +6,9 @@ import (
 
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	assets "github.com/YaleOpenLab/openx/chains/xlm/assets"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	xlm "github.com/Varunram/essentials/xlm"
+	assets "github.com/Varunram/essentials/xlm/assets"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 )
 
 // AddFirstLossGuarantee adds the given entity as a first loss guarantor

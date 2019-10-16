@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	xlm "github.com/YaleOpenLab/openx/chains/xlm"
-	escrow "github.com/YaleOpenLab/openx/chains/xlm/escrow"
-	multisig "github.com/YaleOpenLab/openx/chains/xlm/multisig"
+	xlm "github.com/Varunram/essentials/xlm"
+	escrow "github.com/Varunram/essentials/xlm/escrow"
+	multisig "github.com/Varunram/essentials/xlm/multisig"
 	consts "github.com/YaleOpenLab/openx/consts"
 	database "github.com/YaleOpenLab/openx/database"
 )

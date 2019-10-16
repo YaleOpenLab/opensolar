@@ -7,7 +7,7 @@ import (
 	"time"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	wallet "github.com/YaleOpenLab/openx/chains/xlm/wallet"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 )
 
 // StartTeller starts the teller
