@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
 
@@ -17,6 +16,7 @@ func setupUserRpcs() {
 	updateUser()
 	reportProject()
 	userInfo()
+	registerUser()
 }
 
 // UserRPC is a collection of all user RPC endpoints and their required params
@@ -24,6 +24,7 @@ var UserRPC = map[int][]string{
 	1: []string{"/user/update", "POST"},              // POST
 	2: []string{"/user/report", "POST", "projIndex"}, // POST
 	3: []string{"/user/info", "GET"},                 // GET
+	4: []string{"/user/register", "POST", "name", "username", "pwhash", "seedpwd"},
 }
 
 func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (openx.User, error) {
@@ -36,8 +37,12 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 		return user, err
 	}
 
-	username := r.URL.Query()["username"][0]
-	token := r.URL.Query()["token"][0]
+	var username, token string
+	if method == "GET" {
+		username, token = r.URL.Query()["username"][0], r.URL.Query()["token"][0]
+	} else {
+		username, token = r.FormValue("username"), r.FormValue("token")
+	}
 
 	user, err = core.ValidateUser(username, token)
 	if err != nil {
@@ -46,23 +51,12 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 		return user, err
 	}
 
-	if !user.Admin {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-		return user, errors.New("unauthorized")
-	}
-
 	return user, nil
 }
 
 // updateUser updates credentials of the user
 func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
@@ -73,6 +67,14 @@ func updateUser() {
 		}
 		if r.FormValue("city") != "" {
 			user.City = r.FormValue("city")
+		}
+		if r.FormValue("pwhash") != "" {
+			if len(r.FormValue("pwhash")) != 128 {
+				log.Println("length of pwhash not 128")
+				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				return
+			}
+			user.Pwhash = r.FormValue("pwhash")
 		}
 		if r.FormValue("zipcode") != "" {
 			user.ZipCode = r.FormValue("zipcode")
@@ -92,6 +94,7 @@ func updateUser() {
 		if r.FormValue("email") != "" {
 			user.Email = r.FormValue("email")
 		}
+
 		if r.FormValue("notification") != "" {
 			if r.FormValue("notification") != "true" {
 				user.Notification = false
@@ -112,6 +115,7 @@ func updateUser() {
 			investor.U = &user
 			err = investor.Save()
 			if err != nil {
+				log.Println("unable to save investor: ", err)
 				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 				return
 			}
@@ -121,10 +125,12 @@ func updateUser() {
 			recipient.U = &user
 			err = recipient.Save()
 			if err != nil {
+				log.Println("unable to save recipient: ", err)
 				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 				return
 			}
 		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
@@ -132,12 +138,6 @@ func updateUser() {
 // reportProject updates credentials of the user
 func reportProject() {
 	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
@@ -174,12 +174,6 @@ type validateParams struct {
 // userInfo validates a user and returns whether the user is an investor or recipient on the opensolar platform
 func userInfo() {
 	http.HandleFunc(UserRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		// need to pass the pwhash param here
 		prepUser, err := userValidateHelper(w, r, UserRPC[3][2:], UserRPC[3][1])
 		if err != nil {
@@ -215,5 +209,47 @@ func userInfo() {
 			erpc.MarshalSend(w, x)
 			return
 		}
+	})
+}
+
+// registerUser creates a new user on the platform
+func registerUser() {
+	http.HandleFunc(UserRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		// parse form the check whether required params are present
+		err = r.ParseForm()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		for _, option := range UserRPC[4][2:] {
+			if r.FormValue(option) == "" {
+				log.Println("required param: ", option, " not found")
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return
+			}
+		}
+
+		realname := r.FormValue("name")
+		username := r.FormValue("username")
+		pwhash := r.FormValue("pwhash")
+		seedpwd := r.FormValue("seedpwd")
+
+		user, err := core.NewUser(username, pwhash, seedpwd, realname)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, user)
 	})
 }

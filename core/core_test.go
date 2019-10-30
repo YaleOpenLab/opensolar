@@ -10,10 +10,10 @@ import (
 	"time"
 
 	utils "github.com/Varunram/essentials/utils"
-	opensolarconsts "github.com/YaleOpenLab/opensolar/consts"
 	xlm "github.com/Varunram/essentials/xlm"
 	assets "github.com/Varunram/essentials/xlm/assets"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
+	opensolarconsts "github.com/YaleOpenLab/opensolar/consts"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxdb "github.com/YaleOpenLab/openx/database"
 	build "github.com/stellar/go/txnbuild"

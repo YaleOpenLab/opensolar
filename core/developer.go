@@ -5,11 +5,11 @@ import (
 	"log"
 
 	utils "github.com/Varunram/essentials/utils"
-	consts "github.com/YaleOpenLab/opensolar/consts"
 	xlm "github.com/Varunram/essentials/xlm"
 	assets "github.com/Varunram/essentials/xlm/assets"
 	escrow "github.com/Varunram/essentials/xlm/escrow"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
 // RequestWaterfallWithdrawal requests withdrawal of funds from the escrow account

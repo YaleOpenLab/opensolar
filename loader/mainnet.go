@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
+	xlm "github.com/Varunram/essentials/xlm"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
-	xlm "github.com/Varunram/essentials/xlm"
 )
 
 // Mainnet loads the stuff needed for mainnet. Ordering is very important since some consts need the others

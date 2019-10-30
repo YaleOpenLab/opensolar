@@ -7,10 +7,10 @@ import (
 
 	utils "github.com/Varunram/essentials/utils"
 
-	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
 	xlm "github.com/Varunram/essentials/xlm"
 	assets "github.com/Varunram/essentials/xlm/assets"
 	issuer "github.com/Varunram/essentials/xlm/issuer"
+	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"

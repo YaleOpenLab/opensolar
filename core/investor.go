@@ -4,8 +4,8 @@ import (
 	//"log"
 	"github.com/pkg/errors"
 
-	utils "github.com/Varunram/essentials/utils"
 	tickers "github.com/Varunram/essentials/exchangetickers"
+	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openx "github.com/YaleOpenLab/openx/database"
