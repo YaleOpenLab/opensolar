@@ -68,6 +68,14 @@ func updateUser() {
 		if r.FormValue("city") != "" {
 			user.City = r.FormValue("city")
 		}
+		if r.FormValue("pwhash") != "" {
+			if len(r.FormValue("pwhash")) != 128 {
+				log.Println("length of pwhash not 128")
+				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				return
+			}
+			user.Pwhash = r.FormValue("pwhash")
+		}
 		if r.FormValue("zipcode") != "" {
 			user.ZipCode = r.FormValue("zipcode")
 		}
