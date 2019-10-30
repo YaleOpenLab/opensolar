@@ -17,6 +17,7 @@ func setupUserRpcs() {
 	updateUser()
 	reportProject()
 	userInfo()
+	registerUser()
 }
 
 // UserRPC is a collection of all user RPC endpoints and their required params
@@ -24,6 +25,7 @@ var UserRPC = map[int][]string{
 	1: []string{"/user/update", "POST"},              // POST
 	2: []string{"/user/report", "POST", "projIndex"}, // POST
 	3: []string{"/user/info", "GET"},                 // GET
+	4: []string{"/user/register", "POST", "name", "username", "pwhash", "seedpwd"},
 }
 
 func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (openx.User, error) {
@@ -57,12 +59,6 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 // updateUser updates credentials of the user
 func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
@@ -132,12 +128,6 @@ func updateUser() {
 // reportProject updates credentials of the user
 func reportProject() {
 	http.HandleFunc(UserRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
 		if err != nil {
 			return
@@ -174,12 +164,6 @@ type validateParams struct {
 // userInfo validates a user and returns whether the user is an investor or recipient on the opensolar platform
 func userInfo() {
 	http.HandleFunc(UserRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		// need to pass the pwhash param here
 		prepUser, err := userValidateHelper(w, r, UserRPC[3][2:], UserRPC[3][1])
 		if err != nil {
@@ -215,5 +199,47 @@ func userInfo() {
 			erpc.MarshalSend(w, x)
 			return
 		}
+	})
+}
+
+// registerUser creates a new user on the platform
+func registerUser() {
+	http.HandleFunc(UserRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		// parse form the check whether required params are present
+		err = r.ParseForm()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		for _, option := range UserRPC[4][2:] {
+			if r.FormValue(option) == "" {
+				log.Println("required param: ", option, " not found")
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return
+			}
+		}
+
+		realname := r.FormValue("name")
+		username := r.FormValue("username")
+		pwhash := r.FormValue("pwhash")
+		seedpwd := r.FormValue("seedpwd")
+
+		user, err := core.NewUser(username, pwhash, seedpwd, realname)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, user)
 	})
 }

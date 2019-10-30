@@ -150,7 +150,7 @@ type Project struct {
 	// BrokerUrl isthe url of the MQTT broker
 	BrokerUrl string
 
-	// TellerPublishTopic os the topic using which the publisher / subscriber must post / subscribe messages from
+	// TellerPublishTopic is the topic using which the publisher / subscriber must post / subscribe messages from
 	TellerPublishTopic string
 
 	// Metadata contains other metadata and is used to derive project asset ids.
@@ -163,7 +163,7 @@ type Project struct {
 	PanelSize             string    // size of the given panel, for diplsaying to the user who wants to bid stuff
 	InterestRate          float64   // the rate of return for investors
 	ProposedInvestmentCap float64   // the max amount that an investor can invest in when the project is in its proposed stage (stage 2)
-	SelfFund              float64   // the amount that a beneficiary / recipient puts in a project wihtout asking from other investors. This is not included as a seed investment because this would mean the recipient pays his own investment back in the project
+	SelfFund              float64   // the amount that a beneficiary / recipient puts in a project without asking from other investors. This is not included as a seed investment because this would mean the recipient pays his own investment back in the project
 	MainDeveloperIndex    int       // the main developer of the project
 	DeveloperIndices      []int     // the indices of the developers involved in the project`
 	ContractorFee         float64   // fee paid to the contractor from the total fee of the project
