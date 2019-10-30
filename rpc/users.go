@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
 
@@ -38,19 +37,18 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 		return user, err
 	}
 
-	username := r.URL.Query()["username"][0]
-	token := r.URL.Query()["token"][0]
+	var username, token string
+	if method == "GET" {
+		username, token = r.URL.Query()["username"][0], r.URL.Query()["token"][0]
+	} else {
+		username, token = r.FormValue("username"), r.FormValue("token")
+	}
 
 	user, err = core.ValidateUser(username, token)
 	if err != nil {
 		log.Println(err)
 		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 		return user, err
-	}
-
-	if !user.Admin {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
-		return user, errors.New("unauthorized")
 	}
 
 	return user, nil
@@ -88,6 +86,7 @@ func updateUser() {
 		if r.FormValue("email") != "" {
 			user.Email = r.FormValue("email")
 		}
+
 		if r.FormValue("notification") != "" {
 			if r.FormValue("notification") != "true" {
 				user.Notification = false
@@ -108,6 +107,7 @@ func updateUser() {
 			investor.U = &user
 			err = investor.Save()
 			if err != nil {
+				log.Println("unable to save investor: ", err)
 				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 				return
 			}
@@ -117,10 +117,12 @@ func updateUser() {
 			recipient.U = &user
 			err = recipient.Save()
 			if err != nil {
+				log.Println("unable to save recipient: ", err)
 				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 				return
 			}
 		}
+
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

@@ -5,10 +5,10 @@ import (
 	"log"
 
 	utils "github.com/Varunram/essentials/utils"
-	consts "github.com/YaleOpenLab/opensolar/consts"
 	xlm "github.com/Varunram/essentials/xlm"
 	assets "github.com/Varunram/essentials/xlm/assets"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
 // AddFirstLossGuarantee adds the given entity as a first loss guarantor
