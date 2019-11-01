@@ -35,6 +35,7 @@ func setupRecipientRPCs() {
 	setOneTimeUnlock()
 	storeTellerURL()
 	storeTellerDetails()
+	recpDashboard()
 }
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
@@ -58,6 +59,7 @@ var RecpRPC = map[int][]string{
 	17: []string{"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                    // POST
 	18: []string{"/recipient/register/teller", "POST", "url", "projIndex"},                      // POST
 	19: []string{"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"}, // POST
+	20: []string{"/recipient/dashboard", "GET"},                                                 // GET
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -766,5 +768,105 @@ func storeTellerDetails() {
 		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+type recpDashboardHelper struct {
+	Name                 string  `json:"Beneficiary Name"`
+	ActiveProjects       int     `json:"Active Projects"`
+	TiCP                 string  `json:"Total in Current Period"`
+	AllTime              string  `json: All Time`
+	ProjectWalletBalance float64 `json:"Project Wallet Balance"`
+	AutoReload           string  `json:"Auto Reload"`
+	Notification         string  `json:"Notification"`
+	ActionsRequired      string  `json:"Actions Required"`
+
+	YourProjects struct {
+		Name              string  `json:"Name"`
+		Location          string  `json:"Location"`
+		SecurityType      string  `json:"Security Type"`
+		SecurityIssuer    string  `json:"Security Issuer"`
+		ShortDes          string  `json:"Short Description"`
+		Bullet1           string  `json:"Bullet1"`
+		Bullet2           string  `json:"Bullet2"`
+		Bullet3           string  `json:"Bullet3"`
+		ProjectOriginator string  `json:"Project Originator"`
+		FundedAmount      float64 `json:"FundedAmount"`
+		Total             float64 `json:"Total"`
+		BSolar            string  `json:"Bsolar"`
+		BBattery          string  `json:"BBattery"`
+		BReturn           string  `json:"BReturn"`
+		BRating           float64 `json:BRating`
+		BMaturity         string  `json:"BMaturity"`
+	}
+}
+
+// recpDashboard returns the relevant data needed to populate the recipient dashboard
+func recpDashboard() {
+	http.HandleFunc(RecpRPC[20][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[20][2:], RecpRPC[20][1])
+		if err != nil {
+			return
+		}
+
+		var ret recpDashboardHelper
+
+		if len(prepRecipient.ReceivedSolarProjectIndices) == 0 {
+			erpc.MarshalSend(w, ret)
+			return
+		}
+
+		project, err := core.RetrieveProject(prepRecipient.ReceivedSolarProjectIndices[0])
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		ret.Name = prepRecipient.U.Name
+		ret.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
+		ret.TiCP = "845 kWh"
+		ret.AllTime = "10,150 MWh"
+		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.AutoReload = "On"
+		ret.Notification = "None"
+		ret.ActionsRequired = "None"
+
+		ret.YourProjects.Name = project.Name
+		ret.YourProjects.Location = project.City + " " + project.State + " " + project.Country
+		ret.YourProjects.SecurityType = "Munibond"
+		ret.YourProjects.SecurityIssuer = "Security Issuer"
+		ret.YourProjects.ShortDes = "Short Description"
+		ret.YourProjects.Bullet1 = "Bullet 1"
+		ret.YourProjects.Bullet2 = "Bullet 2"
+		ret.YourProjects.Bullet3 = "Bullet 3"
+
+		orig, err := core.RetrieveEntity(project.OriginatorIndex)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.YourProjects.ProjectOriginator = orig.U.Name
+		ret.YourProjects.FundedAmount = project.MoneyRaised + project.SeedMoneyRaised
+		ret.YourProjects.Total = project.TotalValue
+		ret.YourProjects.BSolar = "X kW"
+		ret.YourProjects.BBattery = "X kWh"
+		ret.YourProjects.BReturn = "3.2%"
+		ret.YourProjects.BRating = project.InterestRate
+		ret.YourProjects.BMaturity = "2028"
+
+		erpc.MarshalSend(w, ret)
 	})
 }

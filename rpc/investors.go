@@ -25,6 +25,7 @@ func setupInvestorRPCs() {
 	addLocalAssetInv()
 	invAssetInv()
 	sendEmail()
+	invDashboard()
 }
 
 // InvRPC contains a list of all investor related endpoints
@@ -37,6 +38,7 @@ var InvRPC = map[int][]string{
 	6: []string{"/investor/localasset", "POST", "assetName"},                                         // POST
 	7: []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
 	8: []string{"/investor/sendemail", "POST", "message", "to"},                                      // POST
+	9: []string{"/investor/dashboard", "GET"},                                                        // GET
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
@@ -384,5 +386,93 @@ func sendEmail() {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+type invDHelper struct {
+	Stage            int     `json:"Stage"`
+	Name             string  `json:Project Name`
+	Location         string  `json:"Location"`
+	Capacity         string  `json:"Capacity"`
+	YourInvestment   float64 `json:"Your Investment"`
+	YourReturn       string  `json:"Your Return"`
+	InvestmentRating string  `json:"Investment Rating"`
+	ImpactRating     string  `json:"Impact Rating"`
+	ProjectActions   string  `json:"Project Actions"`
+}
+
+type invDashboardStruct struct {
+	Name             string       `json:"Name"`
+	Role             string       `json:"Role"`
+	TotalInvestments float64      `json:"Total Investments"`
+	ProjectsInvested int          `json:"Projects Invested"`
+	PrimaryAddress   string       `json:"Main Wallet"`
+	SecondaryAddress string       `json:"Secondary Wallet"`
+	AccountBalance1  float64      `json:"Account Balance 1"`
+	AccountBalance2  float64      `json:"Account Balance 2"`
+	NetBalance       float64      `json:"Balance"`
+	InvestedProjects []invDHelper `json:"Your Invested Projects"`
+}
+
+// invDashboard returns the parameters needed for displaying details on the frontend
+func invDashboard() {
+	http.HandleFunc(InvRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[9][2:], InvRPC[9][1])
+		if err != nil {
+			return
+		}
+
+		var ret invDashboardStruct
+		for _, index := range prepInvestor.InvestedSolarProjectsIndices {
+			project, err := core.RetrieveProject(index)
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			var temp invDHelper
+			temp.Stage = project.Stage
+			temp.Name = project.Name
+			temp.Location = project.City + " " + project.State + " " + project.Country
+			temp.Capacity = project.PanelSize
+			temp.YourInvestment = project.InvestorMap[prepInvestor.U.StellarWallet.PublicKey] * project.TotalValue
+			temp.YourReturn = "Donation"
+			temp.InvestmentRating = "N/A"
+			temp.ImpactRating = "4/4"
+			temp.ProjectActions = "No immediate action"
+
+			ret.InvestedProjects = append(ret.InvestedProjects, temp)
+		}
+
+		ret.Name = prepInvestor.U.Name
+		ret.Role = "Investor"
+		ret.TotalInvestments = prepInvestor.AmountInvested
+		ret.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
+		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
+		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
+
+		ret.AccountBalance1, err = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		ret.AccountBalance2, err = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		ret.NetBalance = ret.AccountBalance1 + ret.AccountBalance2
+
+		erpc.MarshalSend(w, ret)
 	})
 }
