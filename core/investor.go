@@ -1,8 +1,8 @@
 package core
 
 import (
-	//"log"
 	"github.com/pkg/errors"
+	"log"
 
 	tickers "github.com/Varunram/essentials/exchangetickers"
 	utils "github.com/Varunram/essentials/utils"
@@ -74,6 +74,11 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 		xlmBalance, err := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
 		if err != nil {
 			xlmBalance = 0
+		}
+
+		if !a.U.Legal {
+			log.Println("user has not accepted terms and conditions associated with the platform")
+			return false
 		}
 
 		// need to fetch the oracle price here for the order
