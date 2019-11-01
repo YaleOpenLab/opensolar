@@ -158,6 +158,7 @@ type Project struct {
 
 	// below are all the non critical params only used on the frontend
 	Name                  string    // the name of the project / the identifier by which its referred to
+	City                  string    // the city in which the project is located at
 	State                 string    // the state in which the project has been installed in
 	Country               string    // the country in which the project has been installed in
 	PanelSize             string    // size of the given panel, for diplsaying to the user who wants to bid stuff
