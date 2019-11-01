@@ -38,7 +38,7 @@ var InvRPC = map[int][]string{
 	6: []string{"/investor/localasset", "POST", "assetName"},                                         // POST
 	7: []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
 	8: []string{"/investor/sendemail", "POST", "message", "to"},                                      // POST
-	9: []string{"/investor/dashboard", "GET"},
+	9: []string{"/investor/dashboard", "GET"},                                                        // GET
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
