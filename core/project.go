@@ -162,6 +162,7 @@ type Project struct {
 	State                 string    // the state in which the project has been installed in
 	Country               string    // the country in which the project has been installed in
 	PanelSize             string    // size of the given panel, for diplsaying to the user who wants to bid stuff
+	Image                 string    // a URL to an image of the project that will be displayed on the frontendf
 	InterestRate          float64   // the rate of return for investors
 	ProposedInvestmentCap float64   // the max amount that an investor can invest in when the project is in its proposed stage (stage 2)
 	SelfFund              float64   // the amount that a beneficiary / recipient puts in a project without asking from other investors. This is not included as a seed investment because this would mean the recipient pays his own investment back in the project
