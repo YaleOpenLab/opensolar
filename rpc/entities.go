@@ -7,6 +7,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -21,12 +22,13 @@ func setupEntityRPCs() {
 }
 
 var EntityRPC = map[int][]string{
-	1: []string{"/entity/validate", "GET"},                                      // GET
-	2: []string{"/entity/stage0", "GET"},                                        // GET
-	3: []string{"/entity/stage1", "GET"},                                        // GET
-	4: []string{"/entity/stage2", "GET"},                                        // GET
-	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},        // POST
-	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"}, // POST
+	1: []string{"/entity/validate", "GET"},                                                                  // GET
+	2: []string{"/entity/stage0", "GET"},                                                                    // GET
+	3: []string{"/entity/stage1", "GET"},                                                                    // GET
+	4: []string{"/entity/stage2", "GET"},                                                                    // GET
+	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},                                    // POST
+	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"},                             // POST
+	7: []string{"/entity/register", "POST", "name", "username", "pwhash", "token", "seedpwd", "entityType"}, // POST
 }
 
 // entityValidateHelper is a helper that helps validate an entity
@@ -228,5 +230,95 @@ func proposeOpensolarProject() {
 		}
 
 		erpc.MarshalSend(w, x)
+	})
+}
+
+// registerEntity creates and stores a new entity on the platform
+func registerEntity() {
+	http.HandleFunc(RecpRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckPost(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		err = checkReqdParams(w, r, RecpRPC[7][2:], RecpRPC[7][1])
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		name := r.FormValue("name")
+		username := r.FormValue("username")
+		pwhash := r.FormValue("pwhash")
+		seedpwd := r.FormValue("seedpwd")
+		entityType := r.FormValue("entityType")
+
+		// check for username collision here. If the username already exists, fetch details from that and register as investor
+		if core.CheckUsernameCollision(username) {
+			// user already exists on the platform, need to retrieve the user
+			user, err := userValidateHelper(w, r, nil, RecpRPC[2][1]) // check whether this person is a user and has params
+			if err != nil {
+				return
+			}
+
+			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
+			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
+			if err != nil {
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			pubkey, err := wallet.ReturnPubkey(seed)
+			if err != nil {
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			if pubkey != user.StellarWallet.PublicKey {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				return
+			}
+
+			var a core.Entity
+			switch entityType {
+			case "developer":
+				a.Developer = true
+			case "contractor":
+				a.Contractor = true
+			case "guarantor":
+				a.Guarantor = true
+			case "originator":
+				a.Originator = true
+			}
+
+			a.U = &user
+			err = a.Save()
+			if err != nil {
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			erpc.MarshalSend(w, a)
+			return
+		}
+
+		var user core.Entity
+		switch entityType {
+		case "developer":
+			user, err = core.NewDeveloper(username, pwhash, seedpwd, name)
+		case "contractor":
+			user, err = core.NewContractor(username, pwhash, seedpwd, name)
+		case "guarantor":
+			user, err = core.NewGuarantor(username, pwhash, seedpwd, name)
+		case "originator":
+			user, err = core.NewOriginator(username, pwhash, seedpwd, name)
+
+		}
+
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, user)
 	})
 }

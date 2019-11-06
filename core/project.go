@@ -171,6 +171,27 @@ type Project struct {
 	ContractorFee         float64   // fee paid to the contractor from the total fee of the project
 	OriginatorFee         float64   // fee paid to the originator included in the total value of the project
 	DeveloperFee          []float64 // the fees charged by the developers
+
+	ExploreStub struct {
+		Stage        int
+		Name         string
+		Location     string
+		DonationType string
+		Originator   string
+		Description  string
+		Bullet1      string
+		Bullet2      string
+		Bullet3      string
+		Solar        string
+		Storage      string
+		Tariff       string
+		Return       string
+		Rating       string
+		Tax          string
+		Acquisition  string
+		AmountFunded float64
+		TotalValue   float64
+	}
 }
 
 // Feedback defines a structure that is used for providing feedback
