@@ -7,6 +7,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	xlm "github.com/Varunram/essentials/xlm"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -19,6 +20,9 @@ func setupEntityRPCs() {
 	getStage2Contracts()
 	addCollateral()
 	proposeOpensolarProject()
+	registerEntity()
+	contractorDashboard()
+	developerDashboard()
 }
 
 var EntityRPC = map[int][]string{
@@ -29,6 +33,7 @@ var EntityRPC = map[int][]string{
 	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},                                    // POST
 	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"},                             // POST
 	7: []string{"/entity/register", "POST", "name", "username", "pwhash", "token", "seedpwd", "entityType"}, // POST
+	8: []string{"/entity/contractor/dashboard", "GET"},                                                      // GET
 }
 
 // entityValidateHelper is a helper that helps validate an entity
@@ -235,14 +240,14 @@ func proposeOpensolarProject() {
 
 // registerEntity creates and stores a new entity on the platform
 func registerEntity() {
-	http.HandleFunc(RecpRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(EntityRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		err = checkReqdParams(w, r, RecpRPC[7][2:], RecpRPC[7][1])
+		err = checkReqdParams(w, r, EntityRPC[7][2:], EntityRPC[7][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -320,5 +325,181 @@ func registerEntity() {
 		}
 
 		erpc.MarshalSend(w, user)
+	})
+}
+
+type entityDashboardHelper struct {
+	Name                 string  `json:"Beneficiary Name"`
+	ActiveProjects       int     `json:"Active Projects"`
+	TiCP                 string  `json:"Total in Current Period"`
+	AllTime              string  `json: All Time`
+	ProjectWalletBalance float64 `json:"Project Wallet Balance"`
+	AutoReload           string  `json:"Auto Reload"`
+	Notification         string  `json:"Notification"`
+	ActionsRequired      string  `json:"Actions Required"`
+
+	YourProjects struct {
+		Name              string  `json:"Name"`
+		Location          string  `json:"Location"`
+		SecurityType      string  `json:"Security Type"`
+		SecurityIssuer    string  `json:"Security Issuer"`
+		ShortDes          string  `json:"Short Description"`
+		Bullet1           string  `json:"Bullet1"`
+		Bullet2           string  `json:"Bullet2"`
+		Bullet3           string  `json:"Bullet3"`
+		ProjectOriginator string  `json:"Project Originator"`
+		FundedAmount      float64 `json:"FundedAmount"`
+		Total             float64 `json:"Total"`
+		BSolar            string  `json:"Bsolar"`
+		BBattery          string  `json:"BBattery"`
+		BReturn           string  `json:"BReturn"`
+		BRating           float64 `json:BRating`
+		BMaturity         string  `json:"BMaturity"`
+	}
+}
+
+// contractorDashboard returns the stuff that should be there on the contractor dashboard
+func contractorDashboard() {
+	http.HandleFunc(EntityRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[8][1])
+		if err != nil {
+			log.Println("Error while validating entity", err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		var ret entityDashboardHelper
+
+		if len(prepEntity.PresentContractIndices) == 0 && len(prepEntity.ProposedContractIndices) == 0 {
+			log.Println("Contractor not part of any project")
+			erpc.MarshalSend(w, ret)
+			return
+		}
+
+		var project core.Project
+
+		project, err = core.RetrieveProject(prepEntity.PresentContractIndices[0])
+		if err != nil {
+			// if we error out here, means we have proposed contracts
+			project, err = core.RetrieveProject(prepEntity.ProposedContractIndices[0])
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+		}
+
+		ret.Name = prepEntity.U.Name
+		ret.ActiveProjects = len(prepEntity.PresentContractIndices)
+		ret.TiCP = "845 kWh"
+		ret.AllTime = "10,150 MWh"
+		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.AutoReload = "On"
+		ret.Notification = "None"
+		ret.ActionsRequired = "None"
+
+		ret.YourProjects.Name = project.Name
+		ret.YourProjects.Location = project.City + " " + project.State + " " + project.Country
+		ret.YourProjects.SecurityType = "Munibond"
+		ret.YourProjects.SecurityIssuer = "Security Issuer"
+		ret.YourProjects.ShortDes = "Short Description"
+		ret.YourProjects.Bullet1 = "Bullet 1"
+		ret.YourProjects.Bullet2 = "Bullet 2"
+		ret.YourProjects.Bullet3 = "Bullet 3"
+
+		orig, err := core.RetrieveEntity(project.OriginatorIndex)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.YourProjects.ProjectOriginator = orig.U.Name
+		ret.YourProjects.FundedAmount = project.MoneyRaised + project.SeedMoneyRaised
+		ret.YourProjects.Total = project.TotalValue
+		ret.YourProjects.BSolar = "X kW"
+		ret.YourProjects.BBattery = "X kWh"
+		ret.YourProjects.BReturn = "3.2%"
+		ret.YourProjects.BRating = project.InterestRate
+		ret.YourProjects.BMaturity = "2028"
+
+		erpc.MarshalSend(w, ret)
+	})
+}
+
+// developerDashboard returns the stuff that should be there on the contractor dashboard
+func developerDashboard() {
+	http.HandleFunc(EntityRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[9][1])
+		if err != nil {
+			log.Println("Error while validating entity", err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		var ret entityDashboardHelper
+
+		if len(prepEntity.PresentContractIndices) == 0 && len(prepEntity.ProposedContractIndices) == 0 {
+			log.Println("Contractor not part of any project")
+			erpc.MarshalSend(w, ret)
+			return
+		}
+
+		var project core.Project
+
+		project, err = core.RetrieveProject(prepEntity.PresentContractIndices[0])
+		if err != nil {
+			// if we error out here, means we have proposed contracts
+			project, err = core.RetrieveProject(prepEntity.ProposedContractIndices[0])
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+		}
+
+		ret.Name = prepEntity.U.Name
+		ret.ActiveProjects = len(prepEntity.PresentContractIndices)
+		ret.TiCP = "845 kWh"
+		ret.AllTime = "10,150 MWh"
+		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.AutoReload = "On"
+		ret.Notification = "None"
+		ret.ActionsRequired = "None"
+
+		ret.YourProjects.Name = project.Name
+		ret.YourProjects.Location = project.City + " " + project.State + " " + project.Country
+		ret.YourProjects.SecurityType = "Munibond"
+		ret.YourProjects.SecurityIssuer = "Security Issuer"
+		ret.YourProjects.ShortDes = "Short Description"
+		ret.YourProjects.Bullet1 = "Bullet 1"
+		ret.YourProjects.Bullet2 = "Bullet 2"
+		ret.YourProjects.Bullet3 = "Bullet 3"
+
+		orig, err := core.RetrieveEntity(project.OriginatorIndex)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+		ret.YourProjects.ProjectOriginator = orig.U.Name
+		ret.YourProjects.FundedAmount = project.MoneyRaised + project.SeedMoneyRaised
+		ret.YourProjects.Total = project.TotalValue
+		ret.YourProjects.BSolar = "X kW"
+		ret.YourProjects.BBattery = "X kWh"
+		ret.YourProjects.BReturn = "3.2%"
+		ret.YourProjects.BRating = project.InterestRate
+		ret.YourProjects.BMaturity = "2028"
+
+		erpc.MarshalSend(w, ret)
 	})
 }

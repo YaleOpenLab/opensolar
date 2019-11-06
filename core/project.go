@@ -173,24 +173,44 @@ type Project struct {
 	DeveloperFee          []float64 // the fees charged by the developers
 
 	ExploreStub struct {
-		Stage        int
-		Name         string
-		Location     string
-		DonationType string
-		Originator   string
-		Description  string
-		Bullet1      string
-		Bullet2      string
-		Bullet3      string
-		Solar        string
-		Storage      string
-		Tariff       string
-		Return       string
-		Rating       string
-		Tax          string
-		Acquisition  string
-		AmountFunded float64
-		TotalValue   float64
+		Stage        int     `json:"Stage"`
+		Name         string  `json:"Name"`
+		Location     string  `json:"Location"`
+		DonationType string  `json:"Donation Type"`
+		Originator   string  `json:"Originator"`
+		Description  string  `json:"Description"`
+		Bullet1      string  `json:"Bullet1"`
+		Bullet2      string  `json:"Bullet2"`
+		Bullet3      string  `json:"Bullet3"`
+		Solar        string  `json:"Solar"`
+		Storage      string  `json:"Storage"`
+		Tariff       string  `json:"Tariff"`
+		Return       string  `json:"Return"`
+		Rating       string  `json:"Rating"`
+		Tax          string  `json:"Tax"`
+		Acquisition  string  `json:"Acquisition"`
+		AmountFunded float64 `json:"Amount Funded"`
+		TotalValue   float64 `json:"Total Value"`
+	}
+
+	DetailStub struct {
+		Stage          int     `json:"Stage"`
+		Name           string  `json:"Name"`
+		Location       string  `json:"Location"`
+		Munibond       string  `json:"Munibond"`
+		SecurityType   string  `json:"Security Type"`
+		Description    string  `json:"Description"`
+		Bullet1        string  `json:"Bullet1"`
+		Bullet2        string  `json:"Bullet2"`
+		Bullet3        string  `json:"Bullet3"`
+		OriginatorName string  `json:"Originator Name"`
+		AmountFunded   float64 `json:"Amount Funded"`
+		TotalValue     float64 `json:"Total Value"`
+		Solar          string  `json:"Solar"`
+		Battery        string  `json:"Battery"`
+		Return         string  `json:"Return"`
+		Rating         string  `json:"Rating"`
+		Maturity       string  `json:"Maturity"`
 	}
 }
 
