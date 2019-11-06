@@ -159,6 +159,17 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		user, err := core.RetrieveUser(19)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		user.Email = "varunramganesh@gmail.com"
+		err = user.Save()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	/*

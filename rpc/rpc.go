@@ -133,6 +133,7 @@ func StartServer(portx int, insecure bool) {
 	setupDeveloperRPCs()
 	setupGuarantorRPCs()
 
+	erpc.SetConsts(60)
 	port, err := utils.ToString(portx)
 	if err != nil {
 		log.Println("couldn't parse passed port, setting it to default 80")
