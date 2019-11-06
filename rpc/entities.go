@@ -34,6 +34,7 @@ var EntityRPC = map[int][]string{
 	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"},                             // POST
 	7: []string{"/entity/register", "POST", "name", "username", "pwhash", "token", "seedpwd", "entityType"}, // POST
 	8: []string{"/entity/contractor/dashboard", "GET"},                                                      // GET
+	9: []string{"/entity/developer/dashboard", "GET"},                                                       // GET
 }
 
 // entityValidateHelper is a helper that helps validate an entity
