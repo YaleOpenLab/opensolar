@@ -30,6 +30,7 @@ var ProjectRPC = map[int][]string{
 	5: []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
 	6: []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
 	7: []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
+	8: []string{"/project/get/dashboard", "GET", "index"},                                              // GET
 }
 
 // insertProject inserts a project into the database.
@@ -117,7 +118,7 @@ func getAllProjects() {
 // getProject gets the details of a specific project.
 func getProject() {
 	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
+		err := checkReqdParams(w, r, ProjectRPC[3][2:], ProjectRPC[3][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -295,5 +296,32 @@ func sendTellerFailedPaybackEmail() {
 		deviceId := r.URL.Query()["deviceId"][0]
 		notif.SendTellerPaymentFailedEmail(prepUser.Email, projIndex, deviceId)
 		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+// getProjectDashboard gets the project details stub that is displayed on the explore page of opensolar
+func getProjectDashboard() {
+	http.HandleFunc(ProjectRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		err := checkReqdParams(w, r, ProjectRPC[8][2:], ProjectRPC[8][1])
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		// no authorization required to get projects
+		index, err := utils.ToInt(r.URL.Query()["index"][0])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		project, err := core.RetrieveProject(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, project.ExploreStub)
 	})
 }

@@ -36,10 +36,16 @@ type Entity struct {
 	PastContracts []Project
 
 	// ProposedContracts contains a list of all proposed contracts associated with the entity
-	ProposedContracts []Project
+	ProposedContract []Project
 
 	// PresentContracts contains a list of all present contracts associated with the entity
-	PresentContracts []Project
+	PresentContract []Project
+
+	// ProposedContractIndices contains the indices of all proposed projects
+	ProposedContractIndices []int
+
+	// PresentContractIndices contains the indices of all present projects
+	PresentContractIndices []int
 
 	// PastFeedback contains a list of all feedback on the given entity
 	PastFeedback []Feedback
