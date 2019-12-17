@@ -26,19 +26,23 @@ func setupInvestorRPCs() {
 	invAssetInv()
 	sendEmail()
 	invDashboard()
+	setCompanyBool()
+	setCompany()
 }
 
 // InvRPC contains a list of all investor related endpoints
 var InvRPC = map[int][]string{
-	1: []string{"/investor/register", "POST", "name", "username", "pwhash", "token", "seedpwd"},      // POST
-	2: []string{"/investor/validate", "GET"},                                                         // GET
-	3: []string{"/investor/all", "GET"},                                                              // GET
-	4: []string{"/investor/invest", "POST", "seedpwd", "projIndex", "amount"},                        // POST
-	5: []string{"/investor/vote", "POST", "votes", "projIndex"},                                      // POST
-	6: []string{"/investor/localasset", "POST", "assetName"},                                         // POST
-	7: []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
-	8: []string{"/investor/sendemail", "POST", "message", "to"},                                      // POST
-	9: []string{"/investor/dashboard", "GET"},                                                        // GET
+	1:  []string{"/investor/register", "POST", "name", "username", "pwhash", "token", "seedpwd"},                                           // POST
+	2:  []string{"/investor/validate", "GET"},                                                                                              // GET
+	3:  []string{"/investor/all", "GET"},                                                                                                   // GET
+	4:  []string{"/investor/invest", "POST", "seedpwd", "projIndex", "amount"},                                                             // POST
+	5:  []string{"/investor/vote", "POST", "votes", "projIndex"},                                                                           // POST
+	6:  []string{"/investor/localasset", "POST", "assetName"},                                                                              // POST
+	7:  []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"},                                      // POST
+	8:  []string{"/investor/sendemail", "POST", "message", "to"},                                                                           // POST
+	9:  []string{"/investor/dashboard", "GET"},                                                                                             // GET
+	10: []string{"/investor/company/set", "POST"},                                                                                          // POST
+	11: []string{"/investor/company/details", "POST", "companytype", "name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
 }
 
 // InvValidateHelper is a helper used to validate an investor on the platform
@@ -474,5 +478,98 @@ func invDashboard() {
 		ret.NetBalance = ret.AccountBalance1 + ret.AccountBalance2
 
 		erpc.MarshalSend(w, ret)
+	})
+}
+
+func setCompanyBool() {
+	http.HandleFunc(InvRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[10][2:], InvRPC[10][1])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		err = prepInvestor.SetCompany()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func setCompany() {
+	http.HandleFunc(InvRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:], InvRPC[11][1])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		companyType := r.FormValue("companytype")
+		switch companyType {
+		case "For-Profit":
+			log.Println("company type: For-Profit")
+		case "Social Enterprise":
+			log.Println("company type: Social Enterprise")
+		case "Non Governmental":
+			log.Println("company type: Non Governmental")
+		case "Cooperative":
+			log.Println("company type: Cooperative")
+		case "Other":
+			log.Println("company type: Other")
+		default:
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+		name := r.FormValue("name")
+		legalName := r.FormValue("legalname")
+		address := r.FormValue("address")
+		country := r.FormValue("country")
+		city := r.FormValue("city")
+		zipCode := r.FormValue("zipcode")
+		role := r.FormValue("role")
+		switch role {
+		case "ceo":
+			log.Println("role: ceo")
+		case "employee":
+			log.Println("role: employee")
+		case "other":
+			log.Println("role: other")
+		default:
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		// these are params which are not necessary
+		var adminEmail, phoneNumber, taxIDNumber string
+
+		if lenParseCheck(adminEmail) != nil || lenParseCheck(phoneNumber) != nil ||
+			lenParseCheck(taxIDNumber) != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		if r.FormValue("adminemail") != "" {
+			adminEmail = r.FormValue("adminemail")
+		}
+		if r.FormValue("phonenumber") != "" {
+			phoneNumber = r.FormValue("phoneNumber")
+		}
+		if r.FormValue("taxidnumber") != "" {
+			taxIDNumber = r.FormValue("taxidnumber")
+		}
+
+		err = prepInvestor.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
+			country, city, zipCode, taxIDNumber, role)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

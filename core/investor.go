@@ -18,6 +18,12 @@ type Investor struct {
 	// U is the base User class inherited from openx
 	U *openx.User
 
+	// C is a structure containing all details of the company the investor is part of
+	C Company
+
+	// Company denotes whether the given investor is acting on behalf of a company
+	Company bool
+
 	// VotingBalance is the balance associated with the particular investor (equal to the amount of USD he possesses)
 	VotingBalance float64
 
@@ -35,6 +41,42 @@ type Investor struct {
 
 	// InvestedSolarProjectsIndices is an integer list of the projects the investor has invested in
 	SeedInvestedSolarProjectsIndices []int
+}
+
+// Company is a struct that is used if an ivnestor/recipient is acting on behalf of their company
+type Company struct {
+	// CompanyType is the type of the company
+	CompanyType string
+
+	// Name is the name of the company
+	Name string
+
+	// LegalName is the legal name of the company
+	LegalName string
+
+	// AdminEmail is the email of the admin / contact point of the company
+	AdminEmail string
+
+	// PhoneNumber is the phone number of the main contact in the company
+	PhoneNumber string
+
+	// Address is the registered address of the company
+	Address string
+
+	// Country is the country where the company is registered in
+	Country string
+
+	// City is the city in which the company is registered at
+	City string
+
+	// ZipCode is the zipcode of the city where the company is at
+	ZipCode string
+
+	// TaxIDNumber is the tax id number associated with the company
+	TaxIDNumber string
+
+	// Role isthe role of the investor in the above company
+	Role string
 }
 
 // NewInvestor creates a new investor based on params passed
@@ -97,4 +139,27 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 	}
 
 	return usdBalance > targetBalance
+}
+
+func (a *Investor) SetCompany() error {
+	a.Company = true
+	return a.Save()
+}
+
+func (a *Investor) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
+	country, city, zipCode, taxIDNumber, role string) error {
+
+	a.C.CompanyType = companyType
+	a.C.Name = name
+	a.C.LegalName = legalName
+	a.C.AdminEmail = adminEmail
+	a.C.PhoneNumber = phoneNumber
+	a.C.Address = address
+	a.C.Country = country
+	a.C.City = city
+	a.C.ZipCode = zipCode
+	a.C.TaxIDNumber = taxIDNumber
+	a.C.Role = role
+
+	return a.Save()
 }

@@ -160,13 +160,16 @@ func main() {
 			log.Fatal(err)
 		}
 
-		user, err := core.RetrieveUser(19)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		user.Email = "varunramganesh@gmail.com"
-		err = user.Save()
+		var project core.Project
+		project.Index = 1
+		project.Metadata = "TESTPROJECT"
+		project.InvestorAssetCode = ""
+		project.TotalValue = 1
+		project.MoneyRaised = 0
+		project.InvestmentType = "munibond"
+		project.RecipientIndex = 1
+		project.DebtAssetCode = "TESTTELLER"
+		err = project.Save()
 		if err != nil {
 			log.Fatal(err)
 		}
