@@ -19,7 +19,12 @@ type HCHeaderResponse struct {
 // a direct endpoint that will serve data directly.
 func hashChainHeaderHandler() {
 	http.HandleFunc("/hash", func(w http.ResponseWriter, r *http.Request) {
-		erpc.CheckGet(w, r)
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
 		var x HCHeaderResponse
 		x.Hash = HashChainHeader
 		erpc.MarshalSend(w, x)

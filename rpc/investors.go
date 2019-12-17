@@ -75,13 +75,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 
 func registerInvestor() {
 	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		err = checkReqdParams(w, r, InvRPC[1][2:], InvRPC[1][1])
+		err := checkReqdParams(w, r, InvRPC[1][2:], InvRPC[1][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -141,11 +135,6 @@ func registerInvestor() {
 // validateInvestor validates the username and pwhash of a given investor
 func validateInvestor() {
 	http.HandleFunc(InvRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][2:], InvRPC[2][1])
 		if err != nil {
 			return
@@ -157,12 +146,7 @@ func validateInvestor() {
 // getAllInvestors gets a list of all the investors in the database
 func getAllInvestors() {
 	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		_, err = InvValidateHelper(w, r, InvRPC[3][2:], InvRPC[3][1])
+		_, err := InvValidateHelper(w, r, InvRPC[3][2:], InvRPC[3][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
@@ -180,12 +164,6 @@ func getAllInvestors() {
 // Invest invests in a project of the investor's choice
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		investor, err := InvValidateHelper(w, r, InvRPC[4][2:], InvRPC[4][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -242,12 +220,6 @@ func invest() {
 // voteTowardsProject votes towards a proposed project of the user's choice.
 func voteTowardsProject() {
 	http.HandleFunc(InvRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		investor, err := InvValidateHelper(w, r, InvRPC[5][2:], InvRPC[5][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -284,12 +256,6 @@ func voteTowardsProject() {
 // from the platform
 func addLocalAssetInv() {
 	http.HandleFunc(InvRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:], InvRPC[6][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -313,12 +279,6 @@ func addLocalAssetInv() {
 // invAssetInv sends a local asset to a remote peer
 func invAssetInv() {
 	http.HandleFunc(InvRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][2:], InvRPC[7][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -368,12 +328,6 @@ func invAssetInv() {
 // sendEmail sends an email to a specific entity
 func sendEmail() {
 	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][2:], InvRPC[8][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -421,11 +375,6 @@ type invDashboardStruct struct {
 // invDashboard returns the parameters needed for displaying details on the frontend
 func invDashboard() {
 	http.HandleFunc(InvRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[9][2:], InvRPC[9][1])
 		if err != nil {
 			return

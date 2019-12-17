@@ -96,13 +96,7 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 // getAllRecipients gets a list of all the recipients who have registered on the platform
 func getAllRecipients() {
 	http.HandleFunc(RecpRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		_, err = recpValidateHelper(w, r, RecpRPC[1][2:], RecpRPC[1][1])
+		_, err := recpValidateHelper(w, r, RecpRPC[1][2:], RecpRPC[1][1])
 		if err != nil {
 			return
 		}
@@ -119,13 +113,7 @@ func getAllRecipients() {
 // registerRecipient creates and stores a new recipient on the platform
 func registerRecipient() {
 	http.HandleFunc(RecpRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		err = checkReqdParams(w, r, RecpRPC[2][2:], RecpRPC[2][1])
+		err := checkReqdParams(w, r, RecpRPC[2][2:], RecpRPC[2][1])
 		if err != nil {
 			log.Println(err)
 			return
@@ -184,12 +172,6 @@ func registerRecipient() {
 // validateRecipient validates a recipient on the platform
 func validateRecipient() {
 	http.HandleFunc(RecpRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[3][2:], RecpRPC[3][1])
 		if err != nil {
 			return
@@ -201,12 +183,6 @@ func validateRecipient() {
 // payback pays back towards an  invested order
 func payback() {
 	http.HandleFunc(RecpRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[4][2:], RecpRPC[4][1])
 		if err != nil {
 			return
@@ -250,12 +226,6 @@ func payback() {
 func storeDeviceId() {
 	http.HandleFunc(RecpRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[5][2:], RecpRPC[5][1])
 		if err != nil {
 			return
@@ -278,12 +248,6 @@ func storeDeviceId() {
 // invested project. Called by the teller
 func storeStartTime() {
 	http.HandleFunc(RecpRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][2:], RecpRPC[6][1])
 		if err != nil {
 			log.Println("COULDN'T VALIDATE THIS GUY")
@@ -306,12 +270,6 @@ func storeStartTime() {
 // storeDeviceLocation stores the location of the remote device when it starts up. Called by the teller
 func storeDeviceLocation() {
 	http.HandleFunc(RecpRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[7][2:], RecpRPC[7][1])
 		if err != nil {
 			log.Println(err)
@@ -335,12 +293,6 @@ func storeDeviceLocation() {
 // known as a 1st price auction.
 func chooseBlindAuction() {
 	http.HandleFunc(RecpRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[8][2:], RecpRPC[8][1])
 		if err != nil {
 			return
@@ -375,12 +327,6 @@ func chooseBlindAuction() {
 // also known as a second price auction
 func chooseVickreyAuction() {
 	http.HandleFunc(RecpRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[9][2:], RecpRPC[9][1])
 		if err != nil {
 			return
@@ -414,12 +360,6 @@ func chooseVickreyAuction() {
 // chooseTimeAuction chooses the winning contractor based on least completion time
 func chooseTimeAuction() {
 	http.HandleFunc(RecpRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[10][2:], RecpRPC[10][1])
 		if err != nil {
 			return
@@ -454,12 +394,6 @@ func chooseTimeAuction() {
 // has accepted the investment.
 func unlockOpenSolar() {
 	http.HandleFunc(RecpRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[11][2:], RecpRPC[11][1])
 		if err != nil {
 			return
@@ -489,12 +423,6 @@ func unlockOpenSolar() {
 // addEmail adds an email address to the recipient's profile
 func addEmail() {
 	http.HandleFunc(RecpRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[12][2:], RecpRPC[12][1])
 		if err != nil {
 			return
@@ -515,13 +443,7 @@ func addEmail() {
 // finalizeProject finalizes (ie moves from stage 2 to 3) a specific project
 func finalizeProject() {
 	http.HandleFunc(RecpRPC[13][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		_, err = recpValidateHelper(w, r, RecpRPC[13][2:], RecpRPC[13][1])
+		_, err := recpValidateHelper(w, r, RecpRPC[13][2:], RecpRPC[13][1])
 		if err != nil {
 			return
 		}
@@ -556,12 +478,6 @@ func finalizeProject() {
 // originateProject originates (ie moves from stage 0 to 1) a project
 func originateProject() {
 	http.HandleFunc(RecpRPC[14][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[14][2:], RecpRPC[14][1])
 		if err != nil {
 			return
@@ -590,12 +506,6 @@ func originateProject() {
 // calculateTrustLimit calculates the trust limit associated with a specific asset.
 func calculateTrustLimit() {
 	http.HandleFunc(RecpRPC[15][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[15][2:], RecpRPC[15][1])
 		if err != nil {
 			return
@@ -617,12 +527,6 @@ func calculateTrustLimit() {
 // Called by the teller
 func storeStateHash() {
 	http.HandleFunc(RecpRPC[16][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		// first validate the recipient or anyone would be able to set device ids
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[16][2:], RecpRPC[16][1])
 		if err != nil {
@@ -644,12 +548,6 @@ func storeStateHash() {
 
 func setOneTimeUnlock() {
 	http.HandleFunc(RecpRPC[17][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		// first validate the recipient or anyone would be able to set device ids
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[17][2:], RecpRPC[17][1])
 		if err != nil {
@@ -678,12 +576,6 @@ func setOneTimeUnlock() {
 
 func storeTellerURL() {
 	http.HandleFunc(RecpRPC[18][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[18][2:], RecpRPC[18][1])
 		if err != nil {
 			return
@@ -730,12 +622,6 @@ func storeTellerURL() {
 
 func storeTellerDetails() {
 	http.HandleFunc(RecpRPC[19][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		recipient, err := recpValidateHelper(w, r, RecpRPC[19][2:], RecpRPC[19][1])
 		if err != nil {
 			return
@@ -806,12 +692,6 @@ type recpDashboardHelper struct {
 // recpDashboard returns the relevant data needed to populate the recipient dashboard
 func recpDashboard() {
 	http.HandleFunc(RecpRPC[20][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[20][2:], RecpRPC[20][1])
 		if err != nil {
 			return
