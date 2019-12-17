@@ -14,6 +14,12 @@ type Recipient struct {
 	// U imports the base User class from openx
 	U *openx.User
 
+	// C is a structure containing all details of the company the investor is part of
+	C Company
+
+	// Company denotes whether the given investor is acting on behalf of a company
+	Company bool
+
 	// ReceivedSolarProjects stores the projects that the recipient is receiver of
 	ReceivedSolarProjects []string
 
@@ -68,4 +74,29 @@ func (a *Recipient) SetOneTimeUnlock(projIndex int, seedpwd string) error {
 
 	project.OneTimeUnlock = seedpwd
 	return project.Save()
+}
+
+// SetCompany sets the company bool to true
+func (a *Recipient) SetCompany() error {
+	a.Company = true
+	return a.Save()
+}
+
+// SetCompanyDetails sets the company detail struct of the recipient class
+func (a *Recipient) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
+	country, city, zipCode, taxIDNumber, role string) error {
+
+	a.C.CompanyType = companyType
+	a.C.Name = name
+	a.C.LegalName = legalName
+	a.C.AdminEmail = adminEmail
+	a.C.PhoneNumber = phoneNumber
+	a.C.Address = address
+	a.C.Country = country
+	a.C.City = city
+	a.C.ZipCode = zipCode
+	a.C.TaxIDNumber = taxIDNumber
+	a.C.Role = role
+
+	return a.Save()
 }

@@ -502,7 +502,7 @@ func setCompanyBool() {
 
 func setCompany() {
 	http.HandleFunc(InvRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
-		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:], InvRPC[11][1])
+		prepInvestor, err := InvValidateHelper(w, r, InvRPC[11][2:], InvRPC[11][1])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return

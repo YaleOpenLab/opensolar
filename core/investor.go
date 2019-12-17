@@ -141,11 +141,13 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 	return usdBalance > targetBalance
 }
 
+// SetCompany sets the company bool to true
 func (a *Investor) SetCompany() error {
 	a.Company = true
 	return a.Save()
 }
 
+// SetCompanyDetails sets the company detail struct of the investor class
 func (a *Investor) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 	country, city, zipCode, taxIDNumber, role string) error {
 
