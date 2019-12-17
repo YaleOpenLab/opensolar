@@ -40,26 +40,28 @@ func setupRecipientRPCs() {
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
 var RecpRPC = map[int][]string{
-	1:  []string{"/recipient/all", "GET"},                                                       // GET
-	2:  []string{"/recipient/register", "POST", "name", "username", "pwhash", "seedpwd"},        // POST
-	3:  []string{"/recipient/validate", "GET"},                                                  // GET
-	4:  []string{"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},   // POST
-	5:  []string{"/recipient/deviceId", "POST", "deviceId"},                                     // POST
-	6:  []string{"/recipient/startdevice", "POST", "start"},                                     // POST
-	7:  []string{"/recipient/storelocation", "POST", "location"},                                // POST
-	8:  []string{"/recipient/auction/choose/blind", "GET"},                                      // GET
-	9:  []string{"/recipient/auction/choose/vickrey", "GET"},                                    // GET
-	10: []string{"/recipient/auction/choose/time", "GET"},                                       // GET
-	11: []string{"/recipient/unlock/opensolar", "POST", "seedpwd", "projIndex"},                 // POST
-	12: []string{"/recipient/addemail", "POST", "email"},                                        // POST
-	13: []string{"/recipient/finalize", "POST", "projIndex"},                                    // POST
-	14: []string{"/recipient/originate", "POST", "projIndex"},                                   // POST
-	15: []string{"/recipient/trustlimit", "GET", "assetName"},                                   // GET
-	16: []string{"/recipient/ssh", "POST", "hash"},                                              // POST
-	17: []string{"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                    // POST
-	18: []string{"/recipient/register/teller", "POST", "url", "projIndex"},                      // POST
-	19: []string{"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"}, // POST
-	20: []string{"/recipient/dashboard", "GET"},                                                 // GET
+	1:  []string{"/recipient/all", "GET"},                                                                                                   // GET
+	2:  []string{"/recipient/register", "POST", "name", "username", "pwhash", "seedpwd"},                                                    // POST
+	3:  []string{"/recipient/validate", "GET"},                                                                                              // GET
+	4:  []string{"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},                                               // POST
+	5:  []string{"/recipient/deviceId", "POST", "deviceId"},                                                                                 // POST
+	6:  []string{"/recipient/startdevice", "POST", "start"},                                                                                 // POST
+	7:  []string{"/recipient/storelocation", "POST", "location"},                                                                            // POST
+	8:  []string{"/recipient/auction/choose/blind", "GET"},                                                                                  // GET
+	9:  []string{"/recipient/auction/choose/vickrey", "GET"},                                                                                // GET
+	10: []string{"/recipient/auction/choose/time", "GET"},                                                                                   // GET
+	11: []string{"/recipient/unlock/opensolar", "POST", "seedpwd", "projIndex"},                                                             // POST
+	12: []string{"/recipient/addemail", "POST", "email"},                                                                                    // POST
+	13: []string{"/recipient/finalize", "POST", "projIndex"},                                                                                // POST
+	14: []string{"/recipient/originate", "POST", "projIndex"},                                                                               // POST
+	15: []string{"/recipient/trustlimit", "GET", "assetName"},                                                                               // GET
+	16: []string{"/recipient/ssh", "POST", "hash"},                                                                                          // POST
+	17: []string{"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                                                                // POST
+	18: []string{"/recipient/register/teller", "POST", "url", "projIndex"},                                                                  // POST
+	19: []string{"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"},                                             // POST
+	20: []string{"/recipient/dashboard", "GET"},                                                                                             // GET
+	21: []string{"/recipient/company/set", "POST"},                                                                                          // POST
+	22: []string{"/recipient/company/details", "POST", "companytype", "name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -868,5 +870,98 @@ func recpDashboard() {
 		ret.YourProjects.BMaturity = "2028"
 
 		erpc.MarshalSend(w, ret)
+	})
+}
+
+func setCompanyBoolRecp() {
+	http.HandleFunc(RecpRPC[21][0], func(w http.ResponseWriter, r *http.Request) {
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[21][2:], RecpRPC[21][1])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		err = prepRecipient.SetCompany()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func setCompanyRecp() {
+	http.HandleFunc(RecpRPC[22][0], func(w http.ResponseWriter, r *http.Request) {
+		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[22][2:], RecpRPC[22][1])
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		companyType := r.FormValue("companytype")
+		switch companyType {
+		case "For-Profit":
+			log.Println("company type: For-Profit")
+		case "Social Enterprise":
+			log.Println("company type: Social Enterprise")
+		case "Non Governmental":
+			log.Println("company type: Non Governmental")
+		case "Cooperative":
+			log.Println("company type: Cooperative")
+		case "Other":
+			log.Println("company type: Other")
+		default:
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+		name := r.FormValue("name")
+		legalName := r.FormValue("legalname")
+		address := r.FormValue("address")
+		country := r.FormValue("country")
+		city := r.FormValue("city")
+		zipCode := r.FormValue("zipcode")
+		role := r.FormValue("role")
+		switch role {
+		case "ceo":
+			log.Println("role: ceo")
+		case "employee":
+			log.Println("role: employee")
+		case "other":
+			log.Println("role: other")
+		default:
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		// these are params which are not necessary
+		var adminEmail, phoneNumber, taxIDNumber string
+
+		if lenParseCheck(adminEmail) != nil || lenParseCheck(phoneNumber) != nil ||
+			lenParseCheck(taxIDNumber) != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		if r.FormValue("adminemail") != "" {
+			adminEmail = r.FormValue("adminemail")
+		}
+		if r.FormValue("phonenumber") != "" {
+			phoneNumber = r.FormValue("phoneNumber")
+		}
+		if r.FormValue("taxidnumber") != "" {
+			taxIDNumber = r.FormValue("taxidnumber")
+		}
+
+		err = prepRecipient.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
+			country, city, zipCode, taxIDNumber, role)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

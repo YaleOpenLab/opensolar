@@ -11,6 +11,15 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
+// lenParseCheck checks the length of a parameter if it is a string
+func lenParseCheck(field string) error {
+	if len(field) > 200 {
+		return errors.New("field length too long")
+	}
+
+	return nil
+}
+
 func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, method string) error {
 	if method == "GET" {
 		err := erpc.CheckGet(w, r)
@@ -30,6 +39,11 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 			if r.URL.Query()[option] == nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return errors.New("required param: " + option + " not specified, quitting")
+			}
+
+			if lenParseCheck(r.URL.Query()[option][0]) != nil {
+				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				return errors.New("length of param: " + option + " too long")
 			}
 		}
 
@@ -64,6 +78,11 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 			if r.FormValue(option) == "" {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 				return errors.New("required param: " + option + " not specified, quitting")
+			}
+
+			if lenParseCheck(r.FormValue(option)) != nil {
+				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				return errors.New("length of param: " + option + " too long")
 			}
 		}
 	} else {
