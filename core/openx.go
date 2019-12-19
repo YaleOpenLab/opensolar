@@ -49,10 +49,10 @@ func ValidateUser(name string, token string) (openx.User, error) {
 }
 
 // NewUser creates a new user in openx's database
-func NewUser(name string, pwhash string, seedpwd string, realname string) (openx.User, error) {
+func NewUser(name string, pwhash string, seedpwd string, email string) (openx.User, error) {
 	var user openx.User
 	body := consts.OpenxURL + "/platform/user/new?code=" + consts.TopSecretCode + "&username=" + name + "&pwhash=" + pwhash +
-		"&seedpwd=" + seedpwd + "&realname=" + realname
+		"&seedpwd=" + seedpwd + "&email=" + email
 
 	log.Println(body)
 	data, err := erpc.GetRequest(body)

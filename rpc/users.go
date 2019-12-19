@@ -240,12 +240,12 @@ func registerUser() {
 			}
 		}
 
-		realname := r.FormValue("name")
+		email := r.FormValue("email")
 		username := r.FormValue("username")
 		pwhash := r.FormValue("pwhash")
 		seedpwd := r.FormValue("seedpwd")
 
-		user, err := core.NewUser(username, pwhash, seedpwd, realname)
+		user, err := core.NewUser(username, pwhash, seedpwd, email)
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
