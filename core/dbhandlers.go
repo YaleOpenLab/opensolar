@@ -71,6 +71,62 @@ func RetrieveInvestor(key int) (Investor, error) {
 	return inv, inv.Save()
 }
 
+// SearchForInvestor searches for an investor in the database
+func SearchForInvestor(name string) (Investor, error) {
+	var inv Investor
+
+	investors, err := RetrieveAllInvestors()
+	if err != nil {
+		return inv, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
+	}
+
+	for _, val := range investors {
+		if val.U.Name == name {
+			return val, nil
+		}
+	}
+
+	return inv, errors.Wrap(err, "could not find an investor while searching by username")
+}
+
+
+// SearchForRecipient searches for a recipient in the database
+func SearchForRecipient(name string) (Recipient, error) {
+	var recp Recipient
+
+	recipients, err := RetrieveAllRecipients()
+	if err != nil {
+		return recp, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
+	}
+
+	for _, val := range recipients {
+		if val.U.Name == name {
+			return val, nil
+		}
+	}
+
+	return recp, errors.Wrap(err, "could not find an investor while searching by username")
+}
+
+
+// SearchForEntity searches for an investor in the database
+func SearchForEntity(name string) (Entity, error) {
+	var et Entity
+
+	ets, err := RetrieveAllEntitiesWithoutRole()
+	if err != nil {
+		return et, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
+	}
+
+	for _, val := range ets {
+		if val.U.Name == name {
+			return val, nil
+		}
+	}
+
+	return et, errors.Wrap(err, "could not find an investor while searching by username")
+}
+
 // RetrieveRecipient retrieves a recipient from the database
 func RetrieveRecipient(key int) (Recipient, error) {
 	var recp Recipient
