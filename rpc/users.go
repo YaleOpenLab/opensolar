@@ -257,10 +257,10 @@ func registerUser() {
 }
 
 type UserRoleStruct struct {
-	User openx.User
-	Investor core.Investor
+	User      openx.User
+	Investor  core.Investor
 	Recipient core.Recipient
-	Entity core.Entity
+	Entity    core.Entity
 }
 
 // getUserRoles gets a list of the roles that an investor partakes on the platform
