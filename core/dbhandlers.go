@@ -89,7 +89,6 @@ func SearchForInvestor(name string) (Investor, error) {
 	return inv, errors.Wrap(err, "could not find an investor while searching by username")
 }
 
-
 // SearchForRecipient searches for a recipient in the database
 func SearchForRecipient(name string) (Recipient, error) {
 	var recp Recipient
@@ -107,7 +106,6 @@ func SearchForRecipient(name string) (Recipient, error) {
 
 	return recp, errors.Wrap(err, "could not find an investor while searching by username")
 }
-
 
 // SearchForEntity searches for an investor in the database
 func SearchForEntity(name string) (Entity, error) {
