@@ -17,6 +17,7 @@ func setupUserRpcs() {
 	reportProject()
 	userInfo()
 	registerUser()
+	getUserRoles()
 }
 
 // UserRPC is a collection of all user RPC endpoints and their required params
@@ -25,6 +26,7 @@ var UserRPC = map[int][]string{
 	2: []string{"/user/report", "POST", "projIndex"}, // POST
 	3: []string{"/user/info", "GET"},                 // GET
 	4: []string{"/user/register", "POST", "name", "username", "pwhash", "seedpwd"},
+	5: []string{"/user/roles", "GET"}, // GET
 }
 
 func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (openx.User, error) {
@@ -251,5 +253,44 @@ func registerUser() {
 		}
 
 		erpc.MarshalSend(w, user)
+	})
+}
+
+type UserRoleStruct struct {
+	User openx.User
+	Investor core.Investor
+	Recipient core.Recipient
+	Entity core.Entity
+}
+
+// getUserRoles gets a list of the roles that an investor partakes on the platform
+func getUserRoles() {
+	http.HandleFunc(UserRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
+		user, err := userValidateHelper(w, r, UserRPC[5][2:], UserRPC[5][1])
+		if err != nil {
+			return
+		}
+
+		var ret UserRoleStruct
+		// we now have the user struct, search invetors, recipients, entities for what role the
+		// user is on the platform
+
+		ret.User = user
+		inv, err := core.SearchForInvestor(user.Name)
+		if err == nil {
+			ret.Investor = inv
+		}
+
+		recp, err := core.SearchForRecipient(user.Name)
+		if err == nil {
+			ret.Recipient = recp
+		}
+
+		entity, err := core.SearchForEntity(user.Name)
+		if err == nil {
+			ret.Entity = entity
+		}
+
+		erpc.MarshalSend(w, ret)
 	})
 }
