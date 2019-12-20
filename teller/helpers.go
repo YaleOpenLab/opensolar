@@ -3,14 +3,15 @@ package main
 import (
 	"bufio"
 	//"bytes"
-	"github.com/pkg/errors"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
-	//"encoding/json"
+
+	"github.com/pkg/errors"
 
 	ipfs "github.com/Varunram/essentials/ipfs"
 	utils "github.com/Varunram/essentials/utils"
@@ -99,14 +100,19 @@ func checkPayback() {
 			log.Println("Error while paying amount back", err)
 			sendDevicePaybackFailedEmail()
 		}
-		time.Sleep(time.Duration(LocalProject.PaybackPeriod * consts.OneWeekInSecond))
+		time.Sleep(time.Duration(LocalProject.PaybackPeriod) * consts.OneWeekInSecond)
 	}
 }
 
 // updateState stores the current state of the teller in ipfs and commits the ipfs hash to the blockchain
 func updateState(trigger bool) {
 	for {
-		subcommand := "Energy production data for this cycle: " + "100" + "W"
+		data, err := ioutil.ReadFile("data.txt")
+		if err != nil {
+			log.Println("error while trying to read data file")
+			time.Sleep(consts.TellerPollInterval)
+		}
+		subcommand := string(data)
 		// TODO: replace this with real data rather than fake data that we have here
 		ipfsHash, err := ipfs.IpfsAddString("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
 		if err != nil {
@@ -357,7 +363,87 @@ func getDeviceID() (string, error) {
 		return "", errors.Wrap(err, "could not read from file")
 	}
 	if readBytes != 32 {
-		return "", errors.New("Length of strings doesn't match, quitting!")
+		return "", errors.New("length of strings doesn't match, quitting")
 	}
 	return string(data), nil
+}
+
+type energyStruct struct {
+	EnergyTimestamp string `json:"energy_timestamp"`
+	Unit            string `json:"unit"`
+	Value           uint32 `json:"value"`
+	OwnerId         string `json:"owner_id"`
+	AssetId         string `json:"asset_id"`
+}
+
+func updateEnergyData() error {
+	EnergyValue = 0
+	f, err := os.Open("data.txt")
+	if err != nil {
+		return errors.Wrap(err, "could not open data file for reading")
+	}
+
+	defer func() {
+		if ferr := f.Close(); ferr != nil {
+			err = ferr
+		}
+	}()
+
+	reader := bufio.NewReader(f)
+
+	for {
+		var data []byte
+
+		for i := 0; i < 7; i++ {
+			line, _, err := reader.ReadLine()
+			if err != nil {
+				log.Println("reached end of file")
+				err = os.Remove("data.txt")
+				if err != nil {
+					return err
+				}
+				file, err := os.Create("data.txt")
+				if err != nil {
+					return err
+				}
+				err = file.Close()
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+			data = append(data, line...)
+		}
+
+		var x energyStruct
+		err = json.Unmarshal(data, &x)
+		if err != nil {
+			return errors.Wrap(err, "could not unmarshal json data struct")
+		}
+
+		EnergyValue += x.Value
+	}
+}
+
+// readEnergyData reads energy data from the local file and stores it in the remote opensolar instance
+func readEnergyData() {
+	for {
+		LocalProject.PaybackPeriod = 2 // 2 weeks by default, this should be removed when moving to a dynamic system
+		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond)
+		log.Println("reading energy data from file")
+		err := updateEnergyData()
+		if err != nil {
+			log.Println("error while reading energy data: ", err)
+			continue
+		}
+
+		// need to update remote with the energy data
+		log.Println("storign energy data on opensolar")
+		data, err := putEnergy(EnergyValue)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		log.Println(string(data))
+	}
 }

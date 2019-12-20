@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"log"
 	"net/url"
+
+	"github.com/pkg/errors"
 
 	geo "github.com/martinlindhe/google-geolocate"
 
@@ -605,4 +606,23 @@ func getIpfsData(hash string) (string, error) {
 	}
 
 	return string(data), err
+}
+
+func putEnergy(energyx uint32) ([]byte, error) {
+
+	energy, err := utils.ToString(energyx)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	postdata := basePostData()
+	postdata.Set("energy", energy)
+
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[23][0], postdata)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, err
 }
