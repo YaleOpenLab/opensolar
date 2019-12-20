@@ -112,7 +112,7 @@ func updateUser() {
 		}
 
 		// check whether given user is an investor or recipient
-		investor, err := InvValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
+		investor, err := core.ValidateInvestor(user.Username, user.AccessToken)
 		if err == nil {
 			investor.U = &user
 			err = investor.Save()
@@ -122,7 +122,7 @@ func updateUser() {
 				return
 			}
 		}
-		recipient, err := recpValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
+		recipient, err := core.ValidateRecipient(user.Username, user.AccessToken)
 		if err == nil {
 			recipient.U = &user
 			err = recipient.Save()
