@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/chzyer/readline"
-	"github.com/fatih/color"
-	flags "github.com/jessevdk/go-flags"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strings"
+
+	"github.com/chzyer/readline"
+	"github.com/fatih/color"
+	flags "github.com/jessevdk/go-flags"
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -73,6 +74,8 @@ var (
 	SwytchClientid string
 	// SwytchClientSecret is the password associated with the given IoT Hub on swytch
 	SwytchClientSecret string
+	// EnergyValue is the net amount of energy accumulated during a day
+	EnergyValue uint32
 
 	// GOOGLE MAPS VARIABLES
 	// Mapskey is the API key of google maps needed to store the location of the teller

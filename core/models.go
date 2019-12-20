@@ -1,9 +1,10 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"time"
+
+	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
 
@@ -184,7 +185,7 @@ func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod time.Duration,
 		// sleep until the next payment is due
 		paybackTimes += 1
 		log.Println("Sent: ", email, "a notification on payments for payment cycle: ", paybackTimes)
-		time.Sleep(2 * paybackPeriod)
+		time.Sleep(paybackPeriod * consts.OneWeekInSecond)
 	}
 }
 

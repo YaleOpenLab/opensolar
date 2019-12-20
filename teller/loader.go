@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
@@ -37,10 +38,11 @@ func StartTeller() error {
 
 	if projIndex != LocalProject.Index {
 		log.Println("Project indices don't match, quitting!")
-		return errors.New("Project indices don't match, quitting!")
+		return errors.New("project indices don't match, quitting")
 	}
 
 	go refreshLogin(loginUsername, loginPwhash) // update local copy of the recipient every 5 minutes
+	go readEnergyData()
 
 	seed, err := wallet.DecryptSeed(LocalRecipient.U.StellarWallet.EncryptedSeed, LocalSeedPwd)
 	if err != nil {

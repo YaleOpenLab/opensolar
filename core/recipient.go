@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
+
+	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
 	openx "github.com/YaleOpenLab/openx/database"
@@ -37,6 +38,9 @@ type Recipient struct {
 
 	// StateHashes stores the list of state updates (ipfs hashes) of the teller
 	StateHashes []string
+
+	// TellerEnergy contains the net energy consumed during a given period
+	TellerEnergy uint32
 
 	// Autoreload is a bool to denote whether the recipient wants to reload balance from their secondary account
 	Autoreload bool

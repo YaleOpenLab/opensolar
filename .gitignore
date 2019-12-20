@@ -9,3 +9,4 @@ watcher/watcher
 config.yaml
 legal/legal
 teller/mqtt/mqtt
+teller/data.txt

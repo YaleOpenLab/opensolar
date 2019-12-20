@@ -36,6 +36,7 @@ func setupRecipientRPCs() {
 	storeTellerURL()
 	storeTellerDetails()
 	recpDashboard()
+	storeTellerEnergy()
 }
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
@@ -62,6 +63,7 @@ var RecpRPC = map[int][]string{
 	20: []string{"/recipient/dashboard", "GET"},                                                                                             // GET
 	21: []string{"/recipient/company/set", "POST"},                                                                                          // POST
 	22: []string{"/recipient/company/details", "POST", "companytype", "name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
+	23: []string{"/recipient/teller/energy", "POST", "energy"},                                                                              // POST
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
@@ -836,6 +838,41 @@ func setCompanyRecp() {
 
 		err = prepRecipient.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 			country, city, zipCode, taxIDNumber, role)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+func storeTellerEnergy() {
+	http.HandleFunc(RecpRPC[23][0], func(w http.ResponseWriter, r *http.Request) {
+		recipient, err := recpValidateHelper(w, r, RecpRPC[23][2:], RecpRPC[23][1])
+		if err != nil {
+			return
+		}
+
+		err = r.ParseForm()
+		if err != nil {
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		energy := r.FormValue("energy")
+
+		energyInt, err := utils.ToInt(energy)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		recipient.TellerEnergy = uint32(energyInt)
+
+		err = recipient.Save()
 		if err != nil {
 			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
