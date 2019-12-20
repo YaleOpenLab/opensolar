@@ -1,9 +1,10 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"time"
+
+	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -640,7 +641,7 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 		}
 		timeElapsed := utils.Unix() - project.DateLastPaid // this would be in seconds (unix time)
 		factor := float64(timeElapsed) / period
-		project.AmountOwed += factor * oracle.MonthlyBill() // add the amount owed only if the time elapsed is more than one payback period
+		project.AmountOwed += factor * oracle.MonthlyBill() * float64(recipient.TellerEnergy) // add the amount owed only if the time elapsed is more than one payback period
 		// Reputation adjustments based on payback history:
 		if factor <= 1 {
 			// don't do anything since the user has been paying back regularly

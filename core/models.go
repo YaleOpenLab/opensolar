@@ -204,7 +204,7 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 		return -1, errors.Wrap(err, "Unable to retrieve issuer seed")
 	}
 
-	monthlyBill := oracle.MonthlyBill()
+	monthlyBill := oracle.MonthlyBill() * float64(recipient.TellerEnergy)
 	if err != nil {
 		return -1, errors.Wrap(err, "Unable to fetch oracle price, exiting")
 	}
