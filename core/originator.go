@@ -15,7 +15,7 @@ func (contractor *Entity) Originate(panelSize string, totalValue float64, locati
 
 	indexCheck, err := RetrieveAllProjects()
 	if err != nil {
-		return pc, errors.New("Projects could not be retrieved!")
+		return pc, errors.New("projects could not be retrieved")
 	}
 	pc.Index = len(indexCheck) + 1
 	pc.PanelSize = panelSize

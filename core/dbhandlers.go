@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+
 	"github.com/pkg/errors"
 
 	edb "github.com/Varunram/essentials/database"
@@ -291,7 +292,7 @@ func RetrieveAllProjects() ([]Project, error) {
 func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
-		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting!"), "stage can not be greater than 9, quitting!")
+		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting"), "stage can not be greater than 9, quitting")
 	}
 
 	projects, err := RetrieveAllProjects()
@@ -312,7 +313,7 @@ func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
-		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting!"), "stage can not be greater than 9, quitting!")
+		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting"), "stage can not be greater than 9, quitting")
 	}
 
 	projects, err := RetrieveAllProjects()
@@ -333,7 +334,7 @@ func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
-		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting!"), "stage can not be greater than 9, quitting!")
+		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting"), "stage can not be greater than 9, quitting")
 	}
 
 	projects, err := RetrieveAllProjects()
@@ -354,7 +355,7 @@ func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
-		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting!"), "stage can not be greater than 9, quitting!")
+		return arr, errors.Wrap(errors.New("stage can not be greater than 9, quitting"), "stage can not be greater than 9, quitting")
 	}
 
 	projects, err := RetrieveAllProjects()
@@ -457,6 +458,7 @@ func UserMarkFlagged(projIndex int, userIndex int) error {
 	return a.Save()
 }
 
+// AddTellerDetails adds teller details to the backend
 func AddTellerDetails(projIndex int, url string, brokerurl string, topic string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {

@@ -52,7 +52,7 @@ func RecipientAuthorize(projIndex int, recpIndex int) error {
 		return errors.Wrap(err, "couldn't retrieve recipient")
 	}
 	if project.RecipientIndex != recipient.U.Index {
-		return errors.New("You can't authorize a project which is not assigned to you!")
+		return errors.New("you can't authorize a project which is not assigned to you")
 	}
 
 	err = project.SetStage(1) // set the project as originated
@@ -353,7 +353,7 @@ func UnlockProject(username string, pwhash string, projIndex int, seedpwd string
 	}
 
 	if recipient.U.Index != project.RecipientIndex {
-		return errors.New("Recipient Indices don't match, quitting!")
+		return errors.New("recipient Indices don't match, quitting")
 	}
 
 	recpSeed, err := wallet.DecryptSeed(recipient.U.StellarWallet.EncryptedSeed, seedpwd)

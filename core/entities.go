@@ -2,8 +2,9 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
@@ -163,7 +164,7 @@ func newEntity(uname string, pwhash string, seedpwd string, name string, role st
 	case "guarantor":
 		a.Guarantor = true
 	default:
-		return a, errors.New("invalid entity type passed!")
+		return a, errors.New("invalid entity type passed")
 	}
 
 	a.U = &user
