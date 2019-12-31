@@ -4,6 +4,12 @@
 
 Opensolar is a platform built on openx for financing smart solar infrastructure using the Stellar blockchain. Opensolar uses IoT devices, smart meters and smart contracts to automate the end-end payments flow, making moving money cheaper and faster. Work in Progress.
 
+Download builds: [builds.openx.solar](https://builds.opens.solar/fe)  
+Openx test API: [api.openx.solar](https://api.openx.solar/ping)  
+Opensolar test API: [api2.openx.solar](https://api2.openx.solar/ping)  
+Checkout Frontend: [openx.solar](https://openx.solar)  
+API docs: [apidocs.opens.solar](https://apidocs.openx.solar)  
+
 #### ABSTRACT
 
 The OpenSolar Project and platform aims to use blockchain and IoT based smart contracts to help finance community solar projects. We seek to develop open source core technology to streamline the flow of crowd-based funds (eg. muni bonds and equity crowds) to finance the deployment of solar assets, and allow the end-users to own these resources in a short time frame through regular utility-like payments driven by energy generation and consumption IoT data.
