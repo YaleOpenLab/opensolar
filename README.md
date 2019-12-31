@@ -7,7 +7,7 @@ Opensolar is a platform built on openx for financing smart solar infrastructure 
 Download builds: [builds.openx.solar](https://builds.opens.solar/fe)  
 Openx test API: [api.openx.solar](https://api.openx.solar/ping)  
 Opensolar test API: [api2.openx.solar](https://api2.openx.solar/ping)  
-Checkout Frontend: [openx.solar](https://openx.solar)  
+Checkout Frontend: [openx.solar](https:/www.openx.solar)  
 API docs: [apidocs.opens.solar](https://apidocs.openx.solar)  
 
 #### ABSTRACT
