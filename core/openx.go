@@ -7,6 +7,7 @@ import (
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
+	"github.com/pkg/errors"
 
 	openx "github.com/YaleOpenLab/openx/database"
 )
@@ -27,6 +28,12 @@ func RetrieveUser(key int) (openx.User, error) {
 	if err != nil {
 		return user, err
 	}
+
+	if user.Index == 0 {
+		log.Println(string(data))
+		return user, errors.New("problem with retrieving user")
+	}
+
 	return user, nil
 }
 
@@ -45,6 +52,12 @@ func ValidateUser(name string, token string) (openx.User, error) {
 		log.Println(err)
 		return user, err
 	}
+
+	if user.Index == 0 {
+		log.Println(string(data))
+		return user, errors.New("problem with user validation")
+	}
+
 	return user, nil
 }
 
@@ -59,10 +72,17 @@ func NewUser(name string, pwhash string, seedpwd string, email string) (openx.Us
 	if err != nil {
 		return user, err
 	}
+
 	err = json.Unmarshal(data, &user)
 	if err != nil {
 		return user, err
 	}
+
+	if user.Index == 0 {
+		log.Println(string(data))
+		return user, errors.New("problem with user creation")
+	}
+
 	return user, nil
 }
 
