@@ -248,7 +248,7 @@ func registerUser() {
 		user, err := core.NewUser(username, pwhash, seedpwd, email)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusNotFound)
 			return
 		}
 
