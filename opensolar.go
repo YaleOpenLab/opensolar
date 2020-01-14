@@ -187,6 +187,29 @@ func main() {
 		project.InvestmentType = "munibond"
 		project.RecipientIndex = 1
 		project.DebtAssetCode = "TESTTELLER"
+		project.Metadata = "MAINNETTEST"
+		project.InvestorAssetCode = ""
+		project.TotalValue = 1
+		project.MoneyRaised = 0
+		project.InvestmentType = "munibond"
+		project.RecipientIndex = 1
+		project.DebtAssetCode = "TESTTELLER"
+		project.ExploreStub.Name = "This is a sample project Name"
+		project.ExploreStub.Location = "Puerto Rico"
+		project.ExploreStub.DonationType = "donation"
+		project.ExploreStub.Originator = "Project Originator"
+		project.ExploreStub.Description = "Project Description"
+		project.ExploreStub.Bullet1 = "This is a sample bullet"
+		project.ExploreStub.Bullet2 = "This is a sample bullet"
+		project.ExploreStub.Bullet3 = "This is a sample bullet"
+		project.ExploreStub.Solar = "Solar"
+		project.ExploreStub.Storage = "This is a sample storage ipsum"
+		project.ExploreStub.Tariff = "Unlimited tariff"
+		project.ExploreStub.Return = "Unlimited Return"
+		project.ExploreStub.Rating = "AAA"
+		project.ExploreStub.Tax = "1000"
+		project.ExploreStub.Acquisition = "Sample Acquisition"
+
 		err = project.Save()
 		if err != nil {
 			log.Fatal(err)
