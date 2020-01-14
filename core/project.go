@@ -172,46 +172,21 @@ type Project struct {
 	OriginatorFee         float64   // fee paid to the originator included in the total value of the project
 	DeveloperFee          []float64 // the fees charged by the developers
 
-	ExploreStub struct {
-		Stage        int     `json:"Stage"`
-		Name         string  `json:"Name"`
-		Location     string  `json:"Location"`
-		DonationType string  `json:"Donation Type"`
-		Originator   string  `json:"Originator"`
-		Description  string  `json:"Description"`
-		Bullet1      string  `json:"Bullet1"`
-		Bullet2      string  `json:"Bullet2"`
-		Bullet3      string  `json:"Bullet3"`
-		Solar        string  `json:"Solar"`
-		Storage      string  `json:"Storage"`
-		Tariff       string  `json:"Tariff"`
-		Return       string  `json:"Return"`
-		Rating       string  `json:"Rating"`
-		Tax          string  `json:"Tax"`
-		Acquisition  string  `json:"Acquisition"`
-		AmountFunded float64 `json:"Amount Funded"`
-		TotalValue   float64 `json:"Total Value"`
-	}
-
-	DetailStub struct {
-		Stage          int     `json:"Stage"`
-		Name           string  `json:"Name"`
-		Location       string  `json:"Location"`
-		Munibond       string  `json:"Munibond"`
-		SecurityType   string  `json:"Security Type"`
-		Description    string  `json:"Description"`
-		Bullet1        string  `json:"Bullet1"`
-		Bullet2        string  `json:"Bullet2"`
-		Bullet3        string  `json:"Bullet3"`
-		OriginatorName string  `json:"Originator Name"`
-		AmountFunded   float64 `json:"Amount Funded"`
-		TotalValue     float64 `json:"Total Value"`
-		Solar          string  `json:"Solar"`
-		Battery        string  `json:"Battery"`
-		Return         string  `json:"Return"`
-		Rating         string  `json:"Rating"`
-		Maturity       string  `json:"Maturity"`
-	}
+	Location     string  `json:"Location"`
+	DonationType string  `json:"Donation Type"`
+	Originator   string  `json:"Originator"`
+	Description  string  `json:"Description"`
+	Bullet1      string  `json:"Bullet1"`
+	Bullet2      string  `json:"Bullet2"`
+	Bullet3      string  `json:"Bullet3"`
+	Solar        string  `json:"Solar"`
+	Storage      string  `json:"Storage"`
+	Tariff       string  `json:"Tariff"`
+	Return       string  `json:"Return"`
+	Rating       string  `json:"Rating"`
+	Tax          string  `json:"Tax"`
+	Acquisition  string  `json:"Acquisition"`
+	AmountFunded float64 `json:"Amount Funded"`
 }
 
 // Feedback defines a structure that is used for providing feedback

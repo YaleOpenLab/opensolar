@@ -322,6 +322,6 @@ func getProjectDashboard() {
 			return
 		}
 
-		erpc.MarshalSend(w, project.ExploreStub)
+		erpc.MarshalSend(w, project)
 	})
 }
