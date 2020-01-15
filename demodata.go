@@ -65,10 +65,42 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Tax = "1000"
 	project.Acquisition = "Sample Acquisition"
 
-	project.RecipientIndex = -1                      // replace with real indicces once created
-	project.OriginatorIndex = -1                     // replace with real indicces once created
-	project.GuarantorIndex = -1                      // replace with real indicces once created
-	project.ContractorIndex = -1                     // replace with real indicces once created
+	/*
+		recp, err := core.NewRecipient("aibonito", utils.SHA3hash("password"), "password", "Maria Pastor")
+		if err != nil {
+			return err
+		}
+		project.RecipientIndex = recp.U.Index
+
+		orig, err := core.NewOriginator("mwainstein", "password", "password", "Martin Wainstein")
+		if err != nil {
+			return err
+		}
+		project.OriginatorIndex = orig.U.Index
+
+		cont, err := NewContractor("contractor", "password", "password", "Contractor Name")
+		if err != nil {
+			return err
+		}
+		project.ContractorIndex = cont.U.Index
+
+		dev, err := core.NewDeveloper("developer", "password", "password", "Developer Name")
+		if err != nil {
+			return err
+		}
+		project.MainDeveloperIndex = dev.U.Index
+
+		guar, err := core.NewGuarantor("guarantor", "password", "password", "Guarantor Name")
+		if err != nil {
+			return err
+		}
+		project.GuarantorIndex = guar.U.Index
+	*/
+
+	project.RecipientIndex = -1                      // replace with real indices once created
+	project.OriginatorIndex = -1                     // replace with real indices once created
+	project.GuarantorIndex = -1                      // replace with real indices once created
+	project.ContractorIndex = -1                     // replace with real indices once created
 	project.PaybackPeriod = consts.FourWeeksInSecond // four weeks payback time
 	project.Stage = 3
 	project.Chain = "stellar"
