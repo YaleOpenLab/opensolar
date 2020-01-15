@@ -1,20 +1,12 @@
 package main
 
 import (
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
 func demoData() error {
 	var project core.Project
-	project.Index = 1
-	project.Metadata = "TESTPROJECT"
-	project.InvestorAssetCode = ""
-	project.TotalValue = 4000
-	project.MoneyRaised = 0
-	project.InvestmentType = "munibond"
-	project.RecipientIndex = 1
-	project.DebtAssetCode = "TESTTELLER"
-	project.InvestorAssetCode = ""
 	project.Name = "5kW Solar at FabIDEAS Coop - Pilot 1"
 	project.City = "Aibonito"
 	project.State = "Puerto Rico"
@@ -72,6 +64,22 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Rating = "AAA"
 	project.Tax = "1000"
 	project.Acquisition = "Sample Acquisition"
+
+	project.RecipientIndex = -1                      // replace with real indicces once created
+	project.OriginatorIndex = -1                     // replace with real indicces once created
+	project.GuarantorIndex = -1                      // replace with real indicces once created
+	project.ContractorIndex = -1                     // replace with real indicces once created
+	project.PaybackPeriod = consts.FourWeeksInSecond // four weeks payback time
+	project.Stage = 3
+	project.Chain = "stellar"
+	project.OwnershipShift = 0
+	project.BrokerUrl = "mqtt.openx.solar"
+	project.TellerPublishTopic = "opensolartest"
+	project.Index = 1
+	project.TotalValue = 4000
+	project.MoneyRaised = 0
+	project.Metadata = "Aibonito Pilot Project"
+	project.InvestmentType = "munibond"
 
 	return project.Save()
 }

@@ -101,6 +101,9 @@ var OneWeekInSecond = time.Duration(604800 * time.Second)
 // TwoWeeksInSecond is two weeks in seconds
 var TwoWeeksInSecond = time.Duration(1209600 * time.Second)
 
+// FourWeeksInSecond is four weeks in seconds
+var FourWeeksInSecond = time.Duration(2419200 * time.Second)
+
 // SixWeeksInSecond is six weeks in seconds
 var SixWeeksInSecond = time.Duration(3628800 * time.Second)
 
