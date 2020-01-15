@@ -171,22 +171,25 @@ type Project struct {
 	ContractorFee         float64   // fee paid to the contractor from the total fee of the project
 	OriginatorFee         float64   // fee paid to the originator included in the total value of the project
 	DeveloperFee          []float64 // the fees charged by the developers
-
-	Location     string  `json:"Location"`
-	DonationType string  `json:"Donation Type"`
-	Originator   string  `json:"Originator"`
-	Description  string  `json:"Description"`
-	Bullet1      string  `json:"Bullet1"`
-	Bullet2      string  `json:"Bullet2"`
-	Bullet3      string  `json:"Bullet3"`
-	Solar        string  `json:"Solar"`
-	Storage      string  `json:"Storage"`
-	Tariff       string  `json:"Tariff"`
-	Return       string  `json:"Return"`
-	Rating       string  `json:"Rating"`
-	Tax          string  `json:"Tax"`
-	Acquisition  string  `json:"Acquisition"`
-	AmountFunded float64 `json:"Amount Funded"`
+	Location              string    `json:"Location"`
+	DonationType          string    `json:"Donation Type"`
+	Originator            string    `json:"Originator"`
+	Description           string    `json:"Description"`
+	Bullet1               string    `json:"Bullet1"`
+	Bullet2               string    `json:"Bullet2"`
+	Bullet3               string    `json:"Bullet3"`
+	Solar                 string    `json:"Solar"`
+	InverterSize          string    `json:"Inverter Size"`
+	Battery               string    `json:"Battery"`
+	Storage               string    `json:"Storage"`
+	Tariff                string    `json:"Tariff"`
+	Return                string    `json:"Return"`
+	Rating                string    `json:"Rating"`
+	Tax                   string    `json:"Tax"`
+	DailyAvgGeneration    string    `json:"Daily Average Generation"`
+	Maturity              string    `json:"Maturity"`
+	Acquisition           string    `json:"Acquisition"`
+	AmountFunded          float64   `json:"Amount Funded"`
 }
 
 // Feedback defines a structure that is used for providing feedback
