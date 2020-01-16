@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	aes "github.com/Varunram/essentials/aes"
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	wallet "github.com/Varunram/essentials/xlm/wallet"
 	core "github.com/YaleOpenLab/opensolar/core"
 	openx "github.com/YaleOpenLab/openx/database"
 	// openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -95,6 +97,24 @@ func updateUser() {
 		}
 		if r.FormValue("email") != "" {
 			user.Email = r.FormValue("email")
+		}
+		if r.FormValue("seedpwd") != "" {
+			if r.FormValue("oldseedpwd") == "" {
+				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				return
+			}
+			oldseedpwd := r.FormValue("oldseedpwd")
+			seedpwd := r.FormValue("seedpwd")
+			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, oldseedpwd)
+			if err != nil {
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			user.StellarWallet.EncryptedSeed, err = aes.Encrypt([]byte(seed), seedpwd)
+			if err != nil {
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
 		}
 
 		if r.FormValue("notification") != "" {

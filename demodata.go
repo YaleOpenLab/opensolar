@@ -102,7 +102,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.GuarantorIndex = -1                      // replace with real indices once created
 	project.ContractorIndex = -1                     // replace with real indices once created
 	project.PaybackPeriod = consts.FourWeeksInSecond // four weeks payback time
-	project.Stage = 3
+	project.Stage = 4
 	project.Chain = "stellar"
 	project.OwnershipShift = 0
 	project.BrokerUrl = "mqtt.openx.solar"
