@@ -1,13 +1,13 @@
 package rpc
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
-	aes "github.com/Varunram/essentials/aes"
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	wallet "github.com/Varunram/essentials/xlm/wallet"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	openx "github.com/YaleOpenLab/openx/database"
 	// openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -24,7 +24,7 @@ func setupUserRpcs() {
 
 // UserRPC is a collection of all user RPC endpoints and their required params
 var UserRPC = map[int][]string{
-	1: []string{"/user/update", "POST"},                                             // POST
+	1: []string{"/update", "POST"},                                                  // POST
 	2: []string{"/user/report", "POST", "projIndex"},                                // POST
 	3: []string{"/user/info", "GET"},                                                // GET
 	4: []string{"/user/register", "POST", "email", "username", "pwhash", "seedpwd"}, // POST
@@ -61,99 +61,75 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 // updateUser updates credentials of the user
 func updateUser() {
 	http.HandleFunc(UserRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		user, err := userValidateHelper(w, r, UserRPC[1][2:], UserRPC[1][1])
+		// updateUser must first call the openx rpc to update the user struct
+
+		err := erpc.CheckPost(w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
-		if r.FormValue("name") != "" {
-			user.Name = r.FormValue("name")
-		}
-		if r.FormValue("city") != "" {
-			user.City = r.FormValue("city")
-		}
-		if r.FormValue("pwhash") != "" {
-			if len(r.FormValue("pwhash")) != 128 {
-				log.Println("length of pwhash not 128")
-				erpc.ResponseHandler(w, erpc.StatusBadRequest)
-				return
-			}
-			user.Pwhash = r.FormValue("pwhash")
-		}
-		if r.FormValue("zipcode") != "" {
-			user.ZipCode = r.FormValue("zipcode")
-		}
-		if r.FormValue("country") != "" {
-			user.Country = r.FormValue("country")
-		}
-		if r.FormValue("recoveryphone") != "" {
-			user.RecoveryPhone = r.FormValue("recoveryphone")
-		}
-		if r.FormValue("address") != "" {
-			user.Address = r.FormValue("address")
-		}
-		if r.FormValue("description") != "" {
-			user.Description = r.FormValue("description")
-		}
-		if r.FormValue("email") != "" {
-			user.Email = r.FormValue("email")
-		}
-		if r.FormValue("seedpwd") != "" {
-			if r.FormValue("oldseedpwd") == "" {
-				erpc.ResponseHandler(w, erpc.StatusBadRequest)
-				return
-			}
-			oldseedpwd := r.FormValue("oldseedpwd")
-			seedpwd := r.FormValue("seedpwd")
-			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, oldseedpwd)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-				return
-			}
-			user.StellarWallet.EncryptedSeed, err = aes.Encrypt([]byte(seed), seedpwd)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-				return
-			}
-		}
+		body := consts.OpenxURL + r.URL.String()
+		log.Println(body)
 
-		if r.FormValue("notification") != "" {
-			if r.FormValue("notification") != "true" {
-				user.Notification = false
-			} else {
-				user.Notification = true
-			}
-		}
-
-		err = user.Save()
+		err = r.ParseForm()
 		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		data, err := erpc.PostForm(body, r.Form)
+		if err != nil {
+			log.Println(err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
 
-		// check whether given user is an investor or recipient
-		investor, err := core.ValidateInvestor(user.Username, user.AccessToken)
-		if err == nil {
-			investor.U = &user
-			err = investor.Save()
-			if err != nil {
-				log.Println("unable to save investor: ", err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-				return
-			}
-		}
-		recipient, err := core.ValidateRecipient(user.Username, user.AccessToken)
-		if err == nil {
-			recipient.U = &user
-			err = recipient.Save()
-			if err != nil {
-				log.Println("unable to save recipient: ", err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-				return
-			}
+		var user openx.User
+		err = json.Unmarshal(data, &user)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
 		}
 
-		erpc.ResponseHandler(w, erpc.StatusOK)
+		if user.Index != 0 {
+			// check whether given user is an investor or recipient
+			investor, err := core.ValidateInvestor(user.Username, user.AccessToken)
+			if err == nil {
+				investor.U = &user
+				err = investor.Save()
+				if err != nil {
+					log.Println("unable to save investor: ", err)
+					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+					return
+				}
+			}
+			recipient, err := core.ValidateRecipient(user.Username, user.AccessToken)
+			if err == nil {
+				recipient.U = &user
+				err = recipient.Save()
+				if err != nil {
+					log.Println("unable to save recipient: ", err)
+					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+					return
+				}
+			}
+			entity, err := core.ValidateEntity(user.Username, user.AccessToken)
+			if err == nil {
+				entity.U = &user
+				err = entity.Save()
+				if err != nil {
+					log.Println("unable to save recipient: ", err)
+					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+					return
+				}
+			}
+			erpc.MarshalSend(w, user)
+		} else {
+			log.Println("user not updated")
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		}
 	})
 }
 
