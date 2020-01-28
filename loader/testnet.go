@@ -1,10 +1,11 @@
 package loader
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
 
 	// edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
