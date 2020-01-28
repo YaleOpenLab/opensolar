@@ -180,6 +180,11 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	}
 
 	project.RecipientIndex = recp.U.Index
+	err = project.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
 	if err != nil {
