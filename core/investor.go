@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/pkg/errors"
-	"log"
 
 	tickers "github.com/Varunram/essentials/exchangetickers"
 	utils "github.com/Varunram/essentials/utils"
@@ -118,14 +117,14 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 			xlmBalance = 0
 		}
 
-		if !a.U.Legal {
-			log.Println("user has not accepted terms and conditions associated with the platform")
-			return false
-		}
+		// if !a.U.Legal {
+		// 	log.Println("user has not accepted terms and conditions associated with the platform")
+		// 	return false
+		// }
 
 		// need to fetch the oracle price here for the order
 		oraclePrice := tickers.ExchangeXLMforUSD(xlmBalance)
-		if usdBalance > targetBalance || oraclePrice > targetBalance {
+		if usdBalance > targetBalance-1 || oraclePrice > targetBalance {
 			// return true since the user has enough USD balance to pay for the order
 			return true
 		}

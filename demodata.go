@@ -1,6 +1,18 @@
 package main
 
 import (
+	"log"
+	"time"
+
+	"github.com/Varunram/essentials/xlm/assets"
+
+	"github.com/Varunram/essentials/utils"
+
+	"github.com/Varunram/essentials/xlm/wallet"
+
+	"github.com/Varunram/essentials/xlm"
+
+	"github.com/Varunram/essentials/xlm/stablecoin"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -112,6 +124,88 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.MoneyRaised = 0
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
+	project.TellerUrl = ""
+	project.BrokerUrl = "https://mqtt.openx.solar"
+	project.TellerPublishTopic = "opensolartest"
 
-	return project.Save()
+	err := project.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	txhash, err := assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, 10000000000, consts.PlatformSeed)
+	if err != nil {
+		return err
+	}
+
+	log.Println("tx for platform trusting stablecoin:", txhash)
+
+	password := "password"
+	pwhash := utils.SHA3hash(password)
+	seedpwd := "x"
+	exchangeAmount := 1.0
+	invAmount := 4000.0
+	run := utils.GetRandomString(5)
+
+	inv, err := core.NewInvestor("inv"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	// inv.U.Legal = true
+	err = inv.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = xlm.GetXLM(inv.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	recp, err := core.NewRecipient("recp"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = xlm.GetXLM(inv.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	project.RecipientIndex = recp.U.Index
+
+	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
+	if err != nil {
+		return err
+	}
+
+	err = stablecoin.Exchange(inv.U.StellarWallet.PublicKey, invSeed, exchangeAmount)
+	if err != nil {
+		log.Println("did not exchange xlm", err)
+		return err
+	}
+
+	time.Sleep(5 * time.Second)
+
+	err = core.Invest(project.Index, inv.U.Index, invAmount, invSeed)
+	if err != nil {
+		log.Println("did not invest in order", err)
+		return err
+	}
+
+	time.Sleep(10 * time.Second)
+
+	err = core.UnlockProject(recp.U.Username, pwhash, project.Index, seedpwd)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
