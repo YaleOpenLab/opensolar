@@ -109,11 +109,11 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 		project.GuarantorIndex = guar.U.Index
 	*/
 
-	project.RecipientIndex = -1                      // replace with real indices once created
-	project.OriginatorIndex = -1                     // replace with real indices once created
-	project.GuarantorIndex = -1                      // replace with real indices once created
-	project.ContractorIndex = -1                     // replace with real indices once created
-	project.PaybackPeriod = consts.FourWeeksInSecond // four weeks payback time
+	project.RecipientIndex = -1  // replace with real indices once created
+	project.OriginatorIndex = -1 // replace with real indices once created
+	project.GuarantorIndex = -1  // replace with real indices once created
+	project.ContractorIndex = -1 // replace with real indices once created
+	project.PaybackPeriod = 4    // four weeks payback time
 	project.Stage = 4
 	project.Chain = "stellar"
 	project.OwnershipShift = 0
