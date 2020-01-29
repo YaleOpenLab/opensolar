@@ -340,14 +340,14 @@ func (project *Project) sendRecipientNotification() error {
 }
 
 // UnlockProject unlocks a specific project that has just been invested in
-func UnlockProject(username string, pwhash string, projIndex int, seedpwd string) error {
+func UnlockProject(username string, token string, projIndex int, seedpwd string) error {
 	log.Println("UNLOCKING PROJECT")
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
 		return errors.Wrap(err, "couldn't retrieve project")
 	}
 
-	recipient, err := ValidateRecipient(username, pwhash)
+	recipient, err := ValidateRecipient(username, token)
 	if err != nil {
 		return errors.Wrap(err, "couldn't validate recipient")
 	}
@@ -459,7 +459,7 @@ func sendRecipientAssets(projIndex int) error {
 
 	recipient, err := RetrieveRecipient(project.RecipientIndex)
 	if err != nil {
-		return errors.Wrap(err, "couldn't retrieve recipienrt")
+		return errors.Wrap(err, "couldn't retrieve recipient")
 	}
 
 	recpSeed, err := wallet.DecryptSeed(recipient.U.StellarWallet.EncryptedSeed, project.LockPwd)
@@ -467,8 +467,7 @@ func sendRecipientAssets(projIndex int) error {
 		return errors.Wrap(err, "couldn't decrypt seed")
 	}
 
-	project.LockPwd = "" // lockpwd set to empty immediately after use
-
+	log.Println("initializing escrow: ", project.Index, consts.EscrowPwd, recipient.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed)
 	escrowPubkey, err := escrow.InitEscrow(project.Index, consts.EscrowPwd, recipient.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed)
 	if err != nil {
 		return errors.Wrap(err, "error while initializing issuer")
@@ -487,6 +486,7 @@ func sendRecipientAssets(projIndex int) error {
 
 	project.DebtAssetCode = assets.AssetID(consts.DebtAssetPrefix + project.Metadata)
 	project.PaybackAssetCode = assets.AssetID(consts.PaybackAssetPrefix + project.Metadata)
+	project.LockPwd = "" // lockpwd set to empty immediately after use
 
 	// when sending debt and payback assets, account for SeedMoneyRaised
 	err = MunibondReceive(consts.OpenSolarIssuerDir, project.RecipientIndex, projIndex, project.DebtAssetCode,

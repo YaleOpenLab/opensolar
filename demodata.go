@@ -142,7 +142,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	log.Println("tx for platform trusting stablecoin:", txhash)
 
 	password := "password"
-	pwhash := utils.SHA3hash(password)
+	//pwhash := utils.SHA3hash(password)
 	seedpwd := "x"
 	exchangeAmount := 1.0
 	invAmount := 4000.0
@@ -207,10 +207,11 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 
 	time.Sleep(10 * time.Second)
 
-	err = core.UnlockProject(recp.U.Username, pwhash, project.Index, seedpwd)
-	if err != nil {
-		return err
-	}
+	log.Println("RECIPIENT CREDS: ", recp.U.Username, recp.U.AccessToken, recp.U.Pwhash, project.Index)
+	// err = core.UnlockProject(recp.U.Username, pwhash, project.Index, seedpwd)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }

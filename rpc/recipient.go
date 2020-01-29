@@ -411,7 +411,7 @@ func unlockOpenSolar() {
 			return
 		}
 
-		err = core.UnlockProject(recipient.U.Username, recipient.U.Pwhash, projIndex, seedpwd)
+		err = core.UnlockProject(recipient.U.Username, recipient.U.AccessToken, projIndex, seedpwd)
 		if err != nil {
 			log.Println("did not unlock project", err)
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
