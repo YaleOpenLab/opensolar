@@ -128,7 +128,22 @@ func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num i
 
 	for receiveCount < num {
 		incoming := <-receiver
-		messages = append(messages, incoming[1])
+		messages = append(messages, incoming[1:]...)
+
+		fPath := "data.txt"
+		f, err := os.OpenFile(fPath, os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return errors.Wrap(err, "could not open data file for reading")
+		}
+
+		defer f.Close()
+
+		for _, data := range incoming[1:] {
+			_, err = f.WriteString(data)
+			if err != nil {
+				return errors.Wrap(err, "could not write data to the hc file")
+			}
+		}
 		log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 		receiveCount++
 	}
@@ -181,17 +196,14 @@ func ParseConfig() error {
 	// parse params needed by mosquitto subscriber
 	mqttopts := mqtt.NewClientOptions()
 	mqttopts.AddBroker(viper.GetString("mqttbroker"))
-	mqttopts.SetClientID(viper.GetString("username"))
-	mqttopts.SetUsername(viper.GetString("username"))
-	mqttopts.SetPassword(viper.GetString("password"))
+	mqttopts.SetClientID(viper.GetString("mqttusername"))
+	mqttopts.SetUsername(viper.GetString("mqttusername"))
+	mqttopts.SetPassword(viper.GetString("mqttpassword"))
 	topic := viper.GetString("mqtttopic")
 	qos := 0
-	num := 100000
+	num := 10000000 // set this to a very high number
 
-	err = SubscribeMessage(mqttopts, topic, qos, num)
-	if err != nil {
-		log.Fatal(err)
-	}
+	go SubscribeMessage(mqttopts, topic, qos, num)
 
 	if opts.Port == 0 {
 		opts.Port = consts.Tlsport
