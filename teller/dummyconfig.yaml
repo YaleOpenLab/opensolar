@@ -20,3 +20,11 @@ sclientsecret: "46d10252a4954007af5e2f8941aeeb37"
 susername: "pr-collab%40swytch.io"
 # The password used to logon to swytch
 spassword: "S%4091380ee5cfad455a919db9985f913f69"
+# The URL of the mqtt broker
+mqttbroker: tls://mqtt.openx.solar:8883
+# The username needed to id with the broker
+username: username
+# The password needed to id with the broker
+password: password
+# The topic on which the subscriber should listen
+mqtttopic: topic

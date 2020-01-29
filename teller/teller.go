@@ -17,6 +17,7 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/opensolar/core"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/spf13/viper"
 )
 
@@ -105,6 +106,54 @@ func autoComplete() readline.AutoCompleter {
 	)
 }
 
+func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
+	log.Println("starting mqtt subscriber")
+	receiveCount := 0
+	receiver := make(chan [2]string)
+	var messages []string
+
+	mqttopts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
+		receiver <- [2]string{msg.Topic(), string(msg.Payload())}
+	})
+
+	client := mqtt.NewClient(mqttopts)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+
+	token := client.Subscribe(topic, byte(qos), nil)
+	if token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+
+	for receiveCount < num {
+		incoming := <-receiver
+		messages = append(messages, incoming[1:]...)
+
+		fPath := "data.txt"
+		f, err := os.OpenFile(fPath, os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return errors.Wrap(err, "could not open data file for reading")
+		}
+
+		defer f.Close()
+
+		for _, data := range incoming[1:] {
+			_, err = f.WriteString(data)
+			if err != nil {
+				return errors.Wrap(err, "could not write data to the hc file")
+			}
+		}
+		log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
+		receiveCount++
+	}
+
+	client.Disconnect(250)
+	log.Println("Subscriber Disconnected")
+	log.Println("MESSAGES: ", messages)
+	return nil
+}
+
 func ParseConfig() error {
 	var err error
 	_, err = flags.ParseArgs(&opts, os.Args)
@@ -143,6 +192,18 @@ func ParseConfig() error {
 	SwytchPassword = viper.GetString("spassword")
 	SwytchClientid = viper.GetString("sclientid")
 	SwytchClientSecret = viper.GetString("sclientsecret")
+
+	// parse params needed by mosquitto subscriber
+	mqttopts := mqtt.NewClientOptions()
+	mqttopts.AddBroker(viper.GetString("mqttbroker"))
+	mqttopts.SetClientID(viper.GetString("mqttusername"))
+	mqttopts.SetUsername(viper.GetString("mqttusername"))
+	mqttopts.SetPassword(viper.GetString("mqttpassword"))
+	topic := viper.GetString("mqtttopic")
+	qos := 0
+	num := 10000000 // set this to a very high number
+
+	go SubscribeMessage(mqttopts, topic, qos, num)
 
 	if opts.Port == 0 {
 		opts.Port = consts.Tlsport
