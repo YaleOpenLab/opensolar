@@ -378,7 +378,75 @@ type energyStruct struct {
 
 func updateEnergyData() error {
 	EnergyValue = 0
-	f, err := os.Open("data.txt")
+
+	origPath := "data.txt"
+	hcPath := consts.TellerHomeDir + "/data.txt"
+
+	presentData, err := ioutil.ReadFile(origPath)
+	if err != nil {
+		return errors.Wrap(err, "could not open data file for reading")
+	}
+
+	hc, err := os.OpenFile(hcPath, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return errors.Wrap(err, "could not open data file for reading")
+	}
+
+	defer hc.Close()
+
+	_, err = hc.Write(presentData)
+	if err != nil {
+		return errors.Wrap(err, "could not write data to the hc file")
+	}
+
+	// read size of the updated file
+	hcData, err := ioutil.ReadFile(hcPath)
+	if err != nil {
+		return errors.Wrap(err, "could not open data file for reading")
+	}
+
+	for {
+		size, err := hc.Stat()
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		log.Println("File size is: ", size.Size())
+		if size.Size() >= int64(consts.TellerMaxLocalStorageSize) {
+			log.Println("flushing data to ipfs")
+			// close the file, store in ipfs, get hash, delete file and create same file again
+			// with the previous file's hash (so people can verify) as the first line
+			err = hc.Close()
+			if err != nil {
+				log.Println("couldn't close file, trying again")
+				break
+			}
+			fileHash, err := ipfs.IpfsAddBytes(hcData)
+			if err != nil {
+				log.Println("Couldn't hash file: ", err)
+			}
+			HashChainHeader = fileHash
+			fileHash = "IPFSHASHCHAIN: " + fileHash + "\n" // the header of the ipfs hashchain that we form
+			// log.Println("HashChainHeader: ", HashChainHeader)
+			os.Remove(hcPath)
+			_, err = os.Create(hcPath)
+			if err != nil {
+				log.Println("error while opening file", err)
+				continue
+			}
+			hc, err := os.OpenFile(hcPath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+			if err != nil {
+				log.Println("error while opening file", err)
+				continue
+			}
+			defer hc.Close()
+			hc.Write([]byte(fileHash))
+		}
+		break
+	}
+
+	// now that the hash chain is done, take care of accumulating data
+	f, err := os.Open(origPath)
 	if err != nil {
 		return errors.Wrap(err, "could not open data file for reading")
 	}
@@ -394,7 +462,8 @@ func updateEnergyData() error {
 	for {
 		var data []byte
 
-		for i := 0; i < 7; i++ {
+		for i := 0; i < 7; i++ { // formatted according to the responses received from the lumen unit
+			// which is further read by mosquitto_sub
 			line, _, err := reader.ReadLine()
 			if err != nil {
 				log.Println("reached end of file")
@@ -425,10 +494,9 @@ func updateEnergyData() error {
 	}
 }
 
-// readEnergyData reads energy data from the local file and stores it in the remote opensolar instance
+// readEnergyData reads energy data from a local file and stores it in the remote opensolar instance
 func readEnergyData() {
 	for {
-		LocalProject.PaybackPeriod = 2 // 2 weeks by default, this should be removed when moving to a dynamic system
 		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond)
 		log.Println("reading energy data from file")
 		err := updateEnergyData()
@@ -438,7 +506,7 @@ func readEnergyData() {
 		}
 
 		// need to update remote with the energy data
-		log.Println("storign energy data on opensolar")
+		log.Println("storing energy data on opensolar")
 		data, err := putEnergy(EnergyValue)
 		if err != nil {
 			log.Println(err)

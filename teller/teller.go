@@ -118,7 +118,7 @@ func ParseConfig() error {
 
 	err = viper.ReadInConfig()
 	if err != nil {
-		return errors.Wrap(err, "Error while reading email values from config file")
+		return errors.Wrap(err, "Error while reading values from config file")
 	}
 
 	requiredParams := []string{"platformPublicKey", "seedpwd", "username",
@@ -193,13 +193,10 @@ func main() {
 	log.Println("BALANCE: ", balance)
 	log.Println("START HASH: ", StartHash)
 
-	// log.Fatal(getIpfsData("QmUXTtySmd7LD4p6RG6rZW6RuUuPZXTtNMmRQ6DSQo3aMw"))
-	// log.Fatal(putIpfsData([]byte("hello")))
-
 	// run goroutines in the background to routinely check for payback, state updates and stuff
-	// go checkPayback()
-	// go updateState(true)
-	// go storeDataLocal()
+	go checkPayback()
+	go updateState(true)
+	// go storeDataLocal() archived, this works only with particle io
 
 	if opts.Daemon {
 		log.Println("Running teller in daemon mode")

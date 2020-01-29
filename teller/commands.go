@@ -89,7 +89,7 @@ func ParseInput(input []string) {
 			case "xlm":
 				balance, err = getNativeBalance()
 			default:
-				balance, err = getAssetBalance(subcommand)
+				balance, err = getAssetBalance(subsubcommand)
 			}
 
 			if err != nil {
