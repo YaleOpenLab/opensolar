@@ -17,6 +17,7 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	solar "github.com/YaleOpenLab/opensolar/core"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/spf13/viper"
 )
 
@@ -105,6 +106,39 @@ func autoComplete() readline.AutoCompleter {
 	)
 }
 
+func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
+	log.Println("starting mqtt subscriber")
+	receiveCount := 0
+	receiver := make(chan [2]string)
+	var messages []string
+
+	mqttopts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
+		receiver <- [2]string{msg.Topic(), string(msg.Payload())}
+	})
+
+	client := mqtt.NewClient(mqttopts)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+
+	token := client.Subscribe(topic, byte(qos), nil)
+	if token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+
+	for receiveCount < num {
+		incoming := <-receiver
+		messages = append(messages, incoming[1])
+		log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
+		receiveCount++
+	}
+
+	client.Disconnect(250)
+	log.Println("Subscriber Disconnected")
+	log.Println("MESSAGES: ", messages)
+	return nil
+}
+
 func ParseConfig() error {
 	var err error
 	_, err = flags.ParseArgs(&opts, os.Args)
@@ -143,6 +177,21 @@ func ParseConfig() error {
 	SwytchPassword = viper.GetString("spassword")
 	SwytchClientid = viper.GetString("sclientid")
 	SwytchClientSecret = viper.GetString("sclientsecret")
+
+	// parse params needed by mosquitto subscriber
+	mqttopts := mqtt.NewClientOptions()
+	mqttopts.AddBroker(viper.GetString("mqttbroker"))
+	mqttopts.SetClientID(viper.GetString("username"))
+	mqttopts.SetUsername(viper.GetString("username"))
+	mqttopts.SetPassword(viper.GetString("password"))
+	topic := viper.GetString("mqtttopic")
+	qos := 0
+	num := 100000
+
+	err = SubscribeMessage(mqttopts, topic, qos, num)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if opts.Port == 0 {
 		opts.Port = consts.Tlsport

@@ -15,9 +15,6 @@
 package mqtt
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -87,11 +84,12 @@ var opts struct {
 	Message   string `long:"message" description:"message text to publish"`
 	Action    string `long:"action" description:"pub/sub" required:"true"`
 	Store     string `long:"store" description:"store directory" default:":memory:"`
-	Https     bool   `long:"secure" description:"start https"`
 }
 
 // ./mqtt --broker 0.0.0.0:1883 --action pub --message cool --topic test --id pub --user publisher
 // ./mqtt --action sub --topic test --broker 0.0.0.0:1883 --id sub --user subscriber
+
+// set id to username when connecting
 
 func test() {
 	var err error
@@ -135,33 +133,6 @@ func test() {
 	// openssl req -new -newkey rsa:2048 -nodes -keyout server.key -out server.csr
 	// openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
 
-	if opts.Https {
-		log.Println("creating root cert chain to work with https broker")
-		certFile := "server.crt"
-
-		rootCAs, _ := x509.SystemCertPool()
-		if rootCAs == nil {
-			rootCAs = x509.NewCertPool()
-		}
-
-		certs, err := ioutil.ReadFile(certFile)
-		if err != nil {
-			log.Fatalf("Failed to append", err)
-		}
-
-		// Append our cert to the system pool
-		if ok := rootCAs.AppendCertsFromPEM(certs); !ok {
-			log.Println("No certs appended, using system certs only")
-		}
-
-		config := &tls.Config{
-			RootCAs: rootCAs,
-		}
-
-		mqttopts.SetTLSConfig(config)
-	}
-
-	log.Println("THIS IS COOL")
 	if opts.Action == "pub" {
 		err = PublishMessage(mqttopts)
 		if err != nil {
