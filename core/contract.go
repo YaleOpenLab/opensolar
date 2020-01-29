@@ -640,6 +640,9 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 			period = 1 // for the test suite
 		}
 		timeElapsed := utils.Unix() - project.DateLastPaid // this would be in seconds (unix time)
+		if project.DateLastPaid == 0 {
+			timeElapsed = 0
+		}
 		factor := float64(timeElapsed) / period
 		project.AmountOwed += factor * oracle.MonthlyBill() * float64(recipient.TellerEnergy) // add the amount owed only if the time elapsed is more than one payback period
 		// Reputation adjustments based on payback history:

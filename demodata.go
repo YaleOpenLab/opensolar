@@ -173,13 +173,26 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 		return err
 	}
 
-	err = xlm.GetXLM(inv.U.StellarWallet.PublicKey)
+	err = xlm.GetXLM(recp.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	guar, err := core.NewGuarantor("guar"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = xlm.GetXLM(guar.U.StellarWallet.PublicKey)
 	if err != nil {
 		log.Println("could not get XLM: ", err)
 		return err
 	}
 
 	project.RecipientIndex = recp.U.Index
+	project.GuarantorIndex = guar.U.Index
 	err = project.Save()
 	if err != nil {
 		log.Println(err)
