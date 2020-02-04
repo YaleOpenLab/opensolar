@@ -349,6 +349,7 @@ func sendEmail() {
 }
 
 type invDHelper struct {
+	Index            int     `json:"Int`
 	Stage            int     `json:"Stage"`
 	Name             string  `json:Project Name`
 	Location         string  `json:"Location"`
@@ -400,6 +401,7 @@ func invDashboard() {
 			temp.InvestmentRating = "N/A"
 			temp.ImpactRating = "4/4"
 			temp.ProjectActions = "No immediate action"
+			temp.Index = project.Index
 
 			ret.InvestedProjects = append(ret.InvestedProjects, temp)
 		}
@@ -411,8 +413,17 @@ func invDashboard() {
 		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
 
-		ret.AccountBalance1 = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey)
-		ret.AccountBalance2 = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey)
+		ret.AccountBalance1 = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) + xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, "STABLEUSD")
+		ret.AccountBalance2 = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) + xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, "STABLEUSD")
+
+		if ret.AccountBalance2 < 0 {
+			ret.AccountBalance2 = 0
+		}
+
+		if ret.AccountBalance1 < 0 {
+			ret.AccountBalance1 = 0
+		}
+
 		ret.NetBalance = ret.AccountBalance1 + ret.AccountBalance2
 		erpc.MarshalSend(w, ret)
 	})

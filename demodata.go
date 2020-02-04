@@ -122,6 +122,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Index = 1
 	project.TotalValue = 4000
 	project.MoneyRaised = 0
+	project.SeedInvestmentCap
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
 	project.TellerUrl = ""
@@ -179,20 +180,8 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 		return err
 	}
 
-	guar, err := core.NewGuarantor("guar"+run, password, seedpwd, "varunramganesh@gmail.com")
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	err = xlm.GetXLM(guar.U.StellarWallet.PublicKey)
-	if err != nil {
-		log.Println("could not get XLM: ", err)
-		return err
-	}
-
 	project.RecipientIndex = recp.U.Index
-	project.GuarantorIndex = guar.U.Index
+	project.GuarantorIndex = 1
 	err = project.Save()
 	if err != nil {
 		log.Println(err)
