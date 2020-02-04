@@ -122,7 +122,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Index = 1
 	project.TotalValue = 4000
 	project.MoneyRaised = 0
-	project.SeedInvestmentCap
+	project.SeedInvestmentCap = 4000
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
 	project.TellerUrl = ""
