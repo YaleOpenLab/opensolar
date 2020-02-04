@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
+
+	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -36,12 +37,7 @@ func (a *Entity) RefillEscrowAsset(projIndex int, asset string, amount float64, 
 		return err
 	}
 
-	balancex, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, asset)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
+	balancex := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, asset)
 	balance, err := utils.ToFloat(balancex)
 	if err != nil {
 		log.Println(err)
@@ -83,12 +79,7 @@ func (a *Entity) RefillEscrowXLM(projIndex int, amount float64, seedpwd string) 
 		return err
 	}
 
-	balancex, err := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
+	balancex := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
 	balance, err := utils.ToFloat(balancex)
 	if err != nil {
 		log.Println(err)

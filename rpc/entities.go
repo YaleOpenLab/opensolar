@@ -1,9 +1,10 @@
 package rpc
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -394,7 +395,7 @@ func contractorDashboard() {
 		ret.ActiveProjects = len(prepEntity.PresentContractIndices)
 		ret.TiCP = "845 kWh"
 		ret.AllTime = "10,150 MWh"
-		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
+		ret.ProjectWalletBalance = xlm.GetNativeBalance(project.EscrowPubkey)
 		if err != nil {
 			log.Println(err)
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
@@ -467,12 +468,7 @@ func developerDashboard() {
 		ret.ActiveProjects = len(prepEntity.PresentContractIndices)
 		ret.TiCP = "845 kWh"
 		ret.AllTime = "10,150 MWh"
-		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
-		if err != nil {
-			log.Println(err)
-			erpc.MarshalSend(w, erpc.StatusInternalServerError)
-			return
-		}
+		ret.ProjectWalletBalance = xlm.GetNativeBalance(project.EscrowPubkey)
 		ret.AutoReload = "On"
 		ret.Notification = "None"
 		ret.ActionsRequired = "None"

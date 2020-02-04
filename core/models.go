@@ -220,9 +220,8 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 		return -1, errors.Wrap(err, "Unable to offer xlm to STABLEUSD exchange for investor")
 	}
 
-	StableBalance, err := xlm.GetAssetBalance(recipient.U.StellarWallet.PublicKey, "STABLEUSD")
-
-	if err != nil || (StableBalance < amount) {
+	StableBalance := xlm.GetAssetBalance(recipient.U.StellarWallet.PublicKey, "STABLEUSD")
+	if StableBalance < amount {
 		return -1, errors.Wrap(err, "You do not have the required stablecoin balance, please refill")
 	}
 
@@ -282,25 +281,13 @@ func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, 
 	var txhash string
 
 	if !consts.Mainnet {
-		oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
-		if err != nil {
-			log.Println(err)
-			// platform does not have stablecoin, shouldn't arrive here ideally
-			oldPlatformBalance = 0
-		}
-
+		oldPlatformBalance = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
 		_, txhash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, consts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
 		}
 	} else {
-		oldPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
-		if err != nil {
-			log.Println(err)
-			// platform does not have stablecoin, shouldn't arrive here ideally
-			oldPlatformBalance = 0
-		}
-
+		oldPlatformBalance = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
 		_, txhash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, consts.PlatformPublicKey, invAmount, invSeed, memo)
 		if err != nil {
 			return txhash, errors.Wrap(err, "sending stableusd to platform failed")
@@ -312,15 +299,9 @@ func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, 
 
 	var newPlatformBalance float64
 	if !consts.Mainnet {
-		newPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
-		if err != nil {
-			return txhash, errors.Wrap(err, "error while getting asset balance")
-		}
+		newPlatformBalance = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.StablecoinCode)
 	} else {
-		newPlatformBalance, err = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
-		if err != nil {
-			return txhash, errors.Wrap(err, "error while getting asset balance")
-		}
+		newPlatformBalance = xlm.GetAssetBalance(consts.PlatformPublicKey, consts.AnchorUSDCode)
 	}
 
 	if newPlatformBalance-oldPlatformBalance < invAmount-1 {

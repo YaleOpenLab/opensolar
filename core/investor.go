@@ -107,15 +107,8 @@ func (a *Investor) ChangeVotingBalance(votes float64) error {
 func (a *Investor) CanInvest(targetBalance float64) bool {
 	if !consts.Mainnet {
 		// testnet
-		usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
-		if err != nil {
-			usdBalance = 0
-		}
-
-		xlmBalance, err := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
-		if err != nil {
-			xlmBalance = 0
-		}
+		usdBalance := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
+		xlmBalance := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
 
 		// if !a.U.Legal {
 		// 	log.Println("user has not accepted terms and conditions associated with the platform")
@@ -132,11 +125,7 @@ func (a *Investor) CanInvest(targetBalance float64) bool {
 	}
 
 	// mainnet
-	usdBalance, err := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
-	if err != nil {
-		usdBalance = 0
-	}
-
+	usdBalance := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
 	return usdBalance > targetBalance
 }
 

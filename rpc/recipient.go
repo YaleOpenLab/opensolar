@@ -514,13 +514,7 @@ func calculateTrustLimit() {
 		}
 
 		assetName := r.URL.Query()["assetName"][0]
-		trustLimit, err := xlm.GetAssetTrustLimit(recipient.U.StellarWallet.PublicKey, assetName)
-		if err != nil {
-			log.Println("did not get trust limit", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
+		trustLimit := xlm.GetAssetTrustLimit(recipient.U.StellarWallet.PublicKey, assetName)
 		erpc.MarshalSend(w, trustLimit)
 	})
 }
@@ -717,12 +711,7 @@ func recpDashboard() {
 		ret.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
 		ret.TiCP = "845 kWh"
 		ret.AllTime = "10,150 MWh"
-		ret.ProjectWalletBalance, err = xlm.GetNativeBalance(project.EscrowPubkey)
-		if err != nil {
-			log.Println(err)
-			erpc.MarshalSend(w, erpc.StatusInternalServerError)
-			return
-		}
+		ret.ProjectWalletBalance = xlm.GetNativeBalance(project.EscrowPubkey)
 		ret.AutoReload = "On"
 		ret.Notification = "None"
 		ret.ActionsRequired = "None"

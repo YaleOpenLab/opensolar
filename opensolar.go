@@ -162,7 +162,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		err = demoData()
+		//err = demoData()
 		if err != nil {
 			log.Fatal(err)
 		}

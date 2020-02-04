@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
+
+	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -72,12 +73,7 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 	}
 
 	if consts.Mainnet {
-		susdbalancex, err := xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
+		susdbalancex := xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
 		susdbalance, err := utils.ToFloat(susdbalancex)
 		if err != nil {
 			log.Println(err)
@@ -101,12 +97,7 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 			return err
 		}
 	} else {
-		usdbalancex, err := xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
+		usdbalancex := xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
 		usdbalance, err := utils.ToFloat(usdbalancex)
 		if err != nil {
 			log.Println(err)

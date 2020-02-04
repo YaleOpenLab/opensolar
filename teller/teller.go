@@ -79,6 +79,7 @@ var (
 	EnergyValue uint32
 
 	// GOOGLE MAPS VARIABLES
+
 	// Mapskey is the API key of google maps needed to store the location of the teller
 	Mapskey string
 )
@@ -171,7 +172,8 @@ func ParseConfig() error {
 	}
 
 	requiredParams := []string{"platformPublicKey", "seedpwd", "username",
-		"password", "apiurl", "mapskey", "projIndex", "assetName"}
+		"password", "apiurl", "mapskey", "projIndex", "assetName",
+		"mqttbroker", "mqttusername", "mqttpassword", "mqtttopic"}
 
 	for _, param := range requiredParams {
 		if !viper.IsSet(param) {

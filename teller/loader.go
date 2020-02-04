@@ -56,12 +56,12 @@ func StartTeller() error {
 
 	if pubkey != LocalRecipient.U.StellarWallet.PublicKey {
 		log.Println("PUBLIC KEYS DON'T MATCH, QUITTING!")
-		return errors.New("PUBLIC KEYS DON'T MATCH, QUITTING!")
+		return errors.New("public keys don't match, quitting")
 	}
 
 	if LocalProject.Stage < 4 {
 		log.Println("TRYING TO INSTALL A PROJECT THAT HASN'T BEEN FUNDED YET, QUITTING!")
-		return errors.New("TRYING TO INSTALL A PROJECT THAT HASN'T BEEN FUNDED YET, QUITTING!")
+		return errors.New("trying to install a project that hasn't been funded yet, quitting")
 	}
 
 	// check for device id and set if none is set

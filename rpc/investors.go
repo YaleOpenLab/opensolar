@@ -411,22 +411,9 @@ func invDashboard() {
 		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
 
-		ret.AccountBalance1, err = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		ret.AccountBalance2, err = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-
+		ret.AccountBalance1 = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey)
+		ret.AccountBalance2 = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey)
 		ret.NetBalance = ret.AccountBalance1 + ret.AccountBalance2
-
 		erpc.MarshalSend(w, ret)
 	})
 }

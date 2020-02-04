@@ -296,16 +296,8 @@ func (project *Project) updateAfterInvestment(invAmount float64, invIndex int, s
 		var balance1 float64
 		var balance2 float64
 
-		balance1, err = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.InvestorAssetCode)
-		if err != nil {
-			balance1 = 0
-		}
-
-		balance2, err = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.SeedAssetCode)
-		if err != nil {
-			balance2 = 0
-		}
-
+		balance1 = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.InvestorAssetCode)
+		balance2 = xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, project.SeedAssetCode)
 		balance := balance1 + balance2
 		percentageInvestment := balance / project.TotalValue
 		project.InvestorMap[investor.U.StellarWallet.PublicKey] = percentageInvestment
