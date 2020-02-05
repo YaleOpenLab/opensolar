@@ -724,14 +724,7 @@ func recpDashboard() {
 		ret.YourProjects.Bullet1 = "Bullet 1"
 		ret.YourProjects.Bullet2 = "Bullet 2"
 		ret.YourProjects.Bullet3 = "Bullet 3"
-
-		orig, err := core.RetrieveEntity(project.OriginatorIndex)
-		if err != nil {
-			log.Println(err)
-			erpc.MarshalSend(w, erpc.StatusInternalServerError)
-			return
-		}
-		ret.YourProjects.ProjectOriginator = orig.U.Name
+		ret.YourProjects.ProjectOriginator = "blah"
 		ret.YourProjects.FundedAmount = project.MoneyRaised + project.SeedMoneyRaised
 		ret.YourProjects.Total = project.TotalValue
 		ret.YourProjects.BSolar = "X kW"

@@ -2,17 +2,13 @@ package main
 
 import (
 	"log"
-	"time"
 
-	"github.com/Varunram/essentials/xlm/assets"
+	"github.com/YaleOpenLab/opensolar/stablecoin"
 
 	"github.com/Varunram/essentials/utils"
-
-	"github.com/Varunram/essentials/xlm/wallet"
-
 	"github.com/Varunram/essentials/xlm"
-
-	"github.com/Varunram/essentials/xlm/stablecoin"
+	"github.com/Varunram/essentials/xlm/assets"
+	"github.com/Varunram/essentials/xlm/wallet"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -145,7 +141,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	password := "password"
 	//pwhash := utils.SHA3hash(password)
 	seedpwd := "x"
-	exchangeAmount := 1.0
+	//exchangeAmount := 1.0
 	invAmount := 4000.0
 	run := utils.GetRandomString(5)
 
@@ -165,6 +161,18 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	err = xlm.GetXLM(inv.U.StellarWallet.PublicKey)
 	if err != nil {
 		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, invSeed, 1000000)
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -188,32 +196,12 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 		return err
 	}
 
-	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
-	if err != nil {
-		return err
-	}
-
-	err = stablecoin.Exchange(inv.U.StellarWallet.PublicKey, invSeed, exchangeAmount)
-	if err != nil {
-		log.Println("did not exchange xlm", err)
-		return err
-	}
-
-	time.Sleep(5 * time.Second)
-
 	err = core.Invest(project.Index, inv.U.Index, invAmount, invSeed)
 	if err != nil {
 		log.Println("did not invest in order", err)
 		return err
 	}
 
-	time.Sleep(10 * time.Second)
-
 	log.Println("RECIPIENT CREDS: ", recp.U.Username, recp.U.AccessToken, recp.U.Pwhash, project.Index)
-	// err = core.UnlockProject(recp.U.Username, pwhash, project.Index, seedpwd)
-	// if err != nil {
-	// 	return err
-	// }
-
 	return nil
 }

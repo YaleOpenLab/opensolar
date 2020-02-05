@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	tickers "github.com/Varunram/essentials/exchangetickers"
+
 	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
@@ -11,8 +13,8 @@ import (
 	xlm "github.com/Varunram/essentials/xlm"
 	assets "github.com/Varunram/essentials/xlm/assets"
 	issuer "github.com/Varunram/essentials/xlm/issuer"
-	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
+	stablecoin "github.com/YaleOpenLab/opensolar/stablecoin"
 
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	notif "github.com/YaleOpenLab/opensolar/notif"
@@ -31,9 +33,14 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 	}
 
 	if !consts.Mainnet {
-		err = stablecoin.OfferExchange(investor.U.StellarWallet.PublicKey, invSeed, invAmount)
-		if err != nil {
-			return errors.Wrap(err, "Unable to offer xlm to STABLEUSD excahnge for investor")
+		usdBalance := xlm.GetAssetBalance(investor.U.StellarWallet.PublicKey, "STABLEUSD")
+		if usdBalance < invAmount {
+			// need to exchange stablecoin equivalent to the difference in balance plus some change
+			amount := invAmount - usdBalance + 10
+			err = stablecoin.GetTestStablecoin(investor.U.Username, investor.U.StellarWallet.PublicKey, invSeed, amount)
+			if err != nil {
+				return errors.Wrap(err, "Unable to offer xlm to STABLEUSD excahnge for investor")
+			}
 		}
 	}
 
@@ -215,14 +222,40 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 		return -1, errors.New("amount paid is less than amount needed. Please refill your main account")
 	}
 
-	err = stablecoin.OfferExchange(recipient.U.StellarWallet.PublicKey, recipientSeed, amount)
-	if err != nil {
-		return -1, errors.Wrap(err, "Unable to offer xlm to STABLEUSD exchange for investor")
+	var StableBalance float64
+	var xlmBalance float64
+
+	if consts.Mainnet {
+		StableBalance = xlm.GetAssetBalance(recipient.U.StellarWallet.PublicKey, consts.AnchorUSDCode)
+	} else {
+		StableBalance = xlm.GetAssetBalance(recipient.U.StellarWallet.PublicKey, consts.StablecoinCode)
 	}
 
-	StableBalance := xlm.GetAssetBalance(recipient.U.StellarWallet.PublicKey, "STABLEUSD")
-	if StableBalance < amount {
+	xlmBalance = xlm.GetNativeBalance(recipient.U.StellarWallet.PublicKey)
+	xlmUSD, err := tickers.BinanceTicker()
+	if err != nil {
+		return -1, errors.Wrap(err, "unable to fetch ticker price from binance")
+	}
+
+	balance := StableBalance + xlmUSD*xlmBalance
+
+	if balance < amount {
 		return -1, errors.Wrap(err, "You do not have the required stablecoin balance, please refill")
+	}
+
+	if StableBalance < amount {
+		if consts.Mainnet {
+			return -1, errors.New("need more stablecoin, exiting")
+		} else {
+			// need to exchange some XLM for stablecoin
+			balNeeded := amount - StableBalance + 5 // 5 for change, fees, etc
+			err := stablecoin.GetTestStablecoin(recipient.U.Username, recipient.U.StellarWallet.PublicKey, recipientSeed, balNeeded)
+			if err != nil {
+				log.Println(err)
+				return -1, errors.Wrap(err, "could not exchange xlm for stablecoin")
+			}
+			time.Sleep(20 * time.Second) // wait for the stablecoin daemon to  give stablecoin
+		}
 	}
 
 	projIndexString, err := utils.ToString(projIndex)
