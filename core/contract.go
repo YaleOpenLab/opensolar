@@ -468,6 +468,7 @@ func sendRecipientAssets(projIndex int) error {
 	log.Println("successfully setup escrow")
 	project.EscrowPubkey = escrowPubkey
 	// transfer totalValue to the escrow, don't account for SeedMoneyRaised here
+	log.Println("PLATFORM PUBKEY: ", consts.PlatformPublicKey, project.TotalValue, project.Index, project.EscrowPubkey, consts.PlatformSeed)
 	err = escrow.TransferFundsToEscrow(project.TotalValue, project.Index, project.EscrowPubkey, consts.PlatformSeed)
 	if err != nil {
 		log.Println(err)

@@ -10,7 +10,6 @@ import (
 	// edb "github.com/Varunram/essentials/database"
 	utils "github.com/Varunram/essentials/utils"
 	// openxconsts "github.com/YaleOpenLab/openx/consts"
-
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )

@@ -18,7 +18,7 @@ import (
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
 	// utils "github.com/Varunram/essentials/utils"
 	//sandbox "github.com/YaleOpenLab/opensolar/sandboxv2"
-
+	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
 )
@@ -111,6 +111,9 @@ func loadOpenxConsts() error {
 	log.Println("X MAINNET: ", x.Mainnet)
 	openxconsts.DbDir = x.DbDir // for our retrieve methods
 
+	stablecoin.SetConsts("STABLEUSD", consts.StablecoinPublicKey, "seed", "seedfile", openxconsts.StablecoinTrustLimit,
+		consts.AnchorUSDCode, consts.AnchorUSDAddress, consts.AnchorUSDTrustLimit, consts.Mainnet)
+
 	return nil
 }
 
@@ -162,23 +165,14 @@ func main() {
 			log.Fatal(err)
 		}
 
-		//err = demoData()
+		err = demoData()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	/*
-		errs := make(chan error, 1)
-		go core.TrackProject(1, "localhost:1883", "test", errs)
-		err = <-errs
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
 	// rpc.KillCode = "NUKE" // compile time nuclear code
 	// run this only when you need to monitor the tellers. Not required for local testing.
-	// go core.MonitorTeller(1, "https://localhost:80")
 	fmt.Println(`
 		██████╗ ██████╗ ███████╗███╗   ██╗███████╗ ██████╗ ██╗      █████╗ ██████╗
 	 ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██╔═══██╗██║     ██╔══██╗██╔══██╗
