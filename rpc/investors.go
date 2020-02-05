@@ -11,6 +11,8 @@ import (
 	assets "github.com/Varunram/essentials/xlm/assets"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
 
+	tickers "github.com/Varunram/essentials/exchangetickers"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
@@ -413,8 +415,59 @@ func invDashboard() {
 		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
 
-		ret.AccountBalance1 = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) + xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, "STABLEUSD")
-		ret.AccountBalance2 = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) + xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, "STABLEUSD")
+		if !consts.Mainnet {
+			primNativeBalance := xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) * 10000000.0
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+
+			secNativeBalance := xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) * 10000000.0
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+
+			primUsdBalance := xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.StablecoinCode)
+			if primUsdBalance < 0 {
+				primUsdBalance = 0
+			}
+
+			secUsdBalance := xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.StablecoinCode)
+			if secUsdBalance < 0 {
+				secUsdBalance = 0
+			}
+
+			ret.AccountBalance1 = primNativeBalance + primUsdBalance
+			ret.AccountBalance2 = secNativeBalance + secUsdBalance
+		} else {
+			xlmUSD, err := tickers.BinanceTicker()
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			}
+
+			primNativeBalance := xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) * xlmUSD
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+
+			secNativeBalance := xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) * xlmUSD
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+
+			primUsdBalance := xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.AnchorUSDCode)
+			if primUsdBalance < 0 {
+				primUsdBalance = 0
+			}
+
+			secUsdBalance := xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.AnchorUSDCode)
+			if secUsdBalance < 0 {
+				secUsdBalance = 0
+			}
+
+			ret.AccountBalance1 = primNativeBalance + primUsdBalance
+			ret.AccountBalance2 = secNativeBalance + secUsdBalance
+		}
 
 		if ret.AccountBalance2 < 0 {
 			ret.AccountBalance2 = 0
