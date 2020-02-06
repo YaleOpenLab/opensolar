@@ -156,6 +156,7 @@ type Project struct {
 	// Metadata contains other metadata and is used to derive project asset ids.
 	Metadata string
 
+	Content CMS
 	// below are all the non critical params only used on the frontend
 	Name                          string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
 	City                          string    `json:"City"`                 // the city in which the project is located at
@@ -211,6 +212,110 @@ type Project struct {
 	Maturity           string  `json:"Maturity"`
 	Acquisition        string  `json:"Acquisition"`
 	AmountFunded       float64 `json:"Amount Funded"`
+}
+
+// CMS handles all the content related stuff wrt a project
+type CMS struct {
+	DetailPageStub struct {
+		Box struct {
+			StageDescription string
+			Name             string
+			Location         string
+			ProjectType      string
+			OriginatorName   string
+			BriefDescription string
+			Bullet1          string
+			Bullet2          string
+			Bullet3          string
+			Solar            string
+			Battery          string
+			Return           string
+			Rating           string
+			Maturity         string
+			MoneyRaised      float64
+			TotalValue       float64
+		}
+		Tabs struct {
+			Terms struct {
+				Purpose string
+				Table   struct {
+					Columns []string
+					Rows    [][]string
+				}
+				SecurityNote string
+			} `json:"Terms"`
+			Overview struct {
+				ExecutiveSummary struct {
+					Columns    []string
+					ColumnData []map[string]string
+				} `json:"ExecutiveSummary"`
+				ImageLink   string
+				Opportunity struct {
+					Description string
+					PilotGoals  []string
+					Images      []string
+				}
+				Context string
+			} `json:"Overview"`
+			Project struct {
+				Architecture struct {
+					MapLayoutImage    string `json:"Map Layout"`
+					SolarOutputImage  string `json:"Solar Output"`
+					DesignDescription string `json:"Design Description"`
+					Description       string
+				} `json:"Architecture / Project Design"`
+				Layout struct {
+					InstallationArchetype string `json:"Installation Archetype"`
+					ITInfrastructure      string `json:"IT Infrastructure"`
+					HighlightedProduct    struct {
+						Description string
+						Images      []string
+					} `json:"Highlighted Product"`
+					Description string
+				} `json:"Engineering / Solar Layout"`
+				CommunityEngagement struct {
+					Columns     []string
+					ColumnData  []ColumnDataStruct
+					Description string
+				} `json:"Community Engagement"`
+				BizNumbers struct {
+					Description             string
+					GeneralPaymentLogic     string `json:"General Payment Logic"`
+					CapitalExpenditure      string `json:"Capital Expenditure"`
+					CapitalExpenditureImage string
+					ProjectRevenue          string   `json:"Project Revenue"`
+					ProjectExpenses         string   `json:"Project Expenses"`
+					NonProfit               string   `json:"Non-profit"`
+					OtherLinks              []string `json:"OtherLinks"`
+				}
+			}
+			StageForecast struct {
+				DevelopmentStage struct {
+					Image            string
+					StageTitle       string
+					StageDescription string
+					OhterLinks       []string
+				} `json:"Development Stage"`
+				SolarStage struct {
+				} `json:"Solar/Financial State & Forecast"`
+			} `json:"Stage & Forecast"`
+			Documents struct {
+				Description    string
+				LegalContracts struct {
+					Image       string
+					Title       string
+					Description string
+				}
+				SmartContractsImage string
+				SCReviewDescription string
+			} `json:"Documents & Contracts"`
+		}
+	}
+}
+
+type ColumnDataStruct struct {
+	Image       string
+	Description string
 }
 
 // Feedback defines a structure that is used for providing feedback
