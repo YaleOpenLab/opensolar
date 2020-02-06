@@ -413,106 +413,6 @@ func explore() {
 	})
 }
 
-// DetailPageStub is the stub used on the project details page
-type DetailPageStub struct {
-	Box struct {
-		StageDescription string
-		Name             string
-		Location         string
-		ProjectType      string
-		OriginatorName   string
-		BriefDescription string
-		Bullet1          string
-		Bullet2          string
-		Bullet3          string
-		Solar            string
-		Battery          string
-		Return           string
-		Rating           string
-		Maturity         string
-		MoneyRaised      float64
-		TotalValue       float64
-	}
-	Tabs struct {
-		Terms struct {
-			Purpose string
-			Table   struct {
-				Columns []string
-				Rows    [][]string
-			}
-			SecurityNote string
-		} `json:"Terms"`
-		Overview struct {
-			ExecutiveSummary struct {
-				Columns    []string
-				ColumnData []map[string]string
-			} `json:"ExecutiveSummary"`
-			ImageLink   string
-			Opportunity struct {
-				Description string
-				PilotGoals  []string
-				Images      []string
-			}
-			Context string
-		} `json:"Overview"`
-		Project struct {
-			Architecture struct {
-				MapLayoutImage    string `json:"Map Layout"`
-				SolarOutputImage  string `json:"Solar Output"`
-				DesignDescription string `json:"Design Description"`
-				Description       string
-			} `json:"Architecture / Project Design"`
-			Layout struct {
-				InstallationArchetype string `json:"Installation Archetype"`
-				ITInfrastructure      string `json:"IT Infrastructure"`
-				HighlightedProduct    struct {
-					Description string
-					Images      []string
-				} `json:"Highlighted Product"`
-				Description string
-			} `json:"Engineering / Solar Layout"`
-			CommunityEngagement struct {
-				Columns    []string
-				ColumnData struct {
-					Image       string
-					Description string
-				}
-				Description string
-			} `json:"Community Engagement"`
-			BizNumbers struct {
-				Description             string
-				GeneralPaymentLogic     string `json:"General Payment Logic"`
-				CapitalExpenditure      string `json:"Capital Expenditure"`
-				CapitalExpenditureImage string
-				ProjectRevenue          string   `json:"Project Revenue"`
-				ProjectExpenses         string   `json:"Project Expenses"`
-				NonProfit               string   `json:"Non-profit"`
-				OtherLinks              []string `json:"OtherLinks"`
-			}
-		}
-		StageForecast struct {
-			DevelopmentStage struct {
-				Image            string
-				StageTitle       string
-				StageDescription string
-				OhterLinks       []string
-			} `json:"Development Stage"`
-			SolarStage struct {
-			} `json:"Solar/Financial State & Forecast"`
-		} `json:"Stage & Forecast"`
-		Documents struct {
-			Description    string
-			LegalContracts struct {
-				Image       string
-				Title       string
-				Description string
-			}
-			SmartContractsImage string
-			SCReviewDescription string
-		} `json:"Documents & Contracts"`
-	}
-}
-
 // projectDetail is an endpoint that fetches all the details needed on the frontend
 func projectDetail() {
 	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
@@ -542,5 +442,6 @@ func projectDetail() {
 			return
 		}
 
+		erpc.MarshalSend(w, project.Content.DetailPageStub)
 	})
 }

@@ -227,7 +227,7 @@ type CMS struct {
 			Overview struct {
 				ExecutiveSummary struct {
 					Columns    []string
-					ColumnData []map[string]string
+					ColumnData map[string][]string
 				} `json:"ExecutiveSummary"`
 				ImageLink   string
 				Opportunity struct {
@@ -255,7 +255,7 @@ type CMS struct {
 				} `json:"Engineering / Solar Layout"`
 				CommunityEngagement struct {
 					Columns     []string
-					ColumnData  []ColumnDataStruct
+					ColumnData  [][]string
 					Description string
 				} `json:"Community Engagement"`
 				BizNumbers struct {
@@ -274,7 +274,7 @@ type CMS struct {
 					Image            string
 					StageTitle       string
 					StageDescription string
-					OhterLink        string
+					OtherLink        string
 				} `json:"Development Stage"`
 				SolarStage struct {
 				} `json:"Solar/Financial State & Forecast"`
@@ -291,11 +291,6 @@ type CMS struct {
 			} `json:"Documents & Contracts"`
 		}
 	}
-}
-
-type ColumnDataStruct struct {
-	Image       string
-	Description string
 }
 
 // Feedback defines a structure that is used for providing feedback
