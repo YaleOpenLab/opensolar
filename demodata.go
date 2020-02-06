@@ -124,92 +124,52 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Images[0] = ""
 	project.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Images[1] = ""
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Columns = []string{"Consultation", "Participation", "Outreach", "Governance"}
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData = make(core.ColumnDataStruct, 4)
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[0].Image = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[0].Description = "The MIT and Yale team will convene meetings with the FabIDEAS cooperative board to discuss project details and outreach opportunities. The team has already convened a meeting with the Parent-Teacher Organisation of the SU Pasto school, thanks to the coordination of the school’s principal Janice Alejandro, to discuss the role of new finance mechanisms for solar in the local community. Over 50 members of the community gathered to discuss the project, with unanimous approval and significant interest for its replication."
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.Columns = []string{"Consultation", "Participation", "Outreach", "Governance"}
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData = make(core.ColumnDataStruct, 4)
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[0].Image = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[0].Description = "The MIT and Yale team will convene meetings with the FabIDEAS cooperative board to discuss project details and outreach opportunities. The team has already convened a meeting with the Parent-Teacher Organisation of the SU Pasto school, thanks to the coordination of the school’s principal Janice Alejandro, to discuss the role of new finance mechanisms for solar in the local community. Over 50 members of the community gathered to discuss the project, with unanimous approval and significant interest for its replication."
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[1].Image = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[1].Description = "The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required."
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[1].Image = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[1].Description = "The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required."
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[2].Image = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[2].Description = "The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community."
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[2].Image = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[2].Description = "The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community."
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[3].Image = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.ColumnData[3].Description = "The board of the Cooperative and its acting President Maria Pastor will convene bi yearly meeting with the Yale-MIT team (i.e. the originators) to review processes and performance of the solar system and the smart contract."
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[3].Image = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[3].Description = "The board of the Cooperative and its acting President Maria Pastor will convene bi yearly meeting with the Yale-MIT team (i.e. the originators) to review processes and performance of the solar system and the smart contract."
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Columns[0] = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Columns[1] = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Columns[2] = ""
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Columns[3] = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.Columns[0] = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.Columns[1] = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.Columns[2] = ""
+	project.DetailPageStub.Tabs.Project.CommunityEngagement.Columns[3] = ""
 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.Description = 
-	project.DetailPageStub.Tabs.Project.Layout.CommunityEngagement.
+	project.DetailPageStub.Tabs.Project.BizNumbers.Description = "The system will be funded by an in-kind donation of inverSOL, providing the solar hardware, and a grant from the Digital Currency Initiative at MIT to cover labor and other service costs. inverSOL’s donation involves the $9000 for 5kW system with issued by the PR Department of Education covered the principle cost, used for labor and materials. The PPA revenue accrues to pay coupons and mature the bond."
+	project.DetailPageStub.Tabs.Project.BizNumbers.GeneralPaymentLogic = ""
+	project.DetailPageStub.Tabs.Project.BizNumbers.CapitalExpenditure = "The expected capital cost of the project is $13000, including the U$S 9000 product value of a 5kW solar array with a Lumen unity (donated by inverSOL), $3000 of labor costs and $1000 for contingency and other services (covered by the DCI grant)."
+	project.DetailPageStub.Tabs.Project.BizNumbers.CapitalExpenditureImage = ""
+	project.DetailPageStub.Tabs.Project.BizNumbers.ProjectRevenue = "The FabIDEAS cooperative will pay for the solar electricity generated at a standard $/kWh local tariff using an Open Solar platform wallet. Once accumulated payments reach $4000 (stored in the project’s smart contract escrow), these will be released back to the FabIDEAS coop wallet to be used for reinvesting in the fab lab."
+	project.DetailPageStub.Tabs.Project.BizNumbers.ProjectExpenses = "The project has an O&M (Operation & Management) contingency fund of $1000, but will otherwise will be covered by inverSOL’s guarantee for 5 years. After this period, the cooperative will be responsible for O&M."
+	project.DetailPageStub.Tabs.Project.BizNumbers.NonProfit = "No net-income or profits will be generated by this project."
 
-	project.DetailPageStub.Tabs.StageForecast
-	project.DetailPageStub.Tabs.Documents
-	
-				Project struct {
-				Layout struct {
-					InstallationArchetype string `json:"Installation Archetype"`
-					ITInfrastructure      string `json:"IT Infrastructure"`
-					HighlightedProduct    struct {
-						Description string
-						Images      []string
-					} `json:"Highlighted Product"`
-					Description string
-				} `json:"Engineering / Solar Layout"`
-				CommunityEngagement struct {
-					Columns    []string
-					ColumnData []struct {
-						Image       string
-						Description string
-					}
-					Description string
-				} `json:"Community Engagement"`
-				BizNumbers struct {
-					Description             string
-					GeneralPaymentLogic     string `json:"General Payment Logic"`
-					CapitalExpenditure      string `json:"Capital Expenditure"`
-					CapitalExpenditureImage string
-					ProjectRevenue          string   `json:"Project Revenue"`
-					ProjectExpenses         string   `json:"Project Expenses"`
-					NonProfit               string   `json:"Non-profit"`
-					OtherLinks              []string `json:"OtherLinks"`
-				}
-			}
+	// project.DetailPageStub.Tabs.StageForecast
+	project.DetailPageStub.Tabs.StageForecast.DevelopmentStage.Image = ""
+	project.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageTitle = "Construction"
+	project.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageDescription = "The project is in the contract development and signing stage. In this stage, the power purchase agreement and general financial variables behind the Open Solar platform’s smart contract are carefully negotiated, drafted and signed by all relevant parties. Full funding of the project is not available."
+	project.DetailPageStub.Tabs.StageForecast.DevelopmentStage.OtherLink = ""
 
+	// project.DetailPageStub.Tabs.StageForecast.SolarStage
+	// project.DetailPageStub.Tabs.Documents
+	project.DetailPageStub.Tabs.Documents.Description = ""
+	project.DetailPageStub.Tabs.Documents.LegalContracts.Image = ""
+	project.DetailPageStub.Tabs.Documents.LegalContracts.Title = ""
+	project.DetailPageStub.Tabs.Documents.LegalContracts.Description = ""
+	project.DetailPageStub.Tabs.Documents.SmartContractsImage = ""
+	project.DetailPageStub.Tabs.Documents.SCReviewDescription = ""
+
+	// end of detail stub
 	project.PanelSize = "50 x 100W"
 	project.DailyAvgGeneration = "20 kWh"
 	project.InverterSize = "4800W"
-	project.Description = "5kW solar to be owned by the FabIDEAS Community Cooperative in Aibonito. The Coop is part of the Instituto Nueva Escuela (INE), and will host a Fab Lab manufacturing montessori school supplies."
-	project.PilotGoals = append(project.PilotGoals, "Demonstrate contractual automation and disintermediation of renewable energy project finance using blockchain-based smart contracts, as featured in the OpenSolar platform")
-	project.PilotGoals = append(project.PilotGoals, "Demonstrate alternative finance schemes with pay-to-own models for community ownership of solar assets.")
-	project.PilotGoals = append(project.PilotGoals, "Demonstrate the integration between data from internet-of-things (IoT) devices into payment schemes and climate asset tokenization (Renewable Energy Certificates).")
-	project.PilotGoals = append(project.PilotGoals, "Stress test all features in the OpenSolar platforms, including user experiences, fiat on and offramps and smart contracts.")
-	project.PilotGoals = append(project.PilotGoals, "Provide a blueprint for a finance plan to transform all of Puerto Rico’s public schools into solar powered emergency shelters.")
-	project.Context = `Two years after hurricane Maria hit the island, schools and local communities are still exposed to a centralized and high-carbon energy system vulnerable to climate impacts. The 2020 Earthquake left ⅓ of the island without power. Cooperatives and schools like FabIDEAS and SU Pasto are ideal places for community owned microgrids to be deployed, in order to provide greater power resilience and usher in a new energy economy to Puerto Rico. Since Hurricane Maria, community cooperatives have become nodal points facilitating discussions of concerned parents on how to increase climate & social resilience in the whole community.
-
-The Puerto Rican (PR) government and the department of education are working to appoint schools as emergency shelters —nodes with robust energy and communication systems— for the community to reach out in the event of unavoidable climate shocks. Financing is a key gap. This project acts as a pilot finance mechanism that can help bridge the finance gap to make solar powered schools and community centers more affordable.`
-
-	project.ArchitectureDesignDescription = "The solar installation will be a behind-the-meter backup setup, to avoid net metering with PREPA’s grid. Future expansion deployments could consider a grid-tied two-way system. The 5kW solar photovoltaics will be installed on the FabIDEAS main building’s roof and connected to the inverSOL’s Lumen unit equipped with a 5kWh battery, a 5kW inverter, a charge regulator and internet-of-things (IoT) functionality."
-	project.InstallationArchetype = "This will be a model installation in that the solar and battery support a subpanel of the building circuitry, where only critical loads have been connected. Large manufacturing machinery will not be connected to the subpanel. The system will be configured as a grid-tied installation, in that the main grid can also support other loads in the panel as well as be used to power the battery bank. The installation allows for the interconnection of an emergency generator if needed."
-	project.ITInfrastructure = "Main power data readings will come directly from the Lumen all-in-one powermeter unit, transmitting secure data via MQTT protocol. A second revenue-grade meter with IoT pre-pay functionality will be added for further testing integrations. IoT readings from the Lumen system will be used in a smart contract oracle to verify & validate readings for payment and REC generation. A whole building non-invasive powermeter is also contemplated to critical vs. general loads."
-	project.HighlightedProduct = `
-		inverSOL Lumen:
-Lumen by inverSOL is a smart renewable energy system for the home providing greater energy independence and backup power. Lithium NMC (LiNMC ) batteries used in Lumen are validated and produced with uncompromised safety and quality control. Wireless connectivity and computing platform allow for remote control through an app, software upgrades and smart energy management features. 
-
-The Lumen smart features minimize wasted solar power and reduce energy bills, eliminating the need for net metering. The proprietary algorithm built in the Lumen brain ensures solar energy is used even when there is no Sun. Enhanced user experience through an interactive touchscreen and remote control through a mobile app allow to track energy usage and savings. New features available with software updates. Robust and sleek design make Lumen a seamless fit for any interior. Touchscreen and Interactive Design ensure enhanced user experience.
-		`
-	project.CommunityEngagement.Consultation = "The MIT and Yale team will convene meetings with the FabIDEAS cooperative board to discuss project details and outreach opportunities. The team has already convened a meeting with the Parent-Teacher Organisation of the SU Pasto school, thanks to the coordination of the school’s principal Janice Alejandro, to discuss the role of new finance mechanisms for solar in the local community. Over 50 members of the community gathered to discuss the project, with unanimous approval and significant interest for its replication."
-	project.CommunityEngagement.Participation = "The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required. "
-	project.CommunityEngagement.Outreach = "The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community. "
-	project.CommunityEngagement.Governance = "The board of the Cooperative and its acting President Maria Pastor will convene bi yearly meeting with the Yale-MIT team (i.e. the originators) to review processes and performance of the solar system and the smart contract."
-	project.BusinessNumbers.Description = "The system will be funded by an in-kind donation of inverSOL, providing the solar hardware, and a grant from the Digital Currency Initiative at MIT to cover labor and other service costs. inverSOL’s donation involves the $9000 for 5kW system with  issued by the PR Department of Education covered the principle cost, used for labor and materials. The PPA revenue accrues to pay coupons and mature the bond. The MIT is registered as a first-loss guarantor."
-	project.BusinessNumbers.CapitalExpenditure = "The expected capital cost of the project is $13000, including the U$S 9000 product value of a 5kW solar array with a Lumen unity (donated by inverSOL), $3000 of labor costs and $1000 for contingency and other services (covered by the DCI grant)."
-	project.BusinessNumbers.ProjectRevenue = "The FabIDEAS cooperative will pay for the solar electricity generated at a standard $/kWh local tariff using an Open Solar platform wallet. Once accumulated payments reach $4000 (stored in the project’s smart contract escrow), these will be released back to the FabIDEAS coop wallet to be used for reinvesting in the fab lab. "
-	project.BusinessNumbers.ProjectExpenses = "The project has an O&M (Operation & Management) contingency fund of $1000, but will otherwise will be covered by inverSOL’s guarantee for 5 years. After this period, the cooperative will be responsible for O&M. "
-	project.BusinessNumbers.NonProfit = "No net-income or profits will be generated by this project. "
 	project.Maturity = "2021"
 
 	/*
