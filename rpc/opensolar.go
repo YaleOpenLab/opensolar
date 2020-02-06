@@ -21,6 +21,7 @@ func setupProjectRPCs() {
 	sendTellerShutdownEmail()
 	sendTellerFailedPaybackEmail()
 	explore()
+	projectDetail()
 }
 
 // ProjectRPC contains a list of all the project related RPC endpoints
@@ -415,7 +416,7 @@ func explore() {
 
 // projectDetail is an endpoint that fetches all the details needed on the frontend
 func projectDetail() {
-	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(ProjectRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)

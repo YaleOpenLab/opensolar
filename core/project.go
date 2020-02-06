@@ -213,8 +213,7 @@ type CMS struct {
 			} `json:"Terms"`
 			Overview struct {
 				ExecutiveSummary struct {
-					Columns    []string
-					ColumnData map[string]map[string]string
+					Columns map[string]map[string]string
 				} `json:"ExecutiveSummary"`
 				ImageLink   string
 				Opportunity struct {
@@ -241,8 +240,7 @@ type CMS struct {
 					Description string
 				} `json:"Engineering / Solar Layout"`
 				CommunityEngagement struct {
-					Columns     []string
-					ColumnData  [][]string
+					Columns     map[string][]string
 					Description string
 				} `json:"Community Engagement"`
 				BizNumbers struct {
@@ -250,10 +248,10 @@ type CMS struct {
 					GeneralPaymentLogic     string `json:"General Payment Logic"`
 					CapitalExpenditure      string `json:"Capital Expenditure"`
 					CapitalExpenditureImage string
-					ProjectRevenue          string   `json:"Project Revenue"`
-					ProjectExpenses         string   `json:"Project Expenses"`
-					NonProfit               string   `json:"Non-profit"`
-					OtherLinks              []string `json:"OtherLinks"`
+					ProjectRevenue          string `json:"Project Revenue"`
+					ProjectExpenses         string `json:"Project Expenses"`
+					NonProfit               string `json:"Non-profit"`
+					OtherLinks              string `json:"OtherLinks"`
 				}
 			}
 			StageForecast struct {
