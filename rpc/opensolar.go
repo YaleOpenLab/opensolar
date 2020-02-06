@@ -20,17 +20,21 @@ func setupProjectRPCs() {
 	addContractHash()
 	sendTellerShutdownEmail()
 	sendTellerFailedPaybackEmail()
+	explore()
 }
 
+// ProjectRPC contains a list of all the project related RPC endpoints
 var ProjectRPC = map[int][]string{
-	1: []string{"/project/insert", "POST", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
-	2: []string{"/project/all", "GET"},                                                                 // GET
-	3: []string{"/project/get", "GET", "index"},                                                        // GET
-	4: []string{"/projects", "GET", "stage"},                                                           // GET
-	5: []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
-	6: []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
-	7: []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
-	8: []string{"/project/get/dashboard", "GET", "index"},                                              // GET
+	1:  []string{"/project/insert", "POST", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
+	2:  []string{"/project/all", "GET"},                                                                 // GET
+	3:  []string{"/project/get", "GET", "index"},                                                        // GET
+	4:  []string{"/projects", "GET", "stage"},                                                           // GET
+	5:  []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
+	6:  []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
+	7:  []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
+	8:  []string{"/project/get/dashboard", "GET", "index"},                                              // GET
+	9:  []string{"/explore", "GET"},                                                                     // GET
+	10: []string{"/project/detail", "GET", "index"},                                                     // GET
 }
 
 // insertProject inserts a project into the database.
@@ -329,5 +333,214 @@ func getProjectDashboard() {
 		}
 
 		erpc.MarshalSend(w, project)
+	})
+}
+
+// ExplorePageStub is used to show brief descriptions of the project on an explore page
+type ExplorePageStub struct {
+	StageDescription string
+	Name             string
+	Location         string
+	ProjectType      string
+	OriginatorName   string
+	BriefDescription string
+	Bullet1          string
+	Bullet2          string
+	Bullet3          string
+	Solar            string
+	Storage          string
+	Tariff           string
+	Stage            int
+	Return           string
+	Rating           string
+	Tax              string
+	Acquisition      string
+	Raised           float64
+	Total            float64
+	Backers          int
+}
+
+// explore is the endpoint called on the frontend to show a comprehensive description of all the project on the platform
+func explore() {
+	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		allProjects, err := core.RetrieveAllProjects()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		var arr []ExplorePageStub
+		for _, project := range allProjects {
+			var x ExplorePageStub
+			stageString, err := utils.ToString(project.Stage)
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
+			x.Name = project.Name
+			x.Location = project.Location
+			x.ProjectType = project.DonationType
+			x.OriginatorName = project.Originator
+			x.BriefDescription = project.BriefDescription
+			x.Bullet1 = project.Bullet1
+			x.Bullet2 = project.Bullet2
+			x.Bullet3 = project.Bullet3
+			x.Solar = project.Solar
+			x.Storage = project.Storage
+			x.Tariff = project.Tariff
+			x.Stage = project.Stage
+			x.Return = project.Return
+			x.Rating = project.Rating
+			x.Tax = project.Tax
+			x.Acquisition = project.Acquisition
+			x.Raised = project.MoneyRaised
+			x.Total = project.TotalValue
+			x.Backers = len(project.InvestorMap)
+			arr = append(arr, x)
+		}
+
+		erpc.MarshalSend(w, arr)
+		// need to compile a structure of the things required
+	})
+}
+
+// DetailPageStub is the stub used on the project details page
+type DetailPageStub struct {
+	Box struct {
+		StageDescription string
+		Name             string
+		Location         string
+		ProjectType      string
+		OriginatorName   string
+		BriefDescription string
+		Bullet1          string
+		Bullet2          string
+		Bullet3          string
+		Solar            string
+		Battery          string
+		Return           string
+		Rating           string
+		Maturity         string
+		MoneyRaised      float64
+		TotalValue       float64
+	}
+	Tabs struct {
+		Terms struct {
+			Purpose string
+			Table   struct {
+				Columns []string
+				Rows    [][]string
+			}
+			SecurityNote string
+		} `json:"Terms"`
+		Overview struct {
+			ExecutiveSummary struct {
+				Columns    []string
+				ColumnData []map[string]string
+			} `json:"ExecutiveSummary"`
+			ImageLink   string
+			Opportunity struct {
+				Description string
+				PilotGoals  []string
+				Images      []string
+			}
+			Context string
+		} `json:"Overview"`
+		Project struct {
+			Architecture struct {
+				MapLayoutImage    string `json:"Map Layout"`
+				SolarOutputImage  string `json:"Solar Output"`
+				DesignDescription string `json:"Design Description"`
+				Description       string
+			} `json:"Architecture / Project Design"`
+			Layout struct {
+				InstallationArchetype string `json:"Installation Archetype"`
+				ITInfrastructure      string `json:"IT Infrastructure"`
+				HighlightedProduct    struct {
+					Description string
+					Images      []string
+				} `json:"Highlighted Product"`
+				Description string
+			} `json:"Engineering / Solar Layout"`
+			CommunityEngagement struct {
+				Columns    []string
+				ColumnData struct {
+					Image       string
+					Description string
+				}
+				Description string
+			} `json:"Community Engagement"`
+			BizNumbers struct {
+				Description             string
+				GeneralPaymentLogic     string `json:"General Payment Logic"`
+				CapitalExpenditure      string `json:"Capital Expenditure"`
+				CapitalExpenditureImage string
+				ProjectRevenue          string   `json:"Project Revenue"`
+				ProjectExpenses         string   `json:"Project Expenses"`
+				NonProfit               string   `json:"Non-profit"`
+				OtherLinks              []string `json:"OtherLinks"`
+			}
+		}
+		StageForecast struct {
+			DevelopmentStage struct {
+				Image            string
+				StageTitle       string
+				StageDescription string
+				OhterLinks       []string
+			} `json:"Development Stage"`
+			SolarStage struct {
+			} `json:"Solar/Financial State & Forecast"`
+		} `json:"Stage & Forecast"`
+		Documents struct {
+			Description    string
+			LegalContracts struct {
+				Image       string
+				Title       string
+				Description string
+			}
+			SmartContractsImage string
+			SCReviewDescription string
+		} `json:"Documents & Contracts"`
+	}
+}
+
+// projectDetail is an endpoint that fetches all the details needed on the frontend
+func projectDetail() {
+	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		if r.URL.Query()["index"] == nil {
+			log.Println("project index not passed")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		index, err := utils.ToInt(r.URL.Query()["index"][0])
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		project, err := core.RetrieveProject(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
 	})
 }

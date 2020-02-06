@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/pkg/errors"
 	"log"
+
+	"github.com/pkg/errors"
 )
 
 // StageXtoY promtoes a contract's stage by one
@@ -96,6 +97,32 @@ var Stage0 = Stage{
 	StateTrigger: []string{
 		"Matching of originator with receiver, and mutual approval/intention of interest.",
 	},
+}
+
+// GetStageDescription gets the description of a particular stage
+func GetStageDescription(stage int) string {
+	switch stage {
+	case 1:
+		return Stage1.Name
+	case 2:
+		return Stage2.Name
+	case 3:
+		return Stage3.Name
+	case 4:
+		return Stage4.Name
+	case 5:
+		return Stage5.Name
+	case 6:
+		return Stage6.Name
+	case 7:
+		return Stage7.Name
+	case 8:
+		return Stage8.Name
+	case 9:
+		return Stage9.Name
+	default:
+		return "Invalid Stage"
+	}
 }
 
 // Stage1 is the engagement stage

@@ -174,6 +174,7 @@ type Project struct {
 	Location                      string    `json:"Location"`
 	DonationType                  string    `json:"Donation Type"`
 	Originator                    string    `json:"Originator"`
+	BriefDescription              string    `json:"Brief Description"`
 	Description                   string    `json:"Description"`
 	Bullet1                       string    `json:"Bullet1"`
 	Bullet2                       string    `json:"Bullet2"`
