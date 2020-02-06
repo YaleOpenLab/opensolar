@@ -156,60 +156,126 @@ type Project struct {
 	// Metadata contains other metadata and is used to derive project asset ids.
 	Metadata string
 
+	// InterestRate is the rate of return for investors
+	InterestRate float64 `json:"Interest Rate"`
+
+	// Content contains the bulk of the non smart contract data
+	Content CMS
 	// below are all the non critical params only used on the frontend
-	Name                          string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
-	City                          string    `json:"City"`                 // the city in which the project is located at
-	State                         string    `json:"State"`                // the state in which the project has been installed in
-	Country                       string    `json:"Country"`              // the country in which the project has been installed in
-	PanelSize                     string    `json:"Panel Size"`           // size of the given panel, for diplsaying to the user who wants to bid stuff
-	Image                         string    `json:"Image"`                // a URL to an image of the project that will be displayed on the frontendf
-	InterestRate                  float64   `json:"Interest Rate"`        // the rate of return for investors
-	ProposedInvestmentCap         float64   `json:"Investment Cap"`       // the max amount that an investor can invest in when the project is in its proposed stage (stage 2)
-	SelfFund                      float64   `json:"Amount Self Funded"`   // the amount that a beneficiary / recipient puts in a project without asking from other investors. This is not included as a seed investment because this would mean the recipient pays his own investment back in the project
-	MainDeveloperIndex            int       `json:"Main Developer Index"` // the main developer of the project
-	DeveloperIndices              []int     `json:"Developer Indices"`    // the indices of the developers involved in the project`
-	ContractorFee                 float64   `json:"Contractor Fee"`       // fee paid to the contractor from the total fee of the project
-	OriginatorFee                 float64   `json:"Originator Fee"`       // fee paid to the originator included in the total value of the project
-	DeveloperFee                  []float64 `json:"Developer Fee"`        // the fees charged by the developers
-	Location                      string    `json:"Location"`
-	DonationType                  string    `json:"Donation Type"`
-	Originator                    string    `json:"Originator"`
-	Description                   string    `json:"Description"`
-	Bullet1                       string    `json:"Bullet1"`
-	Bullet2                       string    `json:"Bullet2"`
-	Bullet3                       string    `json:"Bullet3"`
-	Solar                         string    `json:"Solar"`
-	InverterSize                  string    `json:"Inverter Size"`
-	Battery                       string    `json:"Battery"`
-	Storage                       string    `json:"Storage"`
-	Tariff                        string    `json:"Tariff"`
-	Return                        string    `json:"Return"`
-	Rating                        string    `json:"Rating"`
-	PilotGoals                    []string  `json:"Pilot Goals"`
-	Context                       string    `json:"Context"`
-	OpportunityDescription        string    `json:"Opportunity Description"`
-	ArchitectureDesignDescription string    `json:"Architecture Design Description"`
-	InstallationArchetype         string    `json:"Installation Archetype"`
-	ITInfrastructure              string    `json:"IT Infrastructure"`
-	HighlightedProduct            string    `json:"Highlighted Product"`
-	CommunityEngagement           struct {
-		Consultation  string
-		Participation string
-		Outreach      string
-		Governance    string
+	Name               string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
+	City               string    `json:"City"`                 // the city in which the project is located at
+	State              string    `json:"State"`                // the state in which the project has been installed in
+	Country            string    `json:"Country"`              // the country in which the project has been installed in
+	SelfFund           float64   `json:"Amount Self Funded"`   // the amount that a beneficiary / recipient puts in a project without asking from other investors. This is not included as a seed investment because this would mean the recipient pays his own investment back in the project
+	MainDeveloperIndex int       `json:"Main Developer Index"` // the main developer of the project
+	DeveloperIndices   []int     `json:"Developer Indices"`    // the indices of the developers involved in the project`
+	ContractorFee      float64   `json:"Contractor Fee"`       // fee paid to the contractor from the total fee of the project
+	OriginatorFee      float64   `json:"Originator Fee"`       // fee paid to the originator included in the total value of the project
+	DeveloperFee       []float64 `json:"Developer Fee"`        // the fees charged by the developers
+	Acquisition        string    `json:"Acquisition"`
+}
+
+// CMS handles all the content related stuff wrt a project
+type CMS struct {
+	OtherDetails struct {
+		Tax       string
+		Storage   string
+		Tariff    string
+		PanelSize string `json:"Panel Size"` // size of the given panel, for diplsaying to the user who wants to bid stuff
 	}
-	BusinessNumbers struct {
-		Description        string
-		CapitalExpenditure string `json:"Capital Expenditure"`
-		ProjectRevenue     string `json:"Project Revenue"`
-		ProjectExpenses    string `json:"Project Expenses"`
-		NonProfit          string `json:"Non-profit"`
+	DetailPageStub struct {
+		Box struct {
+			StageDescription string
+			Name             string
+			Location         string
+			ProjectType      string
+			OriginatorName   string
+			Description      string
+			Bullet1          string
+			Bullet2          string
+			Bullet3          string
+			Solar            string
+			Battery          string
+			Return           string
+			Rating           string
+			Maturity         string
+			MoneyRaised      float64
+			TotalValue       float64
+		}
+		Tabs struct {
+			Terms struct {
+				Purpose string
+				Table   struct {
+					Columns []string
+					Rows    [][]string
+				}
+				SecurityNote string
+			} `json:"Terms"`
+			Overview struct {
+				ExecutiveSummary struct {
+					Columns map[string]map[string]string
+				} `json:"ExecutiveSummary"`
+				ImageLink   string
+				Opportunity struct {
+					Description string
+					PilotGoals  []string
+					Images      []string
+				}
+				Context string
+			} `json:"Overview"`
+			Project struct {
+				Architecture struct {
+					MapLayoutImage    string `json:"Map Layout"`
+					SolarOutputImage  string `json:"Solar Output"`
+					DesignDescription string `json:"Design Description"`
+					Description       string
+				} `json:"Architecture / Project Design"`
+				Layout struct {
+					InstallationArchetype string `json:"Installation Archetype"`
+					ITInfrastructure      string `json:"IT Infrastructure"`
+					HighlightedProduct    struct {
+						Description string
+						Images      []string
+					} `json:"Highlighted Product"`
+					Description string
+				} `json:"Engineering / Solar Layout"`
+				CommunityEngagement struct {
+					Columns     map[string][]string
+					Description string
+				} `json:"Community Engagement"`
+				BizNumbers struct {
+					Description             string
+					GeneralPaymentLogic     string `json:"General Payment Logic"`
+					CapitalExpenditure      string `json:"Capital Expenditure"`
+					CapitalExpenditureImage string
+					ProjectRevenue          string `json:"Project Revenue"`
+					ProjectExpenses         string `json:"Project Expenses"`
+					NonProfit               string `json:"Non-profit"`
+					OtherLinks              string `json:"OtherLinks"`
+				}
+			}
+			StageForecast struct {
+				DevelopmentStage struct {
+					Image            string
+					StageTitle       string
+					StageDescription string
+					OtherLink        string
+				} `json:"Development Stage"`
+				SolarStage struct {
+				} `json:"Solar/Financial State & Forecast"`
+			} `json:"Stage & Forecast"`
+			Documents struct {
+				Description    string
+				LegalContracts struct {
+					Image       string
+					Title       string
+					Description string
+				}
+				SmartContractsImage string
+				SCReviewDescription string
+			} `json:"Documents & Contracts"`
+		}
 	}
-	Tax                string  `json:"Tax"`
-	DailyAvgGeneration string  `json:"Daily Average Generation"`
-	Maturity           string  `json:"Maturity"`
-	Acquisition        string  `json:"Acquisition"`
-	AmountFunded       float64 `json:"Amount Funded"`
 }
 
 // Feedback defines a structure that is used for providing feedback
