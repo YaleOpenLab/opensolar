@@ -214,7 +214,7 @@ type CMS struct {
 			Overview struct {
 				ExecutiveSummary struct {
 					Columns    []string
-					ColumnData map[string][]string
+					ColumnData map[string]map[string]string
 				} `json:"ExecutiveSummary"`
 				ImageLink   string
 				Opportunity struct {

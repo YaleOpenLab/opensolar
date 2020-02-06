@@ -57,39 +57,44 @@ func demoData() error {
 
 	// project.Content.DetailPageStub.Tabs.Terms
 	project.Content.DetailPageStub.Tabs.Terms.Purpose = "Proceeds from this project's raise are granted for the development of a pilot solar installation in the FabIDEAS cooperative in Aibonito. The pilot will be used to test the Open Solar platform’s smart contract and financial technology capabilities and is part of a research initiative of the Digital Currency Initiative of the MIT Media Lab and the Yale Open Innovation Lab."
-	project.Content.DetailPageStub.Tabs.Terms.Table.Columns = []string{"Variable, Value, Relevant Party", "Note", "Status", "Support Doc"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Columns = []string{"Variable", "Value", "Relevant Party", "Note", "Status", "Support Doc"}
 	project.Content.DetailPageStub.Tabs.Terms.Table.Rows = make([][]string, 6)
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[0] = []string{"Investment Type", "Donation", "InverSOL", "Solar Equipment"}
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[1] = []string{"PPA Tariff", "0.24 Ct/KWh", "Oracle / PREPA", "Variable Anchored To Local Tariff"}
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[2] = []string{"Return (TEY)", "3.1%", "Broker Dealer", "Tax-Adjusted Yield"}
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[3] = []string{"Maturity", "+/- 2025", "Broker Dealer", "Variable Tied To Tariff"}
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[4] = []string{"Guarantee, 50%", "Foundation X", "First-Loss Upon Breach"}
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[5] = []string{"Insurance", "Premium", "Allianz CS", "Hurricane Coverage"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[0] = []string{"Investment Type", "Donation", "InverSOL", "Solar Equipment", "Confirmed"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[1] = []string{"PPA Tariff", "0.24 Ct/KWh", "Oracle / PREPA", "Variable Anchored To Local Tariff", "Confirmed"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[2] = []string{"Return (TEY)", "3.1%", "Broker Dealer", "Tax-Adjusted Yield", "Signed"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[3] = []string{"Maturity", "+/- 2025", "Broker Dealer", "Variable Tied To Tariff", "Signed"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[4] = []string{"Guarantee, 50%", "Foundation X", "First-Loss Upon Breach", "Started"}
+	project.Content.DetailPageStub.Tabs.Terms.Table.Rows[5] = []string{"Insurance", "Premium", "Allianz CS", "Hurricane Coverage", "Started"}
 	project.Content.DetailPageStub.Tabs.Terms.SecurityNote = "This project does not entail the issuance of a financial security, and is structured exclusively as a restricted research grant. The project does not entail an investment since there are no financial returns offered to donors. All funds accrued through power purchasing are donated back to the Cooperative. Learn more at <link>"
 
 	// project.Content.DetailPageStub.Tabs.Overview
 	columns := []string{"Investment", "Financials", "Project Size", "Sustainability Metrics"}
 	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns = columns
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData = make(map[string][]string)
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]] = []string{"Capex", "$5000"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]] = []string{"Hardware", "60%"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]] = []string{"First-Loss Escrow", "30%"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]] = []string{"Certification Costs", "N/A"}
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData = make(map[string]map[string]string)
 
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]] = []string{"Return (TEY)", "3.1%"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]] = []string{"Insurance", "Premium"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]] = []string{"Tariff (Variable)", "0.24 ct/kWh"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]] = []string{"Maturity (Variable)", "2028"}
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]] = make(map[string]string)
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]]["Capex"] = "$5000"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]]["Hardware"] = "60%"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]]["First-Loss Escrow"] = "30%"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[0]]["Certification Costs"] = "N/A"
 
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]] = []string{"PV Solar", "1 kW"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]] = []string{"Storage", "200 Wh"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]] = []string{"% Critical", "2%"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]] = []string{"Inverter Capacity", "2.5 kW"}
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]] = make(map[string]string)
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]]["Return (TEY)"] = "3.1%"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]]["Insurance"] = "Premium"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]]["Tariff (Variable)"] = "0.24 ct/kWh"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[1]]["Maturity (Variable)"] = "2028"
 
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]] = []string{"Carbon Drawdown", "0.1t/kWh"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]] = []string{"Community Value", "5/7"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]] = []string{"LCA", "N/A"}
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]] = []string{"Resilience Rating", "80%"}
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]] = make(map[string]string)
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]]["PV Solar"] = "1 kW"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]]["Storage"] = "200 Wh"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]]["% Critical"] = "2%"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[2]]["Inverter Capacity"] = "2.5 kW"
+
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]] = make(map[string]string)
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]]["Carbon Drawdown"] = "0.1t/kWh"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]]["Community Value"] = "5/7"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]]["LCA"] = "N/A"
+	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.ColumnData[columns[3]]["Resilience Rating"] = "80%"
 
 	project.Content.DetailPageStub.Tabs.Overview.ImageLink = ""
 	project.Content.DetailPageStub.Tabs.Overview.Opportunity.Description = `Cooperativa Fábrica de Ideas de Aibonito (FabIDEAS Coop), is a project that has received the support of Instituto Nueva Escuela (INE), an independent 501c3 nonprofit organization dedicated to transforming the public education system in Puerto Rico through the Montessori philosophy and methodology. FabIDEAS Coop, is an initiative of the community linked to the INE public school S.U. Pasto in the rural town of Aibonito. FabIDEAS Coop aims to create an economic model in which a cooperative of Montessori materials with five initial members serves as an economic engine for the production and distribution of educational products and children furniture, where each additional member of the community that joins the production guild can learn product design and gradually increase his/her income source. It will act as a hub for education in distributed manufacturing to the students of SU Pasto and as an emergency shelter for community members. 
@@ -132,9 +137,9 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns = []string{"Consultation", "Participation", "Outreach", "Governance"}
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData = make([][]string, len(project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns))
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[0] = []string{"", "The MIT and Yale team will convene meetings with the FabIDEAS cooperative board to discuss project details and outreach opportunities. The team has already convened a meeting with the Parent-Teacher Organisation of the SU Pasto school, thanks to the coordination of the school’s principal Janice Alejandro, to discuss the role of new finance mechanisms for solar in the local community. Over 50 members of the community gathered to discuss the project, with unanimous approval and significant interest for its replication."}
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[1] = []string{"The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required."}
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[2] = []string{"The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community."}
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[3] = []string{"The board of the Cooperative and its acting President Maria Pastor will convene bi yearly meeting with the Yale-MIT team (i.e. the originators) to review processes and performance of the solar system and the smart contract."}
+	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[1] = []string{"", "The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required."}
+	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[2] = []string{"", "The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community."}
+	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[3] = []string{"", "The board of the Cooperative and its acting President Maria Pastor will convene bi yearly meeting with the Yale-MIT team (i.e. the originators) to review processes and performance of the solar system and the smart contract."}
 
 	project.Content.DetailPageStub.Tabs.Project.BizNumbers.Description = "The system will be funded by an in-kind donation of inverSOL, providing the solar hardware, and a grant from the Digital Currency Initiative at MIT to cover labor and other service costs. inverSOL’s donation involves the $9000 for 5kW system with issued by the PR Department of Education covered the principle cost, used for labor and materials. The PPA revenue accrues to pay coupons and mature the bond."
 	project.Content.DetailPageStub.Tabs.Project.BizNumbers.GeneralPaymentLogic = ""
