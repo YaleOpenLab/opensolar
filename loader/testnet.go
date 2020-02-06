@@ -20,7 +20,7 @@ func testSolarProject(index int, panelsize string, totalValue float64, location 
 
 	var project core.Project
 	project.Index = index
-	project.PanelSize = panelsize
+	project.Content.OtherDetails.PanelSize = panelsize
 	project.TotalValue = totalValue
 	project.State = location
 	project.MoneyRaised = moneyRaised

@@ -73,7 +73,7 @@ func insertProject() {
 		var prepProject core.Project
 
 		prepProject.Index = len(allProjects) + 1
-		prepProject.PanelSize = panelSize
+		prepProject.Content.OtherDetails.PanelSize = panelSize
 		prepProject.TotalValue, err = utils.ToFloat(totalValue)
 		if err != nil {
 			log.Println(err)
@@ -343,7 +343,7 @@ type ExplorePageStub struct {
 	Location         string
 	ProjectType      string
 	OriginatorName   string
-	BriefDescription string
+	Description      string
 	Bullet1          string
 	Bullet2          string
 	Bullet3          string
@@ -387,20 +387,20 @@ func explore() {
 			}
 			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			x.Name = project.Name
-			x.Location = project.Location
-			x.ProjectType = project.DonationType
-			x.OriginatorName = project.Originator
-			x.BriefDescription = project.BriefDescription
-			x.Bullet1 = project.Bullet1
-			x.Bullet2 = project.Bullet2
-			x.Bullet3 = project.Bullet3
-			x.Solar = project.Solar
-			x.Storage = project.Storage
-			x.Tariff = project.Tariff
+			x.Location = project.Content.DetailPageStub.Box.Location
+			x.ProjectType = project.Content.DetailPageStub.Box.ProjectType
+			x.OriginatorName = project.Content.DetailPageStub.Box.OriginatorName
+			x.Description = project.Content.DetailPageStub.Box.Description
+			x.Bullet1 = project.Content.DetailPageStub.Box.Bullet1
+			x.Bullet2 = project.Content.DetailPageStub.Box.Bullet2
+			x.Bullet3 = project.Content.DetailPageStub.Box.Bullet3
+			x.Solar = project.Content.DetailPageStub.Box.Solar
+			x.Storage = project.Content.OtherDetails.Storage
+			x.Tariff = project.Content.OtherDetails.Tariff
 			x.Stage = project.Stage
-			x.Return = project.Return
-			x.Rating = project.Rating
-			x.Tax = project.Tax
+			x.Return = project.Content.DetailPageStub.Box.Return
+			x.Rating = project.Content.DetailPageStub.Box.Rating
+			x.Tax = project.Content.OtherDetails.Tax
 			x.Acquisition = project.Acquisition
 			x.Raised = project.MoneyRaised
 			x.Total = project.TotalValue
@@ -441,6 +441,17 @@ func projectDetail() {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
+
+		stageString, err := utils.ToString(project.Stage)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		project.Content.DetailPageStub.Box.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
+		project.Content.DetailPageStub.Box.MoneyRaised = project.MoneyRaised
+		project.Content.DetailPageStub.Box.TotalValue = project.TotalValue
 
 		erpc.MarshalSend(w, project.Content.DetailPageStub)
 	})

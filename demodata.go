@@ -13,41 +13,47 @@ func demoData() error {
 	project.City = "Aibonito"
 	project.State = "Puerto Rico"
 	project.Country = "USA"
-	project.Location = project.City + ", " + project.State + ", " + project.Country
-	project.DonationType = "Grant"
-	project.Originator = "Martin Wainstein"
-	project.Description = "5kW solar to be owned by the FabIDEAS Community Cooperative in Aibonito. The Coop is part of the Instituto Nueva Escuela (INE), and will host a Fab Lab manufacturing montessori school supplies."
-	project.Bullet1 = "Powering a unique social entrepreneurship model through a local cooperative"
-	project.Bullet2 = "Power purchase agreement tied to the standard local Aibonito tariff"
-	project.Bullet3 = "Pay-to-own solar model for the coop with all proceeds reinvested in the Fab Lab"
-	project.Solar = "5kW"
-	project.Storage = "250Wh"
-	project.Tariff = "0.20"
+	project.Index = 1
+	project.SeedInvestmentCap = 4000
 	project.Stage = 4
-	project.Return = "%0"
-	project.Rating = "N/A"
-	project.Tax = "N/A"
-	project.Acquisition = "2025"
 	project.MoneyRaised = 0
 	project.TotalValue = 4000
+	project.OwnershipShift = 0
+	project.RecipientIndex = -1  // replace with real indices once created
+	project.OriginatorIndex = -1 // replace with real indices once created
+	project.GuarantorIndex = -1  // replace with real indices once created
+	project.ContractorIndex = -1 // replace with real indices once created
+	project.PaybackPeriod = 4    // four weeks payback time
+	project.Chain = "stellar"
+	project.BrokerUrl = "mqtt.openx.solar"
+	project.TellerPublishTopic = "opensolartest"
+	project.Metadata = "Aibonito Pilot Project"
+	project.InvestmentType = "munibond"
+	project.TellerUrl = ""
+	project.BrokerUrl = "https://mqtt.openx.solar"
+	project.TellerPublishTopic = "opensolartest"
 
 	// populate the CMS
 	// project.Content.DetailPageStub.Box
 	project.Content.DetailPageStub.Box.Name = project.Name
-	project.Content.DetailPageStub.Box.Location = project.Location
-	project.Content.DetailPageStub.Box.ProjectType = project.DonationType
+	project.Content.DetailPageStub.Box.Location = project.City + ", " + project.State + ", " + project.Country
+	project.Content.DetailPageStub.Box.ProjectType = "Grant"
 	project.Content.DetailPageStub.Box.OriginatorName = "Martin Wainstein"
-	project.Content.DetailPageStub.Box.BriefDescription = "5kW solar to be owned by the FabIDEAS Community Cooperative in Aibonito. The Coop is part of the Instituto Nueva Escuela (INE), and will host a Fab Lab manufacturing montessori school"
+	project.Content.DetailPageStub.Box.Description = "5kW solar to be owned by the FabIDEAS Community Cooperative in Aibonito. The Coop is part of the Instituto Nueva Escuela (INE), and will host a Fab Lab manufacturing montessori school supplies."
 	project.Content.DetailPageStub.Box.Bullet1 = "Powering a unique social entrepreneurship model through a local cooperative"
 	project.Content.DetailPageStub.Box.Bullet2 = "Power purchase agreement tied to the standard local Aibonito tariff"
 	project.Content.DetailPageStub.Box.Bullet3 = "Pay-to-own solar model for the coop with all proceeds reinvested in the Fab Lab"
-	project.Content.DetailPageStub.Box.Solar = project.Solar
-	project.Content.DetailPageStub.Box.Battery = project.Battery
-	project.Content.DetailPageStub.Box.Return = project.Return
-	project.Content.DetailPageStub.Box.Rating = project.Rating
-	project.Content.DetailPageStub.Box.Maturity = project.Maturity
+	project.Content.DetailPageStub.Box.Solar = "5kW"
+	project.Content.DetailPageStub.Box.Battery = "5kWh"
+	project.Content.DetailPageStub.Box.Return = "%0"
+	project.Content.DetailPageStub.Box.Rating = "N/A"
+	project.Content.DetailPageStub.Box.Maturity = project.Acquisition
 	project.Content.DetailPageStub.Box.MoneyRaised = project.MoneyRaised
 	project.Content.DetailPageStub.Box.TotalValue = project.TotalValue
+
+	project.Content.OtherDetails.Tax = "N/A"
+	project.Content.OtherDetails.Storage = "250 Wh"
+	project.Content.OtherDetails.Tariff = "0.20$"
 
 	// project.Content.DetailPageStub.Tabs.Terms
 	project.Content.DetailPageStub.Tabs.Terms.Purpose = "Proceeds from this project's raise are granted for the development of a pilot solar installation in the FabIDEAS cooperative in Aibonito. The pilot will be used to test the Open Solar platform’s smart contract and financial technology capabilities and is part of a research initiative of the Digital Currency Initiative of the MIT Media Lab and the Yale Open Innovation Lab."
@@ -124,7 +130,7 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Content.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Images[1] = ""
 
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns = []string{"Consultation", "Participation", "Outreach", "Governance"}
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData = make([][]string, 4)
+	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData = make([][]string, len(project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns))
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[0] = []string{"", "The MIT and Yale team will convene meetings with the FabIDEAS cooperative board to discuss project details and outreach opportunities. The team has already convened a meeting with the Parent-Teacher Organisation of the SU Pasto school, thanks to the coordination of the school’s principal Janice Alejandro, to discuss the role of new finance mechanisms for solar in the local community. Over 50 members of the community gathered to discuss the project, with unanimous approval and significant interest for its replication."}
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[1] = []string{"The FabIDEAS cooperative community will source volunteers and champions to act as caretakers of the system to monitor its status, report any qualitative information and coordinate with the operation & maintenance required."}
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.ColumnData[2] = []string{"The system will be installed with instructions and visual explanations so that it can act as a pedagogical site for students and community members to learn about the merits of solar energy, electricity and basic electronics. Talks about solar energy will be convened every semester in the context of climate change communication to the community."}
@@ -152,12 +158,6 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Description = ""
 	project.Content.DetailPageStub.Tabs.Documents.SmartContractsImage = ""
 	project.Content.DetailPageStub.Tabs.Documents.SCReviewDescription = ""
-
-	// end of detail stub
-	project.PanelSize = "50 x 100W"
-	project.DailyAvgGeneration = "20 kWh"
-	project.InverterSize = "4800W"
-	project.Maturity = "2021"
 
 	/*
 		recp, err := core.NewRecipient("aibonito", utils.SHA3hash("password"), "password", "Maria Pastor")
@@ -190,26 +190,6 @@ The Lumen smart features minimize wasted solar power and reduce energy bills, el
 		}
 		project.GuarantorIndex = guar.U.Index
 	*/
-
-	project.RecipientIndex = -1  // replace with real indices once created
-	project.OriginatorIndex = -1 // replace with real indices once created
-	project.GuarantorIndex = -1  // replace with real indices once created
-	project.ContractorIndex = -1 // replace with real indices once created
-	project.PaybackPeriod = 4    // four weeks payback time
-	project.Stage = 4
-	project.Chain = "stellar"
-	project.OwnershipShift = 0
-	project.BrokerUrl = "mqtt.openx.solar"
-	project.TellerPublishTopic = "opensolartest"
-	project.Index = 1
-	project.TotalValue = 4000
-	project.MoneyRaised = 0
-	project.SeedInvestmentCap = 4000
-	project.Metadata = "Aibonito Pilot Project"
-	project.InvestmentType = "munibond"
-	project.TellerUrl = ""
-	project.BrokerUrl = "https://mqtt.openx.solar"
-	project.TellerPublishTopic = "opensolartest"
 
 	err := project.Save()
 	if err != nil {

@@ -18,7 +18,7 @@ func (contractor *Entity) Originate(panelSize string, totalValue float64, locati
 		return pc, errors.New("projects could not be retrieved")
 	}
 	pc.Index = len(indexCheck) + 1
-	pc.PanelSize = panelSize
+	pc.Content.OtherDetails.PanelSize = panelSize
 	pc.TotalValue = totalValue
 	pc.State = location
 	pc.EstimatedAcquisition = years
