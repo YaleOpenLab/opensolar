@@ -118,9 +118,15 @@ func getAllProjects() {
 // getProject gets the details of a specific project.
 func getProject() {
 	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		err := checkReqdParams(w, r, ProjectRPC[3][2:], ProjectRPC[3][1])
+		if r.URL.Query()["index"] == nil {
+			log.Println("index not passed")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		err := erpc.CheckGet(w, r)
 		if err != nil {
-			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusNotFound)
 			return
 		}
 
