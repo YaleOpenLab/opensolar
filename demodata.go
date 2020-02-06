@@ -47,22 +47,6 @@ func demoData() error {
 
 	// project.Content.DetailPageStub.Tabs.Overview
 	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns = make(map[string]map[string]string)
-
-	// project.Content.DetailPageStub.Tabs.StageForecast
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.Image = ""
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageTitle = "Construction"
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageDescription = "The project is in the contract development and signing stage. In this stage, the power purchase agreement and general financial variables behind the Open Solar platform’s smart contract are carefully negotiated, drafted and signed by all relevant parties. Full funding of the project is not available."
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.OtherLink = ""
-
-	// project.Content.DetailPageStub.Tabs.StageForecast.SolarStage
-	// project.Content.DetailPageStub.Tabs.Documents
-	project.Content.DetailPageStub.Tabs.Documents.Description = ""
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Image = ""
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Title = ""
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Description = ""
-	project.Content.DetailPageStub.Tabs.Documents.SmartContractsImage = ""
-	project.Content.DetailPageStub.Tabs.Documents.SCReviewDescription = ""
-
 	/*
 		recp, err := core.NewRecipient("aibonito", utils.SHA3hash("password"), "password", "Maria Pastor")
 		if err != nil {
@@ -318,6 +302,27 @@ func parseCMS(fileName string, projIndex int) error {
 	project.Content.DetailPageStub.Tabs.Project.BizNumbers.ProjectExpenses = bizNumbers["projectexpenses"].(string)
 	project.Content.DetailPageStub.Tabs.Project.BizNumbers.NonProfit = bizNumbers["nonprofit"].(string)
 	project.Content.DetailPageStub.Tabs.Project.BizNumbers.OtherLinks = bizNumbers["otherlinks"].(string)
+
+	sForecast := viper.Get("stage").(map[string]interface{})
+	devStage := sForecast["development stage"].(map[string]interface{})
+	// project.Content.DetailPageStub.Tabs.StageForecast
+	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.Image = devStage["image"].(string)
+	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageTitle = devStage["stagetitle"].(string)
+	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageDescription = devStage["stagedescription"].(string)
+	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.OtherLink = devStage["otherlink"].(string)
+
+	documents := viper.Get("documents").(map[string]interface{})
+	// project.Content.DetailPageStub.Tabs.StageForecast.SolarStage
+	// project.Content.DetailPageStub.Tabs.Documents
+	project.Content.DetailPageStub.Tabs.Documents.Description = documents["description"].(string)
+
+	lContracts := documents["legalcontracts"].(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Image = lContracts["image"].(string)
+	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Title = lContracts["title"].(string)
+	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Description = lContracts["description"].(string)
+
+	project.Content.DetailPageStub.Tabs.Documents.SmartContractsImage = documents["smartcontractsimage"].(string)
+	project.Content.DetailPageStub.Tabs.Documents.SCReviewDescription = documents["screviewdescription"].(string)
 
 	err = project.Save()
 	if err != nil {
