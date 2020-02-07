@@ -267,12 +267,12 @@ func parseCMS(fileName string, projIndex int) error {
 			}
 		case 2:
 			msmsi := viper.Get(key).(map[string]interface{})
-			project.Content.Details2[key] = make(map[string]interface{})
+			project.Content.Details2[strings.Title(key)] = make(map[string]interface{})
 			for key1, value1 := range msmsi {
 				depth := findInterfaceDepth(value1)
 				switch depth {
 				case 0:
-					project.Content.Details2[key][key1] = value1.(interface{})
+					project.Content.Details2[strings.Title(key)][strings.Title(key1)] = value1.(interface{})
 				case 1:
 					msi := value1.(map[string]interface{})
 					project.Content.Details2[key][key1] = make(map[string]interface{})
@@ -284,35 +284,56 @@ func parseCMS(fileName string, projIndex int) error {
 							msi[strings.Title(key2)] = value2.(interface{})
 						}
 					}
-					project.Content.Details2[key][key1] = msi
+					project.Content.Details2[strings.Title(key)][strings.Title(key1)] = msi
+				}
+			}
+		case 3:
+			msmsmsi := viper.Get(key).(map[string]interface{})
+			project.Content.Details2[strings.Title(key)] = make(map[string]interface{})
+			for key1, value1 := range msmsmsi {
+				depth := findInterfaceDepth(value1)
+				switch depth {
+				case 0:
+					project.Content.Details2[strings.Title(key)][strings.Title(key1)] = value1.(interface{})
+				case 1:
+					msi := value1.(map[string]interface{})
+					project.Content.Details2[strings.Title(key)][strings.Title(key1)] = make(map[string]interface{})
+					for key2, value2 := range msi {
+						switch value2.(type) {
+						case []interface{}:
+							msi[strings.Title(key2)] = value2.([]interface{})
+						case interface{}:
+							msi[strings.Title(key2)] = value2.(interface{})
+						}
+					}
+					project.Content.Details2[strings.Title(key)][strings.Title(key1)] = msi
+				case 2:
+					msmsi := viper.Get(key).(map[string]interface{})
+					for key2, value2 := range msmsi {
+						depth := findInterfaceDepth(value2)
+						switch depth {
+						case 0:
+							msmsi[key2] = value2.(interface{})
+						case 1:
+							msi := value2.(map[string]interface{})
+							msmsi[strings.Title(key2)] = make(map[string]interface{})
+							for key3, value3 := range msi {
+								switch value3.(type) {
+								case []interface{}:
+									msi[strings.Title(key3)] = value3.([]interface{})
+								case interface{}:
+									msi[strings.Title(key3)] = value3.(interface{})
+								}
+							}
+							msmsi[key2] = msi
+							project.Content.Details2[strings.Title(key)][strings.Title(key1)] = make(map[string]map[string]interface{})
+							project.Content.Details2[strings.Title(key)][strings.Title(key1)] = msmsi
+						}
+					}
 				}
 			}
 		default:
 			log.Println("cool")
-		}
-	}
-
-	od := viper.Get("Other Details").(map[string]interface{})
-	for key, value := range od {
-		titleKey := strings.Title(key)
-		project.Content.OtherDetails[titleKey] = value
-	}
-
-	terms := viper.Get("Terms").(map[string]interface{})
-
-	for key, value := range terms {
-		titleKey := strings.Title(key)
-		if ifString(value) {
-			project.Content.Details.Tabs.Terms[titleKey] = value
-			//project.Content.Details2["Tabs"]["Terms"][titleKey] = value
-		}
-		if ifMapStringInterface(value) {
-			msi := make(map[string]interface{})
-			for tKey, tValue := range value.(map[string]interface{}) {
-				msi[strings.Title(tKey)] = tValue
-			}
-			project.Content.Details.Tabs.Terms[strings.Title(key)] = make(map[string]interface{})
-			project.Content.Details.Tabs.Terms[strings.Title(key)] = msi
 		}
 	}
 
@@ -351,22 +372,6 @@ func parseCMS(fileName string, projIndex int) error {
 			}
 			project.Content.Details.Tabs.Project[strings.Title(key)] = make(map[string]interface{})
 			project.Content.Details.Tabs.Project[strings.Title(key)] = msi
-		}
-	}
-
-	documents := viper.Get("documents").(map[string]interface{})
-	for key, value := range documents {
-		titleKey := strings.Title(key)
-		if ifString(value) {
-			project.Content.Details.Tabs.Documents[titleKey] = value
-		}
-		if ifMapStringInterface(value) {
-			msi := make(map[string]interface{})
-			for tKey, tValue := range value.(map[string]interface{}) {
-				msi[strings.Title(tKey)] = tValue
-			}
-			project.Content.Details.Tabs.Documents[strings.Title(key)] = make(map[string]interface{})
-			project.Content.Details.Tabs.Documents[strings.Title(key)] = msi
 		}
 	}
 
