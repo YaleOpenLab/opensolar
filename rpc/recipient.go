@@ -656,32 +656,29 @@ func storeTellerDetails() {
 }
 
 type recpDashboardHelper struct {
-	Name                 string  `json:"Beneficiary Name"`
-	ActiveProjects       int     `json:"Active Projects"`
-	TiCP                 string  `json:"Total in Current Period"`
-	AllTime              string  `json: All Time`
-	ProjectWalletBalance float64 `json:"Project Wallet Balance"`
-	AutoReload           string  `json:"Auto Reload"`
-	Notification         string  `json:"Notification"`
-	ActionsRequired      string  `json:"Actions Required"`
+	Name                 string              `json:"Beneficiary Name"`
+	ActiveProjects       int                 `json:"Active Projects"`
+	TiCP                 string              `json:"Total in Current Period"`
+	AllTime              string              `json:"All Time"`
+	ProjectWalletBalance float64             `json:"Project Wallet Balance"`
+	AutoReload           string              `json:"Auto Reload"`
+	Notification         string              `json:"Notification"`
+	ActionsRequired      string              `json:"Actions Required"`
+	YourProjects         []recpDashboardData `json:"Your Projects"`
+}
 
-	YourProjects struct {
-		Name              string  `json:"Name"`
-		Location          string  `json:"Location"`
-		SecurityType      string  `json:"Security Type"`
-		SecurityIssuer    string  `json:"Security Issuer"`
-		ShortDes          string  `json:"Short Description"`
-		Bullet1           string  `json:"Bullet1"`
-		Bullet2           string  `json:"Bullet2"`
-		Bullet3           string  `json:"Bullet3"`
-		ProjectOriginator string  `json:"Project Originator"`
-		FundedAmount      float64 `json:"FundedAmount"`
-		Total             float64 `json:"Total"`
-		BSolar            string  `json:"Bsolar"`
-		BBattery          string  `json:"BBattery"`
-		BReturn           string  `json:"BReturn"`
-		BRating           float64 `json:BRating`
-		BMaturity         string  `json:"BMaturity"`
+type recpDashboardData struct {
+	Index int
+	Role  string
+	PSA   struct {
+		Stage   string
+		Actions []string
+	} `json:"Project Stage & Actions"`
+	ProjectWallets struct {
+		Certificates [][]string `json:"Certificates"`
+	}
+	BillsRewards struct {
+		PendingPayments []string `json:"Peyments"`
 	}
 }
 
@@ -716,22 +713,31 @@ func recpDashboard() {
 		ret.Notification = "None"
 		ret.ActionsRequired = "None"
 
-		ret.YourProjects.Name = project.Name
-		ret.YourProjects.Location = project.City + " " + project.State + " " + project.Country
-		ret.YourProjects.SecurityType = "Munibond"
-		ret.YourProjects.SecurityIssuer = "Security Issuer"
-		ret.YourProjects.ShortDes = "Short Description"
-		ret.YourProjects.Bullet1 = "Bullet 1"
-		ret.YourProjects.Bullet2 = "Bullet 2"
-		ret.YourProjects.Bullet3 = "Bullet 3"
-		ret.YourProjects.ProjectOriginator = "blah"
-		ret.YourProjects.FundedAmount = project.MoneyRaised + project.SeedMoneyRaised
-		ret.YourProjects.Total = project.TotalValue
-		ret.YourProjects.BSolar = "X kW"
-		ret.YourProjects.BBattery = "X kWh"
-		ret.YourProjects.BReturn = "3.2%"
-		ret.YourProjects.BRating = project.InterestRate
-		ret.YourProjects.BMaturity = "2028"
+		ret.YourProjects = make([]recpDashboardData, len(prepRecipient.ReceivedSolarProjectIndices))
+		for i, elem := range prepRecipient.ReceivedSolarProjectIndices {
+			var x recpDashboardData
+			project, err := core.RetrieveProject(elem)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+			x.Index = elem
+			x.Role = "You are an Offtaker"
+			sStage, err := utils.ToString(project.Stage)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+			x.PSA.Stage = "Project is in Stage: " + sStage
+			x.PSA.Actions = []string{"Contractor Actions", "No pending action"}
+			x.ProjectWallets.Certificates = make([][]string, 2)
+			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
+			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
+			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", "$203 due on April 30"}
+			ret.YourProjects[i] = x
+		}
 
 		erpc.MarshalSend(w, ret)
 	})
