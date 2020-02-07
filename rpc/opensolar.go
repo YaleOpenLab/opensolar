@@ -323,19 +323,19 @@ func explore() {
 			}
 			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			x.Name = project.Name
-			x.Location = project.Content.Details.ExploreTab["Location"]
-			x.ProjectType = project.Content.Details.ExploreTab["Project Type"]
-			x.OriginatorName = project.Content.Details.ExploreTab["Originator Name"]
-			x.Description = project.Content.Details.ExploreTab["Description"]
-			x.Bullet1 = project.Content.Details.ExploreTab["Bullet 1"]
-			x.Bullet2 = project.Content.Details.ExploreTab["Bullet 2"]
-			x.Bullet3 = project.Content.Details.ExploreTab["Bullet 3"]
-			x.Solar = project.Content.Details.ExploreTab["Solar"]
-			x.Storage = project.Content.OtherDetails["Storage"]
-			x.Tariff = project.Content.OtherDetails["Tariff"]
+			x.Location = project.Content.Details["ExploreTab"]["Location"]
+			x.ProjectType = project.Content.Details["ExploreTab"]["Project Type"]
+			x.OriginatorName = project.Content.Details["ExploreTab"]["Originator Name"]
+			x.Description = project.Content.Details["ExploreTab"]["Description"]
+			x.Bullet1 = project.Content.Details["ExploreTab"]["Bullet 1"]
+			x.Bullet2 = project.Content.Details["ExploreTab"]["Bullet 2"]
+			x.Bullet3 = project.Content.Details["ExploreTab"]["Bullet 3"]
+			x.Solar = project.Content.Details["ExploreTab"]["Solar"]
+			x.Storage = project.Content.Details["OtherDetails"]["Storage"]
+			x.Tariff = project.Content.Details["OtherDetails"]["Tariff"]
 			x.Stage = project.Stage
-			x.Return = project.Content.Details.ExploreTab["Return"]
-			x.Rating = project.Content.Details.ExploreTab["Rating"]
+			x.Return = project.Content.Details["ExploreTab"]["Return"]
+			x.Rating = project.Content.Details["ExploreTab"]["Rating"]
 			x.Tax = project.Content.OtherDetails["Tax"]
 			x.Acquisition = project.Acquisition
 			x.Raised = project.MoneyRaised
@@ -385,9 +385,9 @@ func projectDetail() {
 			return
 		}
 
-		project.Content.Details.ExploreTab["StageDescription"] = stageString + " | " + core.GetStageDescription(project.Stage)
-		project.Content.Details.ExploreTab["MoneyRaised"] = project.MoneyRaised
-		project.Content.Details.ExploreTab["TotalValue"] = project.TotalValue
+		project.Content.Details["ExploreTab"]["StageDescription"] = stageString + " | " + core.GetStageDescription(project.Stage)
+		project.Content.Details["ExploreTab"]["MoneyRaised"] = project.MoneyRaised
+		project.Content.Details["ExploreTab"]["TotalValue"] = project.TotalValue
 
 		erpc.MarshalSend(w, project.Content.Details)
 	})

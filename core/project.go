@@ -179,17 +179,7 @@ type Project struct {
 type CMS struct {
 	Keys         []string // the keys of the map at level 1
 	OtherDetails map[string]interface{}
-	Details2     map[string]map[string]interface{}
-	Details      struct {
-		ExploreTab map[string]interface{} `json:"Explore Tab"`
-		Tabs       struct {
-			Terms         map[string]interface{} `json:"Terms"`
-			Overview      map[string]interface{} `json:"Overview"`
-			Project       map[string]interface{} `json:"Project"`
-			StageForecast map[string]interface{} `json:"Stage Forecast"`
-			Documents     map[string]interface{} `json:"Documents"`
-		}
-	}
+	Details      map[string]map[string]interface{}
 }
 
 // Feedback defines a structure that is used for providing feedback
