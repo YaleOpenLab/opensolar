@@ -39,22 +39,24 @@ func demoData() error {
 	project.TellerPublishTopic = "opensolartest"
 
 	// populate the CMS
-	// project.Content.DetailPageStub.Box
-	project.Content.DetailPageStub.Box = make(map[string]interface{})
+	// project.Content.Details.ExploreTab
+	project.Content.Details.ExploreTab = make(map[string]interface{})
 	project.Content.OtherDetails = make(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Terms = make(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Overview = make(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Project = make(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.StageForecast = make(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Documents = make(map[string]interface{})
+	project.Content.Details.Tabs.Terms = make(map[string]interface{})
+	project.Content.Details.Tabs.Overview = make(map[string]interface{})
+	project.Content.Details.Tabs.Project = make(map[string]interface{})
+	project.Content.Details.Tabs.StageForecast = make(map[string]interface{})
+	project.Content.Details.Tabs.Documents = make(map[string]interface{})
 
-	project.Content.DetailPageStub.Box["Name"] = project.Name
-	project.Content.DetailPageStub.Box["Location"] = project.City + ", " + project.State + ", " + project.Country
-	project.Content.DetailPageStub.Box["Maturity"] = project.Acquisition
-	project.Content.DetailPageStub.Box["Money Raised"] = project.MoneyRaised
-	project.Content.DetailPageStub.Box["Total Value"] = project.TotalValue
+	project.Content.Details2 = make(map[string]map[string]interface{})
 
-	// project.Content.DetailPageStub.Tabs.Overview
+	project.Content.Details.ExploreTab["Name"] = project.Name
+	project.Content.Details.ExploreTab["Location"] = project.City + ", " + project.State + ", " + project.Country
+	project.Content.Details.ExploreTab["Maturity"] = project.Acquisition
+	project.Content.Details.ExploreTab["Money Raised"] = project.MoneyRaised
+	project.Content.Details.ExploreTab["Total Value"] = project.TotalValue
+
+	// project.Content.Details.Tabs.Overview
 	/*
 		recp, err := core.NewRecipient("aibonito", utils.SHA3hash("password"), "password", "Maria Pastor")
 		if err != nil {
@@ -194,6 +196,40 @@ func ifMapStringInterface(x interface{}) bool {
 	}
 }
 
+func max(arr []int) int {
+	if len(arr) == 0 {
+		return 0
+	}
+	max := arr[0]
+	for _, elem := range arr {
+		if elem > max {
+			max = elem
+		}
+	}
+	return max
+}
+
+func findInterfaceDepth(x interface{}) int {
+	switch x.(type) {
+	case []interface{}:
+		var depths []int
+		y := x.([]interface{})
+		for _, val := range y {
+			depths = append(depths, findInterfaceDepth(val))
+		}
+		return max(depths)
+	case map[string]interface{}:
+		var depths []int
+		y := x.(map[string]interface{})
+		for _, val := range y {
+			depths = append(depths, findInterfaceDepth(val))
+		}
+		return 1 + max(depths)
+	default:
+		return 0
+	}
+}
+
 // parseCMS parses the yaml file and converts it into the CMS format we have
 func parseCMS(fileName string, projIndex int) error {
 	viper.SetConfigType("yaml")
@@ -210,10 +246,50 @@ func parseCMS(fileName string, projIndex int) error {
 		return err
 	}
 
-	etm := viper.Get("Explore Tab Modal").(map[string]interface{})
-	for key, value := range etm {
-		titleKey := strings.Title(key)
-		project.Content.DetailPageStub.Box[titleKey] = value
+	project.Content.Keys = []string{"Explore Tab", "Other Details", "Terms", "Overview", "project details", "Stage", "Documents"}
+
+	for _, key := range project.Content.Keys {
+		if !viper.IsSet(key) {
+			log.Println("required content" + key + " not found for project, quitting")
+			return errors.New("required content not found for project, quitting")
+		}
+	}
+
+	for _, key := range project.Content.Keys {
+		depth := findInterfaceDepth(viper.Get(key))
+		switch depth {
+		case 1:
+			msi := viper.Get(key).(map[string]interface{})
+			project.Content.Details2[key] = make(map[string]interface{})
+			for key1, value1 := range msi {
+				titleKey := strings.Title(key1)
+				project.Content.Details2[key][titleKey] = value1
+			}
+		case 2:
+			msmsi := viper.Get(key).(map[string]interface{})
+			project.Content.Details2[key] = make(map[string]interface{})
+			for key1, value1 := range msmsi {
+				depth := findInterfaceDepth(value1)
+				switch depth {
+				case 0:
+					project.Content.Details2[key][key1] = value1.(interface{})
+				case 1:
+					msi := value1.(map[string]interface{})
+					project.Content.Details2[key][key1] = make(map[string]interface{})
+					for key2, value2 := range msi {
+						switch value2.(type) {
+						case []interface{}:
+							msi[strings.Title(key2)] = value2.([]interface{})
+						case interface{}:
+							msi[strings.Title(key2)] = value2.(interface{})
+						}
+					}
+					project.Content.Details2[key][key1] = msi
+				}
+			}
+		default:
+			log.Println("cool")
+		}
 	}
 
 	od := viper.Get("Other Details").(map[string]interface{})
@@ -223,18 +299,20 @@ func parseCMS(fileName string, projIndex int) error {
 	}
 
 	terms := viper.Get("Terms").(map[string]interface{})
+
 	for key, value := range terms {
 		titleKey := strings.Title(key)
 		if ifString(value) {
-			project.Content.DetailPageStub.Tabs.Terms[titleKey] = value
+			project.Content.Details.Tabs.Terms[titleKey] = value
+			//project.Content.Details2["Tabs"]["Terms"][titleKey] = value
 		}
 		if ifMapStringInterface(value) {
 			msi := make(map[string]interface{})
 			for tKey, tValue := range value.(map[string]interface{}) {
 				msi[strings.Title(tKey)] = tValue
 			}
-			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = make(map[string]interface{})
-			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = msi
+			project.Content.Details.Tabs.Terms[strings.Title(key)] = make(map[string]interface{})
+			project.Content.Details.Tabs.Terms[strings.Title(key)] = msi
 		}
 	}
 
@@ -242,15 +320,21 @@ func parseCMS(fileName string, projIndex int) error {
 	for key, value := range overview {
 		titleKey := strings.Title(key)
 		if ifString(value) {
-			project.Content.DetailPageStub.Tabs.Overview[titleKey] = value
+			project.Content.Details.Tabs.Overview[titleKey] = value
 		}
 		if ifMapStringInterface(value) {
 			msi := make(map[string]interface{})
 			for tKey, tValue := range value.(map[string]interface{}) {
+				if ifMapStringInterface(tValue) {
+					submap := tValue.(map[string]interface{})
+					for sKey, _ := range submap {
+						log.Println("SUBKEY: ", strings.Title(sKey))
+					}
+				}
 				msi[strings.Title(tKey)] = tValue
 			}
-			project.Content.DetailPageStub.Tabs.Overview[strings.Title(key)] = make(map[string]interface{})
-			project.Content.DetailPageStub.Tabs.Overview[strings.Title(key)] = msi
+			project.Content.Details.Tabs.Overview[strings.Title(key)] = make(map[string]interface{})
+			project.Content.Details.Tabs.Overview[strings.Title(key)] = msi
 		}
 	}
 
@@ -258,33 +342,15 @@ func parseCMS(fileName string, projIndex int) error {
 	for key, value := range projDetails {
 		titleKey := strings.Title(key)
 		if ifString(value) {
-			project.Content.DetailPageStub.Tabs.Project[titleKey] = value
+			project.Content.Details.Tabs.Project[titleKey] = value
 		}
 		if ifMapStringInterface(value) {
 			msi := make(map[string]interface{})
 			for tKey, tValue := range value.(map[string]interface{}) {
 				msi[strings.Title(tKey)] = tValue
-				log.Println("TKEY: ", strings.Title(tKey))
 			}
-			project.Content.DetailPageStub.Tabs.Project[strings.Title(key)] = make(map[string]interface{})
-			project.Content.DetailPageStub.Tabs.Project[strings.Title(key)] = msi
-		}
-	}
-
-	sForecast := viper.Get("stage").(map[string]interface{})
-	for key, value := range sForecast {
-		titleKey := strings.Title(key)
-		if ifString(value) {
-			project.Content.DetailPageStub.Tabs.StageForecast[titleKey] = value
-		}
-		if ifMapStringInterface(value) {
-			msi := make(map[string]interface{})
-			for tKey, tValue := range value.(map[string]interface{}) {
-				msi[strings.Title(tKey)] = tValue
-				log.Println("TKEY: ", strings.Title(tKey))
-			}
-			project.Content.DetailPageStub.Tabs.StageForecast[strings.Title(key)] = make(map[string]interface{})
-			project.Content.DetailPageStub.Tabs.StageForecast[strings.Title(key)] = msi
+			project.Content.Details.Tabs.Project[strings.Title(key)] = make(map[string]interface{})
+			project.Content.Details.Tabs.Project[strings.Title(key)] = msi
 		}
 	}
 
@@ -292,16 +358,15 @@ func parseCMS(fileName string, projIndex int) error {
 	for key, value := range documents {
 		titleKey := strings.Title(key)
 		if ifString(value) {
-			project.Content.DetailPageStub.Tabs.Documents[titleKey] = value
+			project.Content.Details.Tabs.Documents[titleKey] = value
 		}
 		if ifMapStringInterface(value) {
 			msi := make(map[string]interface{})
 			for tKey, tValue := range value.(map[string]interface{}) {
 				msi[strings.Title(tKey)] = tValue
-				log.Println("TKEY: ", strings.Title(tKey))
 			}
-			project.Content.DetailPageStub.Tabs.Documents[strings.Title(key)] = make(map[string]interface{})
-			project.Content.DetailPageStub.Tabs.Documents[strings.Title(key)] = msi
+			project.Content.Details.Tabs.Documents[strings.Title(key)] = make(map[string]interface{})
+			project.Content.Details.Tabs.Documents[strings.Title(key)] = msi
 		}
 	}
 

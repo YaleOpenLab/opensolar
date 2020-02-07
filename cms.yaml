@@ -1,4 +1,4 @@
-Explore Tab Modal:
+Explore Tab:
   project type: "Grant"
   originator name: "Martin Wainstein"
   description: "5kW solar to be owned by the FabIDEAS Community Cooperative in Aibonito. The Coop is part of the Instituto Nueva Escuela (INE), and will host a Fab Lab manufacturing montessori school supplies."
@@ -62,7 +62,7 @@ Overview:
       - "2"
       - "3"
   context: "Two years after hurricane Maria hit the island, schools and local communities are still exposed to a centralized and high-carbon energy system vulnerable to climate impacts. The 2020 Earthquake left ⅓ of the island without power. Cooperatives and schools like FabIDEAS and SU Pasto are ideal places for community owned microgrids to be deployed, in order to provide greater power resilience and usher in a new energy economy to Puerto Rico. Since Hurricane Maria, community cooperatives have become nodal points facilitating discussions of concerned parents on how to increase climate & social resilience in the whole community. The Puerto Rican (PR) government and the department of education are working to appoint schools as emergency shelters —nodes with robust energy and communication systems— for the community to reach out in the event of unavoidable climate shocks. Financing is a key gap. This project acts as a pilot finance mechanism that can help bridge the finance gap to make solar powered schools and community centers more affordable."
-project details:
+Project Details:
   architecture:
     map layout image: ""
     solar output image: ""

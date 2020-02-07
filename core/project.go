@@ -177,10 +177,12 @@ type Project struct {
 
 // CMS handles all the content related stuff wrt a project
 type CMS struct {
-	OtherDetails   map[string]interface{}
-	DetailPageStub struct {
-		Box  map[string]interface{}
-		Tabs struct {
+	Keys         []string // the keys of the map at level 1
+	OtherDetails map[string]interface{}
+	Details2     map[string]map[string]interface{}
+	Details      struct {
+		ExploreTab map[string]interface{} `json:"Explore Tab"`
+		Tabs       struct {
 			Terms         map[string]interface{} `json:"Terms"`
 			Overview      map[string]interface{} `json:"Overview"`
 			Project       map[string]interface{} `json:"Project"`
