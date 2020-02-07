@@ -10,16 +10,16 @@ Explore Tab Modal:
   return: "%0"
   rating: "N/A"
 Other Details:
-  Tax: "N/A"
-  Storage: "250 Wh"
-  Tariff: "0.20$"
-  PanelSize: "60m"
+  tax: "N/A"
+  storage: "250 Wh"
+  tariff: "0.20$"
+  panel size: "60m"
 Terms:
-  Purpose: "Proceeds from this project's raise are granted for the development of a pilot solar installation in the FabIDEAS cooperative in Aibonito. The pilot will be used to test the Open Solar platform’s smart contract and financial technology capabilities and is part of a research initiative of the Digital Currency Initiative of the MIT Media Lab and the Yale Open Innovation Lab."
-  SecurityNote: "This project does not entail the issuance of a financial security, and is structured exclusively as a restricted research grant. The project does not entail an investment since there are no financial returns offered to donors. All funds accrued through power purchasing are donated back to the Cooperative. Learn more at <link>"
-  Table:
-    Columns: ["Variable", "Value", "Relevant Party", "Note", "Status", "Support Doc"]
-    Rows:
+  purpose: "Proceeds from this project's raise are granted for the development of a pilot solar installation in the FabIDEAS cooperative in Aibonito. The pilot will be used to test the Open Solar platform’s smart contract and financial technology capabilities and is part of a research initiative of the Digital Currency Initiative of the MIT Media Lab and the Yale Open Innovation Lab."
+  security note: "This project does not entail the issuance of a financial security, and is structured exclusively as a restricted research grant. The project does not entail an investment since there are no financial returns offered to donors. All funds accrued through power purchasing are donated back to the Cooperative. Learn more at <link>"
+  table:
+    columns: ["Variable", "Value", "Relevant Party", "Note", "Status", "Support Doc"]
+    rows:
       - ["Investment Type", "Donation", "InverSOL", "Solar Equipment", "Confirmed"]
       - ["PPA Tariff", "0.24 Ct/KWh", "Oracle / PREPA", "Variable Anchored To Local Tariff", "Confirmed"]
       - ["Return (TEY)", "3.1%", "Broker Dealer", "Tax-Adjusted Yield", "Signed"]

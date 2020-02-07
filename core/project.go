@@ -181,14 +181,7 @@ type CMS struct {
 	DetailPageStub struct {
 		Box  map[string]interface{}
 		Tabs struct {
-			Terms struct {
-				Purpose string
-				Table   struct {
-					Columns []string
-					Rows    [][]string
-				}
-				SecurityNote string
-			} `json:"Terms"`
+			Terms    map[string]interface{} `json:"Terms"`
 			Overview struct {
 				ExecutiveSummary struct {
 					Columns map[string]map[string]string

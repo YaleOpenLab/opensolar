@@ -42,6 +42,7 @@ func demoData() error {
 	// project.Content.DetailPageStub.Box
 	project.Content.DetailPageStub.Box = make(map[string]interface{})
 	project.Content.OtherDetails = make(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.Terms = make(map[string]interface{})
 
 	project.Content.DetailPageStub.Box["Name"] = project.Name
 	project.Content.DetailPageStub.Box["Location"] = project.City + ", " + project.State + ", " + project.Country
@@ -172,6 +173,24 @@ func demoData() error {
 	return nil
 }
 
+func ifString(x interface{}) bool {
+	switch x.(type) {
+	case string:
+		return true
+	default:
+		return false
+	}
+}
+
+func ifMapStringInterface(x interface{}) bool {
+	switch x.(type) {
+	case map[string]interface{}:
+		return true
+	default:
+		return false
+	}
+}
+
 // parseCMS parses the yaml file and converts it into the CMS format we have
 func parseCMS(fileName string, projIndex int) error {
 	viper.SetConfigType("yaml")
@@ -201,25 +220,21 @@ func parseCMS(fileName string, projIndex int) error {
 	}
 
 	terms := viper.Get("Terms").(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Terms.Purpose = terms["purpose"].(string)
-
-	table := terms["table"].(map[string]interface{})
-
-	tableColumns := table["columns"].([]interface{})
-	for _, column := range tableColumns {
-		project.Content.DetailPageStub.Tabs.Terms.Table.Columns = append(project.Content.DetailPageStub.Tabs.Terms.Table.Columns, column.(string))
-	}
-
-	tableRows := table["rows"].([]interface{})
-	project.Content.DetailPageStub.Tabs.Terms.Table.Rows = make([][]string, len(tableRows))
-	for i, xrow := range tableRows {
-		row := xrow.([]interface{})
-		for _, subrow := range row {
-			project.Content.DetailPageStub.Tabs.Terms.Table.Rows[i] = append(project.Content.DetailPageStub.Tabs.Terms.Table.Rows[i], subrow.(string))
+	for key, value := range terms {
+		titleKey := strings.Title(key)
+		if ifString(value) {
+			project.Content.DetailPageStub.Tabs.Terms[titleKey] = value
+		}
+		if ifMapStringInterface(value) {
+			msi := make(map[string]interface{})
+			for tKey, tValue := range value.(map[string]interface{}) {
+				msi[strings.Title(tKey)] = tValue
+				log.Println("TKEY: ", strings.Title(tKey))
+			}
+			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = make(map[string]interface{})
+			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = msi
 		}
 	}
-
-	project.Content.DetailPageStub.Tabs.Terms.SecurityNote = terms["securitynote"].(string)
 
 	overview := viper.Get("overview").(map[string]interface{})
 	execSummary := overview["executive summary"].(map[string]interface{})
@@ -280,7 +295,6 @@ func parseCMS(fileName string, projIndex int) error {
 	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns = make(map[string][]string, len(comEng))
 
 	for cKeys, cVals := range comEng {
-		log.Println(cVals)
 		arr := cVals.([]interface{})
 		var columns []string
 		for _, strings := range arr {
