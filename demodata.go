@@ -43,6 +43,10 @@ func demoData() error {
 	project.Content.DetailPageStub.Box = make(map[string]interface{})
 	project.Content.OtherDetails = make(map[string]interface{})
 	project.Content.DetailPageStub.Tabs.Terms = make(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.Overview = make(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.Project = make(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.StageForecast = make(map[string]interface{})
+	project.Content.DetailPageStub.Tabs.Documents = make(map[string]interface{})
 
 	project.Content.DetailPageStub.Box["Name"] = project.Name
 	project.Content.DetailPageStub.Box["Location"] = project.City + ", " + project.State + ", " + project.Country
@@ -51,7 +55,6 @@ func demoData() error {
 	project.Content.DetailPageStub.Box["Total Value"] = project.TotalValue
 
 	// project.Content.DetailPageStub.Tabs.Overview
-	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns = make(map[string]map[string]string)
 	/*
 		recp, err := core.NewRecipient("aibonito", utils.SHA3hash("password"), "password", "Maria Pastor")
 		if err != nil {
@@ -229,7 +232,6 @@ func parseCMS(fileName string, projIndex int) error {
 			msi := make(map[string]interface{})
 			for tKey, tValue := range value.(map[string]interface{}) {
 				msi[strings.Title(tKey)] = tValue
-				log.Println("TKEY: ", strings.Title(tKey))
 			}
 			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = make(map[string]interface{})
 			project.Content.DetailPageStub.Tabs.Terms[strings.Title(key)] = msi
@@ -237,104 +239,71 @@ func parseCMS(fileName string, projIndex int) error {
 	}
 
 	overview := viper.Get("overview").(map[string]interface{})
-	execSummary := overview["executive summary"].(map[string]interface{})
-
-	for execKeys, execVals := range execSummary {
-		exec := execVals.(map[string]interface{})
-		project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns[execKeys] = make(map[string]string)
-		for key, value := range exec {
-			project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns[execKeys][key] = value.(string)
+	for key, value := range overview {
+		titleKey := strings.Title(key)
+		if ifString(value) {
+			project.Content.DetailPageStub.Tabs.Overview[titleKey] = value
+		}
+		if ifMapStringInterface(value) {
+			msi := make(map[string]interface{})
+			for tKey, tValue := range value.(map[string]interface{}) {
+				msi[strings.Title(tKey)] = tValue
+			}
+			project.Content.DetailPageStub.Tabs.Overview[strings.Title(key)] = make(map[string]interface{})
+			project.Content.DetailPageStub.Tabs.Overview[strings.Title(key)] = msi
 		}
 	}
-
-	project.Content.DetailPageStub.Tabs.Overview.ImageLink = overview["imagelink"].(string)
-
-	opportunity := overview["opportunity"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Overview.Opportunity.Description = opportunity["description"].(string)
-
-	pilotgoals := opportunity["pilotgoals"].([]interface{})
-	project.Content.DetailPageStub.Tabs.Overview.Opportunity.PilotGoals = make([]string, len(pilotgoals))
-	for i, goal := range pilotgoals {
-		project.Content.DetailPageStub.Tabs.Overview.Opportunity.PilotGoals[i] = goal.(string)
-	}
-
-	oimages := opportunity["images"].([]interface{})
-	project.Content.DetailPageStub.Tabs.Overview.Opportunity.Images = make([]string, len(oimages))
-	for i, image := range oimages {
-		project.Content.DetailPageStub.Tabs.Overview.Opportunity.Images[i] = image.(string)
-	}
-
-	project.Content.DetailPageStub.Tabs.Overview.Context = opportunity["context"].(string)
 
 	projDetails := viper.Get("project details").(map[string]interface{})
-
-	projArch := projDetails["architecture"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Project.Architecture.MapLayoutImage = projArch["maplayoutimage"].(string)
-	project.Content.DetailPageStub.Tabs.Project.Architecture.SolarOutputImage = projArch["solaroutputimage"].(string)
-	project.Content.DetailPageStub.Tabs.Project.Architecture.DesignDescription = projArch["designdescription"].(string)
-	project.Content.DetailPageStub.Tabs.Project.Architecture.Description = projArch["description"].(string)
-
-	projLayout := projDetails["layout"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Project.Layout.InstallationArchetype = projLayout["installationarchetype"].(string)
-	project.Content.DetailPageStub.Tabs.Project.Layout.ITInfrastructure = projLayout["itinfrastructure"].(string)
-
-	hProduct := projLayout["highlightedproduct"].(map[string]interface{})
-
-	project.Content.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Description = hProduct["description"].(string)
-
-	hpImages := hProduct["images"].([]interface{})
-	project.Content.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Images = make([]string, len(hpImages))
-
-	for i, image := range hpImages {
-		project.Content.DetailPageStub.Tabs.Project.Layout.HighlightedProduct.Images[i] = image.(string)
-	}
-
-	project.Content.DetailPageStub.Tabs.Project.Layout.Description = projLayout["description"].(string)
-
-	comEng := projDetails["community engagement"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns = make(map[string][]string, len(comEng))
-
-	for cKeys, cVals := range comEng {
-		arr := cVals.([]interface{})
-		var columns []string
-		for _, strings := range arr {
-			columns = append(columns, strings.(string))
+	for key, value := range projDetails {
+		titleKey := strings.Title(key)
+		if ifString(value) {
+			project.Content.DetailPageStub.Tabs.Project[titleKey] = value
 		}
-		project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Columns[cKeys] = columns
+		if ifMapStringInterface(value) {
+			msi := make(map[string]interface{})
+			for tKey, tValue := range value.(map[string]interface{}) {
+				msi[strings.Title(tKey)] = tValue
+				log.Println("TKEY: ", strings.Title(tKey))
+			}
+			project.Content.DetailPageStub.Tabs.Project[strings.Title(key)] = make(map[string]interface{})
+			project.Content.DetailPageStub.Tabs.Project[strings.Title(key)] = msi
+		}
 	}
-
-	project.Content.DetailPageStub.Tabs.Project.CommunityEngagement.Description = comEng["description"].([]interface{})[0].(string)
-
-	bizNumbers := projDetails["biznumbers"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.Description = bizNumbers["description"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.GeneralPaymentLogic = bizNumbers["generalpaymentlogic"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.CapitalExpenditure = bizNumbers["capitalexpenditure"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.CapitalExpenditureImage = bizNumbers["capitalexpenditureimage"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.ProjectRevenue = bizNumbers["projectrevenue"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.ProjectExpenses = bizNumbers["projectexpenses"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.NonProfit = bizNumbers["nonprofit"].(string)
-	project.Content.DetailPageStub.Tabs.Project.BizNumbers.OtherLinks = bizNumbers["otherlinks"].(string)
 
 	sForecast := viper.Get("stage").(map[string]interface{})
-	devStage := sForecast["development stage"].(map[string]interface{})
-	// project.Content.DetailPageStub.Tabs.StageForecast
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.Image = devStage["image"].(string)
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageTitle = devStage["stagetitle"].(string)
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.StageDescription = devStage["stagedescription"].(string)
-	project.Content.DetailPageStub.Tabs.StageForecast.DevelopmentStage.OtherLink = devStage["otherlink"].(string)
+	for key, value := range sForecast {
+		titleKey := strings.Title(key)
+		if ifString(value) {
+			project.Content.DetailPageStub.Tabs.StageForecast[titleKey] = value
+		}
+		if ifMapStringInterface(value) {
+			msi := make(map[string]interface{})
+			for tKey, tValue := range value.(map[string]interface{}) {
+				msi[strings.Title(tKey)] = tValue
+				log.Println("TKEY: ", strings.Title(tKey))
+			}
+			project.Content.DetailPageStub.Tabs.StageForecast[strings.Title(key)] = make(map[string]interface{})
+			project.Content.DetailPageStub.Tabs.StageForecast[strings.Title(key)] = msi
+		}
+	}
 
 	documents := viper.Get("documents").(map[string]interface{})
-	// project.Content.DetailPageStub.Tabs.StageForecast.SolarStage
-	// project.Content.DetailPageStub.Tabs.Documents
-	project.Content.DetailPageStub.Tabs.Documents.Description = documents["description"].(string)
-
-	lContracts := documents["legalcontracts"].(map[string]interface{})
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Image = lContracts["image"].(string)
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Title = lContracts["title"].(string)
-	project.Content.DetailPageStub.Tabs.Documents.LegalContracts.Description = lContracts["description"].(string)
-
-	project.Content.DetailPageStub.Tabs.Documents.SmartContractsImage = documents["smartcontractsimage"].(string)
-	project.Content.DetailPageStub.Tabs.Documents.SCReviewDescription = documents["screviewdescription"].(string)
+	for key, value := range documents {
+		titleKey := strings.Title(key)
+		if ifString(value) {
+			project.Content.DetailPageStub.Tabs.Documents[titleKey] = value
+		}
+		if ifMapStringInterface(value) {
+			msi := make(map[string]interface{})
+			for tKey, tValue := range value.(map[string]interface{}) {
+				msi[strings.Title(tKey)] = tValue
+				log.Println("TKEY: ", strings.Title(tKey))
+			}
+			project.Content.DetailPageStub.Tabs.Documents[strings.Title(key)] = make(map[string]interface{})
+			project.Content.DetailPageStub.Tabs.Documents[strings.Title(key)] = msi
+		}
+	}
 
 	err = project.Save()
 	if err != nil {

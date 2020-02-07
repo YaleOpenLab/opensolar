@@ -181,70 +181,11 @@ type CMS struct {
 	DetailPageStub struct {
 		Box  map[string]interface{}
 		Tabs struct {
-			Terms    map[string]interface{} `json:"Terms"`
-			Overview struct {
-				ExecutiveSummary struct {
-					Columns map[string]map[string]string
-				} `json:"ExecutiveSummary"`
-				ImageLink   string
-				Opportunity struct {
-					Description string
-					PilotGoals  []string
-					Images      []string
-				}
-				Context string
-			} `json:"Overview"`
-			Project struct {
-				Architecture struct {
-					MapLayoutImage    string `json:"Map Layout"`
-					SolarOutputImage  string `json:"Solar Output"`
-					DesignDescription string `json:"Design Description"`
-					Description       string
-				} `json:"Architecture / Project Design"`
-				Layout struct {
-					InstallationArchetype string `json:"Installation Archetype"`
-					ITInfrastructure      string `json:"IT Infrastructure"`
-					HighlightedProduct    struct {
-						Description string
-						Images      []string
-					} `json:"Highlighted Product"`
-					Description string
-				} `json:"Engineering / Solar Layout"`
-				CommunityEngagement struct {
-					Columns     map[string][]string
-					Description string
-				} `json:"Community Engagement"`
-				BizNumbers struct {
-					Description             string
-					GeneralPaymentLogic     string `json:"General Payment Logic"`
-					CapitalExpenditure      string `json:"Capital Expenditure"`
-					CapitalExpenditureImage string
-					ProjectRevenue          string `json:"Project Revenue"`
-					ProjectExpenses         string `json:"Project Expenses"`
-					NonProfit               string `json:"Non-profit"`
-					OtherLinks              string `json:"OtherLinks"`
-				}
-			}
-			StageForecast struct {
-				DevelopmentStage struct {
-					Image            string
-					StageTitle       string
-					StageDescription string
-					OtherLink        string
-				} `json:"Development Stage"`
-				SolarStage struct {
-				} `json:"Solar/Financial State & Forecast"`
-			} `json:"Stage & Forecast"`
-			Documents struct {
-				Description    string
-				LegalContracts struct {
-					Image       string
-					Title       string
-					Description string
-				}
-				SmartContractsImage string
-				SCReviewDescription string
-			} `json:"Documents & Contracts"`
+			Terms         map[string]interface{} `json:"Terms"`
+			Overview      map[string]interface{} `json:"Overview"`
+			Project       map[string]interface{} `json:"Project"`
+			StageForecast map[string]interface{} `json:"Stage Forecast"`
+			Documents     map[string]interface{} `json:"Documents"`
 		}
 	}
 }
