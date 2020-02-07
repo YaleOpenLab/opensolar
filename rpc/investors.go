@@ -351,9 +351,9 @@ func sendEmail() {
 }
 
 type invDHelper struct {
-	Index            int     `json:"Int`
+	Index            int     `json:"Int"`
 	Stage            int     `json:"Stage"`
-	Name             string  `json:Project Name`
+	Name             string  `json:"Project Name"`
 	Location         string  `json:"Location"`
 	Capacity         string  `json:"Capacity"`
 	YourInvestment   float64 `json:"Your Investment"`
@@ -364,16 +364,20 @@ type invDHelper struct {
 }
 
 type invDashboardStruct struct {
-	Name             string       `json:"Name"`
-	Role             string       `json:"Role"`
-	TotalInvestments float64      `json:"Total Investments"`
-	ProjectsInvested int          `json:"Projects Invested"`
-	PrimaryAddress   string       `json:"Main Wallet"`
-	SecondaryAddress string       `json:"Secondary Wallet"`
-	AccountBalance1  float64      `json:"Account Balance 1"`
-	AccountBalance2  float64      `json:"Account Balance 2"`
-	NetBalance       float64      `json:"Balance"`
-	InvestedProjects []invDHelper `json:"Your Invested Projects"`
+	Name                string       `json:"Name"`
+	Role                string       `json:"Role"`
+	TotalInvestments    float64      `json:"Total Investments"`
+	ProjectsInvested    int          `json:"Projects Invested"`
+	NetReturns          string       `json:"Net Returns"`
+	RecsReceived        string       `json:"RECs Received"`
+	DirectContributions string       `json:"My Direct Contributions"`
+	TotalContributions  string       `json:"Total Contributions"`
+	PrimaryAddress      string       `json:"Main Wallet"`
+	SecondaryAddress    string       `json:"Secondary Wallet"`
+	AccountBalance1     float64      `json:"Account Balance 1"`
+	AccountBalance2     float64      `json:"Account Balance 2"`
+	NetBalance          float64      `json:"Balance"`
+	InvestedProjects    []invDHelper `json:"Your Invested Projects"`
 }
 
 // invDashboard returns the parameters needed for displaying details on the frontend
@@ -396,7 +400,7 @@ func invDashboard() {
 			var temp invDHelper
 			temp.Stage = project.Stage
 			temp.Name = project.Name
-			temp.Location = project.City + " " + project.State + " " + project.Country
+			temp.Location = project.City + ", " + project.State + ", " + project.Country
 			temp.Capacity = project.Content.Details["Other Details"]["Panel Size"].(string)
 			temp.YourInvestment = project.InvestorMap[prepInvestor.U.StellarWallet.PublicKey] * project.TotalValue
 			temp.YourReturn = "Donation"
@@ -408,10 +412,28 @@ func invDashboard() {
 			ret.InvestedProjects = append(ret.InvestedProjects, temp)
 		}
 
-		ret.Name = prepInvestor.U.Name
-		ret.Role = "Investor"
+		inv, err := core.SearchForInvestor(prepInvestor.U.Name)
+		if err == nil && inv.U.Name != "" {
+			ret.Role += " Investor"
+		}
+
+		recp, err := core.SearchForRecipient(prepInvestor.U.Name)
+		if err == nil && recp.U.Name != "" {
+			ret.Role += " Recipient"
+		}
+
+		entity, err := core.SearchForEntity(prepInvestor.U.Name)
+		if err == nil && entity.U.Name != "" {
+			ret.Role += " Entity"
+		}
+
 		ret.TotalInvestments = prepInvestor.AmountInvested
 		ret.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
+		ret.NetReturns = "$0"
+		ret.RecsReceived = "10 MWh"
+		ret.DirectContributions = "1000 KWh"
+		ret.TotalContributions = "1000 KWh"
+
 		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
 
