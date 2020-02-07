@@ -177,9 +177,8 @@ type Project struct {
 
 // CMS handles all the content related stuff wrt a project
 type CMS struct {
-	Keys         []string // the keys of the map at level 1
-	OtherDetails map[string]interface{}
-	Details      map[string]map[string]interface{}
+	Keys    []string // the keys of the map at level 1
+	Details map[string]map[string]interface{}
 }
 
 // Feedback defines a structure that is used for providing feedback

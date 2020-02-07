@@ -336,7 +336,7 @@ func explore() {
 			x.Stage = project.Stage
 			x.Return = project.Content.Details["ExploreTab"]["Return"]
 			x.Rating = project.Content.Details["ExploreTab"]["Rating"]
-			x.Tax = project.Content.OtherDetails["Tax"]
+			x.Tax = project.Content.Details["Other Details"]["Tax"]
 			x.Acquisition = project.Acquisition
 			x.Raised = project.MoneyRaised
 			x.Total = project.TotalValue

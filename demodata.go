@@ -215,6 +215,34 @@ func findInterfaceDepth(x interface{}) int {
 	}
 }
 
+func convert1(x interface{}) interface{} {
+	msi := x.(map[string]interface{})
+	for key, value := range msi {
+		switch value.(type) {
+		case []interface{}:
+			msi[key] = value.([]interface{})
+		case interface{}:
+			msi[key] = value.(interface{})
+		}
+	}
+	return msi
+}
+
+func convert2(x map[string]interface{}) map[string]interface{} {
+	temp := make(map[string]interface{})
+	for key1, value1 := range x {
+		depth := findInterfaceDepth(value1)
+		switch depth {
+		case 0:
+			temp[key1] = value1.(interface{})
+		case 1:
+			temp[key1] = make(map[string]interface{})
+			temp[key1] = convert1(value1)
+		}
+	}
+	return temp
+}
+
 // parseCMS parses the yaml file and converts it into the CMS format we have
 func parseCMS(fileName string, projIndex int) error {
 	viper.SetConfigType("yaml")
@@ -244,33 +272,24 @@ func parseCMS(fileName string, projIndex int) error {
 		depth := findInterfaceDepth(viper.Get(key))
 		switch depth {
 		case 1:
+			// we can't use convert1 here because it returns interface{}
 			msi := viper.Get(key).(map[string]interface{})
-			project.Content.Details[key] = make(map[string]interface{})
-			for key1, value1 := range msi {
-				project.Content.Details[key][key1] = value1
+			temp := make(map[string]interface{})
+			for key, value := range msi {
+				switch value.(type) {
+				case []interface{}:
+					temp[key] = value.([]interface{})
+				case interface{}:
+					temp[key] = value.(interface{})
+				}
 			}
+
+			project.Content.Details[key] = make(map[string]interface{})
+			project.Content.Details[key] = temp
 		case 2:
 			msmsi := viper.Get(key).(map[string]interface{})
 			project.Content.Details[key] = make(map[string]interface{})
-			for key1, value1 := range msmsi {
-				depth := findInterfaceDepth(value1)
-				switch depth {
-				case 0:
-					project.Content.Details[key][key1] = value1.(interface{})
-				case 1:
-					msi := value1.(map[string]interface{})
-					project.Content.Details[key][key1] = make(map[string]interface{})
-					for key2, value2 := range msi {
-						switch value2.(type) {
-						case []interface{}:
-							msi[key2] = value2.([]interface{})
-						case interface{}:
-							msi[key2] = value2.(interface{})
-						}
-					}
-					project.Content.Details[key][key1] = msi
-				}
-			}
+			project.Content.Details[key] = convert2(msmsi)
 		case 3:
 			msmsmsi := viper.Get(key).(map[string]interface{})
 			project.Content.Details[key] = make(map[string]interface{})
@@ -280,40 +299,12 @@ func parseCMS(fileName string, projIndex int) error {
 				case 0:
 					project.Content.Details[key][key1] = value1.(interface{})
 				case 1:
-					msi := value1.(map[string]interface{})
 					project.Content.Details[key][key1] = make(map[string]interface{})
-					for key2, value2 := range msi {
-						switch value2.(type) {
-						case []interface{}:
-							msi[key2] = value2.([]interface{})
-						case interface{}:
-							msi[key2] = value2.(interface{})
-						}
-					}
-					project.Content.Details[key][key1] = msi
+					project.Content.Details[key][key1] = convert1(value1)
 				case 2:
-					msmsi := viper.Get(key).(map[string]interface{})
-					for key2, value2 := range msmsi {
-						depth := findInterfaceDepth(value2)
-						switch depth {
-						case 0:
-							msmsi[key2] = value2.(interface{})
-						case 1:
-							msi := value2.(map[string]interface{})
-							msmsi[key2] = make(map[string]interface{})
-							for key3, value3 := range msi {
-								switch value3.(type) {
-								case []interface{}:
-									msi[key3] = value3.([]interface{})
-								case interface{}:
-									msi[key3] = value3.(interface{})
-								}
-							}
-							msmsi[key2] = msi
-							project.Content.Details[key][key1] = make(map[string]map[string]interface{})
-							project.Content.Details[key][key1] = msmsi
-						}
-					}
+					msmsi := value1.(map[string]interface{})
+					project.Content.Details[key][key1] = make(map[string]interface{})
+					project.Content.Details[key][key1] = convert2(msmsi)
 				}
 			}
 		default:
