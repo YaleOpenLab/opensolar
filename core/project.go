@@ -177,31 +177,9 @@ type Project struct {
 
 // CMS handles all the content related stuff wrt a project
 type CMS struct {
-	OtherDetails struct {
-		Tax       string
-		Storage   string
-		Tariff    string
-		PanelSize string `json:"Panel Size"` // size of the given panel, for diplsaying to the user who wants to bid stuff
-	}
+	OtherDetails   map[string]interface{}
 	DetailPageStub struct {
-		Box struct {
-			StageDescription string
-			Name             string
-			Location         string
-			ProjectType      string
-			OriginatorName   string
-			Description      string
-			Bullet1          string
-			Bullet2          string
-			Bullet3          string
-			Solar            string
-			Battery          string
-			Return           string
-			Rating           string
-			Maturity         string
-			MoneyRaised      float64
-			TotalValue       float64
-		}
+		Box  map[string]interface{}
 		Tabs struct {
 			Terms struct {
 				Purpose string

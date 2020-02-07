@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	core "github.com/YaleOpenLab/opensolar/core"
 	"github.com/pkg/errors"
@@ -39,11 +40,14 @@ func demoData() error {
 
 	// populate the CMS
 	// project.Content.DetailPageStub.Box
-	project.Content.DetailPageStub.Box.Name = project.Name
-	project.Content.DetailPageStub.Box.Location = project.City + ", " + project.State + ", " + project.Country
-	project.Content.DetailPageStub.Box.Maturity = project.Acquisition
-	project.Content.DetailPageStub.Box.MoneyRaised = project.MoneyRaised
-	project.Content.DetailPageStub.Box.TotalValue = project.TotalValue
+	project.Content.DetailPageStub.Box = make(map[string]interface{})
+	project.Content.OtherDetails = make(map[string]interface{})
+
+	project.Content.DetailPageStub.Box["Name"] = project.Name
+	project.Content.DetailPageStub.Box["Location"] = project.City + ", " + project.State + ", " + project.Country
+	project.Content.DetailPageStub.Box["Maturity"] = project.Acquisition
+	project.Content.DetailPageStub.Box["Money Raised"] = project.MoneyRaised
+	project.Content.DetailPageStub.Box["Total Value"] = project.TotalValue
 
 	// project.Content.DetailPageStub.Tabs.Overview
 	project.Content.DetailPageStub.Tabs.Overview.ExecutiveSummary.Columns = make(map[string]map[string]string)
@@ -173,7 +177,7 @@ func parseCMS(fileName string, projIndex int) error {
 	viper.SetConfigType("yaml")
 	// viper.SetConfigName(fileName)
 	viper.SetConfigName("cms")
-	// viper.AddConfigPath("./data")
+	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
 		return errors.Wrap(err, "error while reading values from config file")
@@ -185,21 +189,16 @@ func parseCMS(fileName string, projIndex int) error {
 	}
 
 	etm := viper.Get("Explore Tab Modal").(map[string]interface{})
-	project.Content.DetailPageStub.Box.ProjectType = etm["projecttype"].(string)
-	project.Content.DetailPageStub.Box.OriginatorName = etm["originatorname"].(string)
-	project.Content.DetailPageStub.Box.Description = etm["description"].(string)
-	project.Content.DetailPageStub.Box.Bullet1 = etm["bullet1"].(string)
-	project.Content.DetailPageStub.Box.Bullet2 = etm["bullet2"].(string)
-	project.Content.DetailPageStub.Box.Bullet3 = etm["bullet3"].(string)
-	project.Content.DetailPageStub.Box.Solar = etm["solar"].(string)
-	project.Content.DetailPageStub.Box.Battery = etm["battery"].(string)
-	project.Content.DetailPageStub.Box.Return = etm["return"].(string)
-	project.Content.DetailPageStub.Box.Rating = etm["rating"].(string)
+	for key, value := range etm {
+		titleKey := strings.Title(key)
+		project.Content.DetailPageStub.Box[titleKey] = value
+	}
 
 	od := viper.Get("Other Details").(map[string]interface{})
-	project.Content.OtherDetails.Tax = od["tax"].(string)
-	project.Content.OtherDetails.Storage = od["storage"].(string)
-	project.Content.OtherDetails.Tariff = od["tariff"].(string)
+	for key, value := range od {
+		titleKey := strings.Title(key)
+		project.Content.OtherDetails[titleKey] = value
+	}
 
 	terms := viper.Get("Terms").(map[string]interface{})
 	project.Content.DetailPageStub.Tabs.Terms.Purpose = terms["purpose"].(string)
@@ -223,7 +222,6 @@ func parseCMS(fileName string, projIndex int) error {
 	project.Content.DetailPageStub.Tabs.Terms.SecurityNote = terms["securitynote"].(string)
 
 	overview := viper.Get("overview").(map[string]interface{})
-	log.Println(overview)
 	execSummary := overview["executive summary"].(map[string]interface{})
 
 	for execKeys, execVals := range execSummary {

@@ -397,7 +397,7 @@ func invDashboard() {
 			temp.Stage = project.Stage
 			temp.Name = project.Name
 			temp.Location = project.City + " " + project.State + " " + project.Country
-			temp.Capacity = project.Content.OtherDetails.PanelSize
+			temp.Capacity = project.Content.OtherDetails["Panel Size"].(string)
 			temp.YourInvestment = project.InvestorMap[prepInvestor.U.StellarWallet.PublicKey] * project.TotalValue
 			temp.YourReturn = "Donation"
 			temp.InvestmentRating = "N/A"

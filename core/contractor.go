@@ -17,7 +17,7 @@ func (contractor *Entity) Propose(panelSize string, totalValue float64, location
 		return pc, errors.New("projects could not be retrieved")
 	}
 	pc.Index = len(indexCheck) + 1
-	pc.Content.OtherDetails.PanelSize = panelSize
+	pc.Content.OtherDetails["Panel Size"] = panelSize
 	pc.TotalValue = totalValue
 	pc.State = location
 	pc.EstimatedAcquisition = years

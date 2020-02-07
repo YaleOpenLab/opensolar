@@ -13,7 +13,6 @@ import (
 
 // setupProjectRPCs sets up all project related RPC calls
 func setupProjectRPCs() {
-	insertProject()
 	getProject()
 	getAllProjects()
 	getProjectsAtIndex()
@@ -26,79 +25,15 @@ func setupProjectRPCs() {
 
 // ProjectRPC contains a list of all the project related RPC endpoints
 var ProjectRPC = map[int][]string{
-	1:  []string{"/project/insert", "POST", "PanelSize", "TotalValue", "Location", "Metadata", "Stage"}, // POST
-	2:  []string{"/project/all", "GET"},                                                                 // GET
-	3:  []string{"/project/get", "GET", "index"},                                                        // GET
-	4:  []string{"/projects", "GET", "stage"},                                                           // GET
-	5:  []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},                           // GET
-	6:  []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"},                       // GET
-	7:  []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                                      // GET
-	8:  []string{"/project/get/dashboard", "GET", "index"},                                              // GET
-	9:  []string{"/explore", "GET"},                                                                     // GET
-	10: []string{"/project/detail", "GET", "index"},                                                     // GET
-}
-
-// insertProject inserts a project into the database.
-func insertProject() {
-	http.HandleFunc(ProjectRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckPost(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		err = checkReqdParams(w, r, ProjectRPC[1][2:], ProjectRPC[1][1])
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		err = r.ParseForm()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-		}
-
-		panelSize := r.FormValue("PanelSize")
-		totalValue := r.FormValue("TotalValue")
-		location := r.FormValue("Location")
-		metadata := r.FormValue("Metadata")
-		stage := r.FormValue("Stage")
-
-		allProjects, err := core.RetrieveAllProjects()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-		}
-
-		var prepProject core.Project
-
-		prepProject.Index = len(allProjects) + 1
-		prepProject.Content.OtherDetails.PanelSize = panelSize
-		prepProject.TotalValue, err = utils.ToFloat(totalValue)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-		}
-		prepProject.State = location
-		prepProject.Metadata = metadata
-		prepProject.Stage, err = utils.ToInt(stage)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-		}
-		prepProject.MoneyRaised = 0
-		prepProject.BalLeft = float64(0)
-		prepProject.DateInitiated = utils.Timestamp()
-
-		err = prepProject.Save()
-		if err != nil {
-			log.Println("did not save project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
-		erpc.ResponseHandler(w, erpc.StatusOK)
-	})
+	2:  []string{"/project/all", "GET"},                                           // GET
+	3:  []string{"/project/get", "GET", "index"},                                  // GET
+	4:  []string{"/projects", "GET", "stage"},                                     // GET
+	5:  []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},     // GET
+	6:  []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"}, // GET
+	7:  []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                // GET
+	8:  []string{"/project/get/dashboard", "GET", "index"},                        // GET
+	9:  []string{"/explore", "GET"},                                               // GET
+	10: []string{"/project/detail", "GET", "index"},                               // GET
 }
 
 // getAllProjects gets a list of all the projects in the database
@@ -341,20 +276,20 @@ func getProjectDashboard() {
 type ExplorePageStub struct {
 	StageDescription string
 	Name             string
-	Location         string
-	ProjectType      string
-	OriginatorName   string
-	Description      string
-	Bullet1          string
-	Bullet2          string
-	Bullet3          string
-	Solar            string
-	Storage          string
-	Tariff           string
+	Location         interface{}
+	ProjectType      interface{}
+	OriginatorName   interface{}
+	Description      interface{}
+	Bullet1          interface{}
+	Bullet2          interface{}
+	Bullet3          interface{}
+	Solar            interface{}
+	Storage          interface{}
+	Tariff           interface{}
 	Stage            int
-	Return           string
-	Rating           string
-	Tax              string
+	Return           interface{}
+	Rating           interface{}
+	Tax              interface{}
 	Acquisition      string
 	Raised           float64
 	Total            float64
@@ -388,20 +323,20 @@ func explore() {
 			}
 			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			x.Name = project.Name
-			x.Location = project.Content.DetailPageStub.Box.Location
-			x.ProjectType = project.Content.DetailPageStub.Box.ProjectType
-			x.OriginatorName = project.Content.DetailPageStub.Box.OriginatorName
-			x.Description = project.Content.DetailPageStub.Box.Description
-			x.Bullet1 = project.Content.DetailPageStub.Box.Bullet1
-			x.Bullet2 = project.Content.DetailPageStub.Box.Bullet2
-			x.Bullet3 = project.Content.DetailPageStub.Box.Bullet3
-			x.Solar = project.Content.DetailPageStub.Box.Solar
-			x.Storage = project.Content.OtherDetails.Storage
-			x.Tariff = project.Content.OtherDetails.Tariff
+			x.Location = project.Content.DetailPageStub.Box["Location"]
+			x.ProjectType = project.Content.DetailPageStub.Box["Project Type"]
+			x.OriginatorName = project.Content.DetailPageStub.Box["Originator Name"]
+			x.Description = project.Content.DetailPageStub.Box["Description"]
+			x.Bullet1 = project.Content.DetailPageStub.Box["Bullet 1"]
+			x.Bullet2 = project.Content.DetailPageStub.Box["Bullet 2"]
+			x.Bullet3 = project.Content.DetailPageStub.Box["Bullet 3"]
+			x.Solar = project.Content.DetailPageStub.Box["Solar"]
+			x.Storage = project.Content.OtherDetails["Storage"]
+			x.Tariff = project.Content.OtherDetails["Tariff"]
 			x.Stage = project.Stage
-			x.Return = project.Content.DetailPageStub.Box.Return
-			x.Rating = project.Content.DetailPageStub.Box.Rating
-			x.Tax = project.Content.OtherDetails.Tax
+			x.Return = project.Content.DetailPageStub.Box["Return"]
+			x.Rating = project.Content.DetailPageStub.Box["Rating"]
+			x.Tax = project.Content.OtherDetails["Tax"]
 			x.Acquisition = project.Acquisition
 			x.Raised = project.MoneyRaised
 			x.Total = project.TotalValue
@@ -450,9 +385,9 @@ func projectDetail() {
 			return
 		}
 
-		project.Content.DetailPageStub.Box.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
-		project.Content.DetailPageStub.Box.MoneyRaised = project.MoneyRaised
-		project.Content.DetailPageStub.Box.TotalValue = project.TotalValue
+		project.Content.DetailPageStub.Box["StageDescription"] = stageString + " | " + core.GetStageDescription(project.Stage)
+		project.Content.DetailPageStub.Box["MoneyRaised"] = project.MoneyRaised
+		project.Content.DetailPageStub.Box["TotalValue"] = project.TotalValue
 
 		erpc.MarshalSend(w, project.Content.DetailPageStub)
 	})
