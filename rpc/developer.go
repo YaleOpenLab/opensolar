@@ -14,6 +14,7 @@ import (
 
 func setupDeveloperRPCs() {
 	withdrawdeveloper()
+	developerDashboard()
 }
 
 var DevRPC = map[int][]string{
@@ -90,7 +91,7 @@ type entityDashboardData struct {
 // developerDashboard returns the stuff that should be there on the contractor dashboard
 func developerDashboard() {
 	http.HandleFunc(DevRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[9][1])
+		prepEntity, err := entityValidateHelper(w, r, []string{}, DevRPC[2][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
