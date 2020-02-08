@@ -148,12 +148,6 @@ func newEntity(uname string, pwhash string, seedpwd string, name string, role st
 		return a, errors.Wrap(err, "couldn't retrieve new user from db")
 	}
 
-	user.Name = name
-	err = user.Save()
-	if err != nil {
-		return a, err
-	}
-
 	switch role {
 	case "contractor":
 		a.Contractor = true
