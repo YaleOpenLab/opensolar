@@ -351,7 +351,7 @@ func sendEmail() {
 }
 
 type invDHelper struct {
-	Index            int     `json:"Int"`
+	Index            int     `json:"Index"`
 	Stage            int     `json:"Stage"`
 	Name             string  `json:"Project Name"`
 	Location         string  `json:"Location"`
@@ -364,20 +364,28 @@ type invDHelper struct {
 }
 
 type invDashboardStruct struct {
-	Name                string       `json:"Name"`
-	Role                string       `json:"Role"`
-	TotalInvestments    float64      `json:"Total Investments"`
-	ProjectsInvested    int          `json:"Projects Invested"`
-	NetReturns          string       `json:"Net Returns"`
-	RecsReceived        string       `json:"RECs Received"`
-	DirectContributions string       `json:"My Direct Contributions"`
-	TotalContributions  string       `json:"Total Contributions"`
-	PrimaryAddress      string       `json:"Main Wallet"`
-	SecondaryAddress    string       `json:"Secondary Wallet"`
-	AccountBalance1     float64      `json:"Account Balance 1"`
-	AccountBalance2     float64      `json:"Account Balance 2"`
-	NetBalance          float64      `json:"Balance"`
-	InvestedProjects    []invDHelper `json:"Your Invested Projects"`
+	YourProfile struct {
+		Name  string `json:"Name"`
+		Roles string `json:"Roles"`
+	} `json:"Your Profile"`
+	YourInvestments struct {
+		TotalInvestments float64 `json:"Total Investments"`
+		ProjectsInvested int     `json:"Projects Invested"`
+	} `json:"Your Investments"`
+	YourReturns struct {
+		NetReturns   string `json:"Net Returns"`
+		RecsReceived string `json:"RECs Received"`
+	} `json:"Your Returns"`
+	EFacilitate struct {
+		DirectContributions string `json:"My Direct Contributions"`
+		TotalContributions  string `json:"Total Contributions"`
+	} `json:"Energy You Facilitate"`
+	PrimaryAddress   string       `json:"Main Wallet"`
+	SecondaryAddress string       `json:"Secondary Wallet"`
+	AccountBalance1  float64      `json:"Account Balance 1"`
+	AccountBalance2  float64      `json:"Account Balance 2"`
+	NetBalance       float64      `json:"Balance"`
+	InvestedProjects []invDHelper `json:"Your Invested Projects"`
 }
 
 // invDashboard returns the parameters needed for displaying details on the frontend
@@ -414,25 +422,25 @@ func invDashboard() {
 
 		inv, err := core.SearchForInvestor(prepInvestor.U.Name)
 		if err == nil && inv.U.Name != "" {
-			ret.Role += " Investor"
+			ret.YourProfile.Roles += " Investor"
 		}
 
 		recp, err := core.SearchForRecipient(prepInvestor.U.Name)
 		if err == nil && recp.U.Name != "" {
-			ret.Role += " Recipient"
+			ret.YourProfile.Roles += " Recipient"
 		}
 
 		entity, err := core.SearchForEntity(prepInvestor.U.Name)
 		if err == nil && entity.U.Name != "" {
-			ret.Role += " Entity"
+			ret.YourProfile.Roles += " Entity"
 		}
 
-		ret.TotalInvestments = prepInvestor.AmountInvested
-		ret.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
-		ret.NetReturns = "$0"
-		ret.RecsReceived = "10 MWh"
-		ret.DirectContributions = "1000 KWh"
-		ret.TotalContributions = "1000 KWh"
+		ret.YourInvestments.TotalInvestments = prepInvestor.AmountInvested
+		ret.YourInvestments.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
+		ret.YourReturns.NetReturns = "$0"
+		ret.YourReturns.RecsReceived = "10 MWh"
+		ret.EFacilitate.DirectContributions = "1000 KWh"
+		ret.EFacilitate.TotalContributions = "1000 KWh"
 
 		ret.PrimaryAddress = prepInvestor.U.StellarWallet.PublicKey
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey

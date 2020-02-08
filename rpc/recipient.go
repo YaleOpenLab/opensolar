@@ -10,6 +10,7 @@ import (
 	xlm "github.com/Varunram/essentials/xlm"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
 
+	"github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -656,15 +657,27 @@ func storeTellerDetails() {
 }
 
 type recpDashboardHelper struct {
-	Name                 string              `json:"Beneficiary Name"`
-	ActiveProjects       int                 `json:"Active Projects"`
-	TiCP                 string              `json:"Total in Current Period"`
-	AllTime              string              `json:"All Time"`
-	ProjectWalletBalance float64             `json:"Project Wallet Balance"`
-	AutoReload           string              `json:"Auto Reload"`
-	Notification         string              `json:"Notification"`
-	ActionsRequired      string              `json:"Actions Required"`
-	YourProjects         []recpDashboardData `json:"Your Projects"`
+	YourProfile struct {
+		Name           string `json:"Name"`
+		ActiveProjects int    `json:"Active Projects"`
+	} `json:"Your Profile"`
+
+	YourEnergy struct {
+		TiCP    string `json:"Total in Current Period"`
+		AllTime string `json:"All Time"`
+	} `json:"Your Energy"`
+
+	YourWallet struct {
+		ProjectWalletBalance float64 `json:"Project Wallet Balance"`
+		AutoReload           string  `json:"Auto Reload"`
+	} `json:"Your Wallet"`
+
+	NActions struct {
+		Notification    string `json:"Notification"`
+		ActionsRequired string `json:"Actions Required"`
+	} `json:"Notifications & Actions"`
+
+	YourProjects []recpDashboardData `json:"Your Projects"`
 }
 
 type recpDashboardData struct {
@@ -706,14 +719,19 @@ func recpDashboard() {
 			return
 		}
 
-		ret.Name = prepRecipient.U.Name
-		ret.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
-		ret.TiCP = "845 kWh"
-		ret.AllTime = "10,150 MWh"
-		ret.ProjectWalletBalance = xlm.GetNativeBalance(project.EscrowPubkey)
-		ret.AutoReload = "On"
-		ret.Notification = "None"
-		ret.ActionsRequired = "None"
+		ret.YourProfile.Name = prepRecipient.U.Name
+		ret.YourProfile.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
+		ret.YourEnergy.TiCP = "845 kWh"
+		ret.YourEnergy.AllTime = "10,150 MWh"
+		ret.YourWallet.AutoReload = "On"
+		ret.NActions.Notification = "None"
+		ret.NActions.ActionsRequired = "None"
+
+		if consts.Mainnet {
+			ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
+		} else {
+			ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
+		}
 
 		ret.YourProjects = make([]recpDashboardData, len(prepRecipient.ReceivedSolarProjectIndices))
 		for i, elem := range prepRecipient.ReceivedSolarProjectIndices {
