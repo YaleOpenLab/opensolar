@@ -91,7 +91,7 @@ type entityDashboardData struct {
 // developerDashboard returns the stuff that should be there on the contractor dashboard
 func developerDashboard() {
 	http.HandleFunc(DevRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
-		prepEntity, err := entityValidateHelper(w, r, []string{}, DevRPC[2][1])
+		prepEntity, err := entityValidateHelper(w, r, DevRPC[2][2:], DevRPC[2][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
 			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
@@ -100,8 +100,8 @@ func developerDashboard() {
 
 		var ret entityDashboardHelper
 
-		var present bool
-		var proposed bool
+		present := false
+		proposed := false
 
 		if len(prepEntity.PresentContractIndices) != 0 {
 			present = true
@@ -127,10 +127,10 @@ func developerDashboard() {
 		ret.ActionsRequired = "None"
 
 		if present {
-			for i := range prepEntity.PresentContractIndices {
+			for _, i := range prepEntity.PresentContractIndices {
 				project, err := core.RetrieveProject(i)
 				if err != nil {
-					log.Println(err)
+					log.Println("could not retrieve project from db:", err)
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
@@ -139,10 +139,10 @@ func developerDashboard() {
 		}
 
 		if proposed {
-			for i := range prepEntity.ProposedContractIndices {
+			for _, i := range prepEntity.ProposedContractIndices {
 				project, err := core.RetrieveProject(i)
 				if err != nil {
-					log.Println(err)
+					log.Println("could not retrieve project from db:", err)
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
@@ -169,7 +169,6 @@ func developerDashboard() {
 
 			var escrowBalance string
 			if consts.Mainnet {
-
 				escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode))
 				if err != nil {
 					log.Println(err)

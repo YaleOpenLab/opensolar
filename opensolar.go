@@ -27,6 +27,7 @@ import (
 var opts struct {
 	Insecure bool   `short:"i" description:"Start the API using http. Not recommended"`
 	Port     int    `short:"p" description:"The port on which the server runs on. Default: HTTPS/8081"`
+	DemoData bool   `short:"d" description:"Populate demo data"`
 	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
 }
 
@@ -166,9 +167,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		err = demoData()
-		if err != nil {
-			log.Fatal(err)
+		if opts.DemoData {
+			err = demoData()
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 
