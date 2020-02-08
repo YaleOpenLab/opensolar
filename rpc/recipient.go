@@ -668,9 +668,10 @@ type recpDashboardHelper struct {
 }
 
 type recpDashboardData struct {
-	Index int
-	Role  string
-	PSA   struct {
+	Index      int
+	ExploreTab map[string]interface{} `json:"Explore Tab"`
+	Role       string
+	PSA        struct {
 		Stage   string
 		Actions []string
 	} `json:"Project Stage & Actions"`
@@ -680,6 +681,7 @@ type recpDashboardData struct {
 	BillsRewards struct {
 		PendingPayments []string `json:"Peyments"`
 	}
+	Documents map[string]interface{} `json:"Documentation and Smart Contracts`
 }
 
 // recpDashboard returns the relevant data needed to populate the recipient dashboard
@@ -723,6 +725,8 @@ func recpDashboard() {
 				return
 			}
 			x.Index = elem
+			x.ExploreTab = make(map[string]interface{})
+			x.ExploreTab = project.Content.Details["Explore Tab"]
 			x.Role = "You are an Offtaker"
 			sStage, err := utils.ToString(project.Stage)
 			if err != nil {
@@ -736,6 +740,8 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", "$203 due on April 30"}
+			x.Documents = make(map[string]interface{})
+			x.Documents = project.Content.Details["Documents"]
 			ret.YourProjects[i] = x
 		}
 
