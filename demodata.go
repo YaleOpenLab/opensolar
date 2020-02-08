@@ -3,6 +3,11 @@ package main
 import (
 	"log"
 
+	"github.com/Varunram/essentials/utils"
+	"github.com/Varunram/essentials/xlm"
+	"github.com/Varunram/essentials/xlm/wallet"
+	"github.com/YaleOpenLab/opensolar/stablecoin"
+
 	core "github.com/YaleOpenLab/opensolar/core"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -86,6 +91,101 @@ func demoData() error {
 		return err
 	}
 
+	project, err = core.RetrieveProject(project.Index)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	password := "password"
+	//pwhash := utils.SHA3hash(password)
+	seedpwd := "x"
+	// invAmount := 4000.0
+	run := utils.GetRandomString(5)
+
+	inv, err := core.NewInvestor("mitdci"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = xlm.GetXLM(inv.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, invSeed, 1000000)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	inv.InvestedSolarProjectsIndices = append(inv.InvestedSolarProjectsIndices, project.Index)
+
+	recp, err := core.NewRecipient("fabideas"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	recp.ReceivedSolarProjectIndices = append(recp.ReceivedSolarProjectIndices, project.Index)
+
+	err = xlm.GetXLM(recp.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	dev, err := core.NewDeveloper("inversol"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = xlm.GetXLM(dev.U.StellarWallet.PublicKey)
+	if err != nil {
+		log.Println("could not get XLM: ", err)
+		return err
+	}
+
+	dev.PresentContractIndices = append(dev.PresentContractIndices, project.Index)
+	project.MainDeveloperIndex = dev.U.Index
+	project.DeveloperFee = []float64{3000}
+
+	project.RecipientIndex = recp.U.Index
+	project.GuarantorIndex = 1
+
+	err = project.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = inv.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = recp.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = dev.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	/*
 		txhash, err := assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, 10000000000, consts.PlatformSeed)
 		if err != nil {
@@ -94,12 +194,7 @@ func demoData() error {
 
 		log.Println("tx for platform trusting stablecoin:", txhash)
 
-		password := "password"
-		//pwhash := utils.SHA3hash(password)
-		seedpwd := "x"
 		//exchangeAmount := 1.0
-		invAmount := 4000.0
-		run := utils.GetRandomString(5)
 
 		inv, err := core.NewInvestor("inv"+run, password, seedpwd, "varunramganesh@gmail.com")
 		if err != nil {

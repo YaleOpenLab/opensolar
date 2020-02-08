@@ -102,10 +102,10 @@ func developerDashboard() {
 		var present bool
 		var proposed bool
 
-		if len(prepEntity.PresentContractIndices) == 0 {
+		if len(prepEntity.PresentContractIndices) != 0 {
 			present = true
 		}
-		if len(prepEntity.ProposedContractIndices) == 0 {
+		if len(prepEntity.ProposedContractIndices) != 0 {
 			proposed = true
 		}
 
