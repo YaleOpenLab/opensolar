@@ -61,14 +61,25 @@ func withdrawdeveloper() {
 }
 
 type entityDashboardHelper struct {
-	Name                 string  `json:"Beneficiary Name"`
-	ActiveProjects       int     `json:"Active Projects"`
-	TiCP                 string  `json:"Total in Current Period"`
-	AllTime              string  `json: All Time`
-	ProjectWalletBalance float64 `json:"Project Wallet Balance"`
-	AutoReload           string  `json:"Auto Reload"`
-	Notification         string  `json:"Notification"`
-	ActionsRequired      string  `json:"Actions Required"`
+	YourProfile struct {
+		Name           string `json:"Name"`
+		ActiveProjects int    `json:"Active Projects"`
+	} `json:"Your Profile"`
+
+	YourEnergy struct {
+		TiCP    string `json:"Total in Current Period"`
+		AllTime string `json:"All Time"`
+	} `json:"Your Energy"`
+
+	YourWallet struct {
+		ProjectWalletBalance float64 `json:"Project Wallet Balance"`
+		AutoReload           string  `json:"Auto Reload"`
+	} `json:"Your Wallet"`
+
+	NActions struct {
+		Notification    string `json:"Notification"`
+		ActionsRequired string `json:"Actions Required"`
+	} `json:"Notifications & Actions"`
 
 	YourProjects []entityDashboardData
 }
@@ -118,13 +129,13 @@ func developerDashboard() {
 
 		var projects []core.Project
 
-		ret.Name = prepEntity.U.Name
-		ret.ActiveProjects = len(prepEntity.PresentContractIndices)
-		ret.TiCP = "845 kWh"
-		ret.AllTime = "10,150 MWh"
-		ret.AutoReload = "On"
-		ret.Notification = "None"
-		ret.ActionsRequired = "None"
+		ret.YourProfile.Name = prepEntity.U.Name
+		ret.YourProfile.ActiveProjects = len(prepEntity.PresentContractIndices)
+		ret.YourEnergy.TiCP = "845 kWh"
+		ret.YourEnergy.AllTime = "10,150 MWh"
+		ret.YourWallet.AutoReload = "On"
+		ret.NActions.Notification = "None"
+		ret.NActions.ActionsRequired = "None"
 
 		if present {
 			for _, i := range prepEntity.PresentContractIndices {
@@ -175,7 +186,7 @@ func developerDashboard() {
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
-				ret.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
+				ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
 			} else {
 
 				escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode))
@@ -184,7 +195,7 @@ func developerDashboard() {
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
-				ret.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
+				ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
 			}
 
 			x.ProjectWallets.Wallets[0] = []string{"Project Escrow Wallet: " + project.EscrowPubkey, escrowBalance}
