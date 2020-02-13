@@ -435,6 +435,7 @@ func invDashboard() {
 			ret.YourProfile.Roles += " Entity"
 		}
 
+		ret.YourProfile.Name = inv.U.Name
 		ret.YourInvestments.TotalInvestments = prepInvestor.AmountInvested
 		ret.YourInvestments.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
 		ret.YourReturns.NetReturns = "$0"

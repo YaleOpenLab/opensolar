@@ -692,9 +692,9 @@ type recpDashboardData struct {
 		Certificates [][]string `json:"Certificates"`
 	}
 	BillsRewards struct {
-		PendingPayments []string `json:"Peyments"`
+		PendingPayments []string `json:"Payments"`
 	}
-	Documents map[string]interface{} `json:"Documentation and Smart Contracts`
+	Documents map[string]interface{} `json:"Documentation and Smart Contracts"`
 }
 
 // recpDashboard returns the relevant data needed to populate the recipient dashboard

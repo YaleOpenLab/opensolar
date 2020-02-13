@@ -86,7 +86,7 @@ type entityDashboardHelper struct {
 
 type entityDashboardData struct {
 	Index      int
-	ExploreTab map[string]interface{}
+	ExploreTab map[string]interface{} `json:"Explore Tab"`
 	Role       string
 	PSA        struct {
 		Stage   string
@@ -95,8 +95,8 @@ type entityDashboardData struct {
 	ProjectWallets struct {
 		Wallets [][]string `json:"Project Wallets"`
 	}
-	PendingPayments []string
-	Documents       map[string]interface{}
+	PendingPayments []string               `json:"Payments"`
+	Documents       map[string]interface{} `json:"Documentation and Smart Contracts"`
 }
 
 // developerDashboard returns the stuff that should be there on the contractor dashboard
