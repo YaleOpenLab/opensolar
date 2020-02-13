@@ -420,30 +420,40 @@ func invDashboard() {
 			ret.InvestedProjects = append(ret.InvestedProjects, temp)
 		}
 
-		inv, err := core.SearchForInvestor(prepInvestor.U.Name)
+		ret.YourProfile.Roles = ""
+		inv, err := core.SearchForInvestor(prepInvestor.U.Username)
 		if err == nil {
-			if inv.U.Name != "" {
-			ret.YourProfile.Roles += " Investor"
-			}
+			ret.YourProfile.Roles += "Investor"
 		}
 
-		recp, err := core.SearchForRecipient(prepInvestor.U.Name)
+		recp, err := core.SearchForRecipient(prepInvestor.U.Username)
 		if err == nil {
-			if recp.U.Name != "" {
-			ret.YourProfile.Roles += " Recipient"
-			}
+			log.Println("RECP: ", recp)
+			ret.YourProfile.Roles += ", Recipient"
 		}
 
-		entity, err := core.SearchForEntity(prepInvestor.U.Name)
+		et, err := core.SearchForEntity(prepInvestor.U.Username)
 		if err == nil {
-			if entity.U.Name != "" {
-			ret.YourProfile.Roles += " Entity"
-			}
+			log.Println("ET: ", et)
+			ret.YourProfile.Roles += ", Entity"
 		}
 
-		ret.YourProfile.Name = inv.U.Name
-		ret.YourInvestments.TotalInvestments = prepInvestor.AmountInvested
-		ret.YourInvestments.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
+		if len(inv.U.Name) == 0 {
+			ret.YourProfile.Name = "No name set"
+		} else {
+			ret.YourProfile.Name = inv.U.Name
+		}
+
+		ret.YourInvestments.TotalInvestments = 0
+		if prepInvestor.AmountInvested > 0 {
+			ret.YourInvestments.TotalInvestments = prepInvestor.AmountInvested
+		}
+
+		ret.YourInvestments.ProjectsInvested = 0
+		if ret.YourInvestments.ProjectsInvested > 0 {
+			ret.YourInvestments.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
+		}
+
 		ret.YourReturns.NetReturns = "$0"
 		ret.YourReturns.RecsReceived = "10 MWh"
 		ret.EFacilitate.DirectContributions = "1000 KWh"

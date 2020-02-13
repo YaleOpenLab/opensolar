@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/pkg/errors"
 
@@ -81,13 +82,17 @@ func SearchForInvestor(name string) (Investor, error) {
 		return inv, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
 	}
 
+	if len(investors) == 0 {
+		return inv, errors.New("investors not found")
+	}
+
 	for _, val := range investors {
-		if val.U.Name == name {
+		if val.U.Username == name {
 			return val, nil
 		}
 	}
 
-	return inv, errors.Wrap(err, "could not find an investor while searching by username")
+	return inv, errors.New("could not find an investor while searching by username")
 }
 
 // SearchForRecipient searches for a recipient in the database
@@ -99,13 +104,17 @@ func SearchForRecipient(name string) (Recipient, error) {
 		return recp, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
 	}
 
+	if len(recipients) == 0 {
+		return recp, errors.New("recipients not found")
+	}
+
 	for _, val := range recipients {
-		if val.U.Name == name {
+		if val.U.Username == name {
 			return val, nil
 		}
 	}
 
-	return recp, errors.Wrap(err, "could not find an investor while searching by username")
+	return recp, errors.New("could not find an investor while searching by username")
 }
 
 // SearchForEntity searches for an investor in the database
@@ -117,13 +126,18 @@ func SearchForEntity(name string) (Entity, error) {
 		return et, errors.Wrap(err, "unable to retrieve all investors from the database, quitting")
 	}
 
+	if len(ets) == 0 {
+		return et, errors.New("entities not found")
+	}
+
 	for _, val := range ets {
-		if val.U.Name == name {
+		if val.U.Username == name {
+			log.Println("VAULNAME: ", val.U.Username, "NAME: ", name)
 			return val, nil
 		}
 	}
 
-	return et, errors.Wrap(err, "could not find an investor while searching by username")
+	return et, errors.New("could not find an investor while searching by username")
 }
 
 // RetrieveRecipient retrieves a recipient from the database

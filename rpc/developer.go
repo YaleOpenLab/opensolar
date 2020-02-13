@@ -129,7 +129,12 @@ func developerDashboard() {
 
 		var projects []core.Project
 
-		ret.YourProfile.Name = prepEntity.U.Name
+		if len(prepEntity.U.Name) == 0 {
+			ret.YourProfile.Name = "No name set"
+		} else {
+			ret.YourProfile.Name = prepEntity.U.Name
+		}
+
 		ret.YourProfile.ActiveProjects = len(prepEntity.PresentContractIndices)
 		ret.YourEnergy.TiCP = "845 kWh"
 		ret.YourEnergy.AllTime = "10,150 MWh"

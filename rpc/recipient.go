@@ -719,7 +719,11 @@ func recpDashboard() {
 			return
 		}
 
-		ret.YourProfile.Name = prepRecipient.U.Name
+		if len(prepRecipient.U.Name) == 0 {
+			ret.YourProfile.Name = "No name set"
+		} else {
+			ret.YourProfile.Name = prepRecipient.U.Name
+		}
 		ret.YourProfile.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
 		ret.YourEnergy.TiCP = "845 kWh"
 		ret.YourEnergy.AllTime = "10,150 MWh"
