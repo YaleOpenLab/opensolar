@@ -421,18 +421,24 @@ func invDashboard() {
 		}
 
 		inv, err := core.SearchForInvestor(prepInvestor.U.Name)
-		if err == nil && inv.U.Name != "" {
+		if err == nil {
+			if inv.U.Name != "" {
 			ret.YourProfile.Roles += " Investor"
+			}
 		}
 
 		recp, err := core.SearchForRecipient(prepInvestor.U.Name)
-		if err == nil && recp.U.Name != "" {
+		if err == nil {
+			if recp.U.Name != "" {
 			ret.YourProfile.Roles += " Recipient"
+			}
 		}
 
 		entity, err := core.SearchForEntity(prepInvestor.U.Name)
-		if err == nil && entity.U.Name != "" {
+		if err == nil {
+			if entity.U.Name != "" {
 			ret.YourProfile.Roles += " Entity"
+			}
 		}
 
 		ret.YourProfile.Name = inv.U.Name
