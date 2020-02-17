@@ -38,6 +38,8 @@ func setupRecipientRPCs() {
 	storeTellerDetails()
 	recpDashboard()
 	storeTellerEnergy()
+	setCompanyBoolRecp()
+	setCompanyRecp()
 }
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params

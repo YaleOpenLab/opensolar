@@ -24,7 +24,7 @@ Terms:
       - ["PPA Tariff", "0.24 Ct/KWh", "Oracle / PREPA", "Variable Anchored To Local Tariff", "Confirmed"]
       - ["Return (TEY)", "3.1%", "Broker Dealer", "Tax-Adjusted Yield", "Signed"]
       - ["Maturity", "+/- 2025", "Broker Dealer", "Variable Tied To Tariff", "Signed"]
-      - ["Guarantee, 50%", "Foundation X", "First-Loss Upon Breach", "Started"]
+      - ["Guarantee", "50%", "Foundation X", "First-Loss Upon Breach", "Started"]
       - ["Insurance", "Premium", "Allianz CS", "Hurricane Coverage", "Started"]
 Overview:
   Executive Summary:
