@@ -272,17 +272,17 @@ func getUserRoles() {
 		// user is on the platform
 
 		ret.User = user
-		inv, err := core.SearchForInvestor(user.Name)
+		inv, err := core.SearchForInvestor(user.Username)
 		if err == nil {
 			ret.Investor = inv
 		}
 
-		recp, err := core.SearchForRecipient(user.Name)
+		recp, err := core.SearchForRecipient(user.Username)
 		if err == nil {
 			ret.Recipient = recp
 		}
 
-		entity, err := core.SearchForEntity(user.Name)
+		entity, err := core.SearchForEntity(user.Username)
 		if err == nil {
 			ret.Entity = entity
 		}
