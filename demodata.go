@@ -80,6 +80,14 @@ func demoData() error {
 		project.GuarantorIndex = guar.U.Index
 	*/
 
+	stageString, err := utils.ToString(project.Stage)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	project.Content.Details["Explore Tab"]["stage description"] = stageString + " | " + core.GetStageDescription(project.Stage)
+	project.Content.Details["Explore Tab"]["location"] = project.Content.Details["Explore Tab"]["city"].(string) + ", " + project.Content.Details["Explore Tab"]["state"].(string) + ", " + project.Content.Details["Explore Tab"]["country"].(string)
+
 	err = project.Save()
 	if err != nil {
 		log.Println(err)
