@@ -105,7 +105,6 @@ func ParseInput(input []string) {
 			colorOutput(balanceS, MagentaColor)
 		case "info":
 			fmt.Println("          PROJECT INDEX: ", LocalProject.Index)
-			fmt.Println("          Panel Size: ", LocalProject.PanelSize)
 			fmt.Println("          Total Value: ", LocalProject.TotalValue)
 			fmt.Println("          Location: ", LocalProject.State)
 			fmt.Println("          Money Raised: ", LocalProject.MoneyRaised)
