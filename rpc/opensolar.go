@@ -275,8 +275,6 @@ func getProjectDashboard() {
 // ExplorePageStub is used to show brief descriptions of the project on an explore page
 type ExplorePageStub struct {
 	StageDescription interface{}
-	Index            int
-	MainImage        string
 	Name             interface{}
 	Location         interface{}
 	ProjectType      interface{}
@@ -288,11 +286,12 @@ type ExplorePageStub struct {
 	Solar            interface{}
 	Storage          interface{}
 	Tariff           interface{}
-	Stage            int
 	Return           interface{}
 	Rating           interface{}
 	Tax              interface{}
-	Acquisition      string
+	Acquisition      interface{}
+	MainImage        interface{}
+	Index            int
 	Raised           float64
 	Total            float64
 	Backers          int
@@ -317,8 +316,6 @@ func explore() {
 		var arr []ExplorePageStub
 		for _, project := range allProjects {
 			var x ExplorePageStub
-			x.Index = project.Index
-			x.MainImage = project.MainImage
 			x.StageDescription = project.Content.Details["Explore Tab"]["stage description"]
 			x.Name = project.Content.Details["Explore Tab"]["name"]
 			x.Location = project.Content.Details["Explore Tab"]["location"]
@@ -331,11 +328,12 @@ func explore() {
 			x.Solar = project.Content.Details["Explore Tab"]["solar"]
 			x.Storage = project.Content.Details["Other Details"]["storage"]
 			x.Tariff = project.Content.Details["Other Details"]["tariff"]
-			x.Stage = project.Stage
 			x.Return = project.Content.Details["Explore Tab"]["return"]
 			x.Rating = project.Content.Details["Explore Tab"]["rating"]
 			x.Tax = project.Content.Details["Other Details"]["tax"]
-			x.Acquisition = project.Acquisition
+			x.MainImage = project.Content.Details["Explore Tab"]["mainimage"]
+			x.Acquisition = project.Content.Details["Other Details"]["acquisition"]
+			x.Index = project.Index
 			x.Raised = project.MoneyRaised
 			x.Total = project.TotalValue
 			x.Backers = len(project.InvestorMap)

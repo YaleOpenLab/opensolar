@@ -352,6 +352,7 @@ func sendEmail() {
 
 type invDHelper struct {
 	Index            int     `json:"Index"`
+	Image            string  `json:"Image"`
 	StageDescription string  `json:"StageDescription"`
 	Name             string  `json:"Project Name"`
 	Location         string  `json:"Location"`
@@ -414,8 +415,9 @@ func invDashboard() {
 			}
 			temp.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			temp.Name = project.Name
-			temp.Location = project.City + ", " + project.State + ", " + project.Country
-			temp.Capacity = project.Content.Details["Other Details"]["panel size"].(string)
+			temp.Image = project.MainImage
+			temp.Location = project.Content.Details["Explore Tab"]["location"].(string)
+			temp.Capacity = project.Content.Details["Other Details"]["capacity"].(string)
 			temp.YourInvestment = project.InvestorMap[prepInvestor.U.StellarWallet.PublicKey] * project.TotalValue
 			temp.YourReturn = "Donation"
 			temp.InvestmentRating = "N/A"
