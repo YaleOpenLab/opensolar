@@ -695,6 +695,7 @@ type recpDashboardData struct {
 	}
 	BillsRewards struct {
 		PendingPayments []string `json:"Payments"`
+		Link            string   `json:"PastPaymentLink"`
 	}
 	Documents map[string]interface{} `json:"Documentation and Smart Contracts"`
 }
@@ -739,6 +740,10 @@ func recpDashboard() {
 			ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
 		}
 
+		if ret.YourWallet.ProjectWalletBalance < 0 {
+			ret.YourWallet.ProjectWalletBalance = 0
+		}
+
 		ret.YourProjects = make([]recpDashboardData, len(prepRecipient.ReceivedSolarProjectIndices))
 		for i, elem := range prepRecipient.ReceivedSolarProjectIndices {
 			var x recpDashboardData
@@ -764,6 +769,7 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", "$203 due on April 30"}
+			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
 			x.Documents = project.Content.Details["Documents"]
 			ret.YourProjects[i] = x

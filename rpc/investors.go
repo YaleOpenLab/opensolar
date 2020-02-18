@@ -450,7 +450,7 @@ func invDashboard() {
 		}
 
 		ret.YourInvestments.ProjectsInvested = 0
-		if ret.YourInvestments.ProjectsInvested > 0 {
+		if len(prepInvestor.InvestedSolarProjects) > 0 {
 			ret.YourInvestments.ProjectsInvested = len(prepInvestor.InvestedSolarProjects)
 		}
 
