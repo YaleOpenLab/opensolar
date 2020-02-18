@@ -274,8 +274,10 @@ func getProjectDashboard() {
 
 // ExplorePageStub is used to show brief descriptions of the project on an explore page
 type ExplorePageStub struct {
-	StageDescription string
-	Name             string
+	StageDescription interface{}
+	Index            int
+	MainImage        string
+	Name             interface{}
 	Location         interface{}
 	ProjectType      interface{}
 	OriginatorName   interface{}
@@ -315,15 +317,11 @@ func explore() {
 		var arr []ExplorePageStub
 		for _, project := range allProjects {
 			var x ExplorePageStub
-			stageString, err := utils.ToString(project.Stage)
-			if err != nil {
-				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-				return
-			}
-			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
-			x.Name = project.Name
-			x.Location = project.City + ", " + project.State + ", " + project.Country
+			x.Index = project.Index
+			x.MainImage = project.MainImage
+			x.StageDescription = project.Content.Details["Explore Tab"]["stage description"]
+			x.Name = project.Content.Details["Explore Tab"]["name"]
+			x.Location = project.Content.Details["Explore Tab"]["location"]
 			x.ProjectType = project.Content.Details["Explore Tab"]["project type"]
 			x.OriginatorName = project.Content.Details["Explore Tab"]["originator name"]
 			x.Description = project.Content.Details["Explore Tab"]["description"]
