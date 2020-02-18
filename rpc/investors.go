@@ -352,7 +352,7 @@ func sendEmail() {
 
 type invDHelper struct {
 	Index            int     `json:"Index"`
-	Stage            int     `json:"Stage"`
+	StageDescription string  `json:"StageDescription"`
 	Name             string  `json:"Project Name"`
 	Location         string  `json:"Location"`
 	Capacity         string  `json:"Capacity"`
@@ -406,7 +406,13 @@ func invDashboard() {
 			}
 
 			var temp invDHelper
-			temp.Stage = project.Stage
+			stageString, err := utils.ToString(project.Stage)
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+			temp.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			temp.Name = project.Name
 			temp.Location = project.City + ", " + project.State + ", " + project.Country
 			temp.Capacity = project.Content.Details["Other Details"]["panel size"].(string)

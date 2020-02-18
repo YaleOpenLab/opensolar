@@ -21,6 +21,7 @@ func demoData() error {
 	project.City = "Aibonito"
 	project.State = "Puerto Rico"
 	project.Country = "USA"
+	project.MainImage = "https://i.ibb.co/8cqdT6n/Asset-3-4x.png"
 	project.Index = 1
 	project.SeedInvestmentCap = 4000
 	project.Stage = 4
