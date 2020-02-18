@@ -172,7 +172,6 @@ type Project struct {
 	ContractorFee      float64   `json:"Contractor Fee"`       // fee paid to the contractor from the total fee of the project
 	OriginatorFee      float64   `json:"Originator Fee"`       // fee paid to the originator included in the total value of the project
 	DeveloperFee       []float64 `json:"Developer Fee"`        // the fees charged by the developers
-	Acquisition        string    `json:"Acquisition"`          // Acquisition date
 	MainImage          string    `json:"MainImage"`            // The main image of the project
 	SmallImage         string    `json:"SmallImage"`           // The small image to be used on the explore tab
 }

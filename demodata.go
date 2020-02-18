@@ -17,11 +17,6 @@ func demoData() error {
 	var project core.Project
 	var err error
 
-	project.Name = "5kW Solar at FabIDEAS Coop - Pilot 1"
-	project.City = "Aibonito"
-	project.State = "Puerto Rico"
-	project.Country = "USA"
-	project.MainImage = "https://i.ibb.co/8cqdT6n/Asset-3-4x.png"
 	project.Index = 1
 	project.SeedInvestmentCap = 4000
 	project.Stage = 4
@@ -33,7 +28,6 @@ func demoData() error {
 	project.GuarantorIndex = -1  // replace with real indices once created
 	project.ContractorIndex = -1 // replace with real indices once created
 	project.PaybackPeriod = 4    // four weeks payback time
-	project.Acquisition = "2025"
 	project.Chain = "stellar"
 	project.BrokerUrl = "mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
@@ -104,6 +98,12 @@ func demoData() error {
 		return err
 	}
 
+	// add details that ashould be parsed from the yaml file here
+	project.Name = project.Content.Details["Explore Tab"]["name"].(string)
+	project.City = project.Content.Details["Explore Tab"]["city"].(string)
+	project.State = project.Content.Details["Explore Tab"]["state"].(string)
+	project.Country = project.Content.Details["Explore Tab"]["country"].(string)
+	project.MainImage = project.Content.Details["Explore Tab"]["mainimage"].(string)
 	project.Content.Details["Explore Tab"]["stage description"] = stageString + " | " + core.GetStageDescription(project.Stage)
 	project.Content.Details["Explore Tab"]["location"] = project.Content.Details["Explore Tab"]["city"].(string) + ", " + project.Content.Details["Explore Tab"]["state"].(string) + ", " + project.Content.Details["Explore Tab"]["country"].(string)
 
