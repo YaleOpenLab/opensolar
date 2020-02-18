@@ -276,6 +276,7 @@ func getProjectDashboard() {
 type ExplorePageStub struct {
 	StageDescription string
 	Index            int
+	MainImage        string
 	Name             interface{}
 	Location         interface{}
 	ProjectType      interface{}
@@ -323,6 +324,7 @@ func explore() {
 				return
 			}
 			x.Index = project.Index
+			x.MainImage = project.MainImage
 			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			x.Name = project.Content.Details["Explore Tab"]["name"]
 			x.Location = project.Content.Details["Explore Tab"]["city"].(string) + ", " + project.Content.Details["Explore Tab"]["state"].(string) + ", " + project.Content.Details["Explore Tab"]["country"].(string)
