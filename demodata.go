@@ -92,19 +92,20 @@ func demoData() error {
 		return err
 	}
 
-	stageString, err := utils.ToString(project.Stage)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	project.Content.Details["Explore Tab"]["stage description"] = stageString + " | " + core.GetStageDescription(project.Stage)
-	project.Content.Details["Explore Tab"]["location"] = project.Content.Details["Explore Tab"]["city"].(string) + ", " + project.Content.Details["Explore Tab"]["state"].(string) + ", " + project.Content.Details["Explore Tab"]["country"].(string)
-
 	project, err = core.RetrieveProject(project.Index)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
+	stageString, err := utils.ToString(project.Stage)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	project.Content.Details["Explore Tab"]["stage description"] = stageString + " | " + core.GetStageDescription(project.Stage)
+	project.Content.Details["Explore Tab"]["location"] = project.Content.Details["Explore Tab"]["city"].(string) + ", " + project.Content.Details["Explore Tab"]["state"].(string) + ", " + project.Content.Details["Explore Tab"]["country"].(string)
 
 	password := "password"
 	//pwhash := utils.SHA3hash(password)
