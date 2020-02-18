@@ -756,6 +756,8 @@ func recpDashboard() {
 			x.Index = elem
 			x.ExploreTab = make(map[string]interface{})
 			x.ExploreTab = project.Content.Details["Explore Tab"]
+			x.ExploreTab["MoneyRaised"] = project.MoneyRaised
+			x.ExploreTab["TotalValue"] = project.TotalValue
 			x.Role = "You are an Offtaker"
 			sStage, err := utils.ToString(project.Stage)
 			if err != nil {
