@@ -45,7 +45,8 @@ func GetTestStablecoin(username string, pubkey string, seed string, amountx floa
 		return err
 	}
 
-	body := "https://api.openx.solar/stablecoin/get?username=" + username + "&token=" + x.Token + "&seedpwd=x&amount=" + amount
+	body := consts.OpenxURL + "/stablecoin/get?username=" + username + "&token=" + x.Token + "&seedpwd=x&amount=" + amount
+	log.Println("STABLECOIN REQ: ", body)
 	go erpc.GetRequest(body)
 	return nil
 }

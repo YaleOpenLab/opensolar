@@ -18,7 +18,6 @@ import (
 	rpc "github.com/YaleOpenLab/opensolar/rpc"
 
 	// utils "github.com/Varunram/essentials/utils"
-	//sandbox "github.com/YaleOpenLab/opensolar/sandboxv2"
 	stablecoin "github.com/Varunram/essentials/xlm/stablecoin"
 	openxconsts "github.com/YaleOpenLab/openx/consts"
 	openxrpc "github.com/YaleOpenLab/openx/rpc"
@@ -27,7 +26,8 @@ import (
 var opts struct {
 	Insecure bool   `short:"i" description:"Start the API using http. Not recommended"`
 	Port     int    `short:"p" description:"The port on which the server runs on. Default: HTTPS/8081"`
-	DemoData bool   `short:"d" description:"Populate demo data"`
+	DemoData bool   `short:"d" description:"Populate project"`
+	Sandbox  bool   `short:"s" description:"Populate sandbox"`
 	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
 }
 
@@ -169,6 +169,13 @@ func main() {
 
 		if opts.DemoData {
 			err = demoData()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if opts.Sandbox {
+			err = sandbox()
 			if err != nil {
 				log.Fatal(err)
 			}
