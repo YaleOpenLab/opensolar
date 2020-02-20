@@ -87,7 +87,6 @@ func ParseInput(input []string) {
 			case "xlm":
 				balance, err = getNativeBalance()
 			default:
-				log.Println("ASSET: ", subsubcommand)
 				balance, err = getAssetBalance(input[3])
 			}
 
@@ -106,24 +105,23 @@ func ParseInput(input []string) {
 			// handle defaults here
 			log.Println("Invalid command or need more parameters")
 		}
-	case commands[6]:
+	case commands[5]:
 		fmt.Println("          PROJECT INDEX: ", LocalProject.Index)
 		fmt.Println("          Money Raised: ", LocalProject.MoneyRaised)
 		fmt.Println("          Metadata: ", LocalProject.Metadata)
-		fmt.Println("          Years: ", LocalProject.EstimatedAcquisition)
 		fmt.Println("          Debt Asset Code: ", LocalProject.DebtAssetCode)
 		fmt.Println("          Payback Asset Code: ", LocalProject.PaybackAssetCode)
 		fmt.Println("          Balance Left: ", LocalProject.BalLeft)
 		fmt.Println("          Date Initiated: ", LocalProject.DateInitiated)
 		fmt.Println("          Date Last Paid: ", LocalProject.DateLastPaid)
 	// end of display
-	case commands[7]:
+	case commands[6]:
 		if len(input) != 1 {
 			fmt.Println("USAGE: update")
 			return
 		}
 		updateState(true)
-	case commands[8]:
+	case commands[7]:
 		// hh = hashchain header
 		if len(input) != 1 {
 			fmt.Println("USAGE: hh")
