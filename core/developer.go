@@ -91,7 +91,8 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 			return errors.Wrap(err, "Error while trusting debt asset")
 		}
 
-		err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, entity.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed, amount, "withdrawal", consts.StablecoinCode)
+		err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, entity.U.StellarWallet.PublicKey, consts.StablecoinPublicKey,
+			recpSeed, consts.PlatformSeed, amount, "withdrawal", consts.StablecoinCode)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -114,7 +115,7 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 			return errors.Wrap(err, "Error while trusting debt asset")
 		}
 
-		err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, entity.U.StellarWallet.PublicKey, recpSeed, consts.PlatformSeed, amount, "withdrawal", consts.AnchorUSDCode)
+		err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, entity.U.StellarWallet.PublicKey, consts.StablecoinPublicKey, recpSeed, consts.PlatformSeed, amount, "withdrawal", consts.AnchorUSDCode)
 		if err != nil {
 			log.Println(err)
 			return err

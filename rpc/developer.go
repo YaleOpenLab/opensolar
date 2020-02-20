@@ -219,7 +219,7 @@ func developerDashboard() {
 
 // requestWaterfall requests that a developer be paid for their services
 func requestWaterfall() {
-	http.HandleFunc(DevRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(DevRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, DevRPC[3][2:], DevRPC[3][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
@@ -234,7 +234,7 @@ func requestWaterfall() {
 			return
 		}
 
-		amount, err := utils.ToFloat(r.URL.Query()["index"][0])
+		amount, err := utils.ToFloat(r.URL.Query()["amount"][0])
 		if err != nil {
 			log.Println("project index not int, quitting")
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
