@@ -559,7 +559,8 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 	// TODO: we need to distribute funds which were paid back to all the parties involved, but we do so only for the investor here
 	err = DistributePayments(recipientSeed, project.EscrowPubkey, projIndex, amount)
 	if err != nil {
-		return errors.Wrap(err, "error while distributing payments")
+		// return errors.Wrap(err, "error while distributing payments")
+		log.Println("error while distributing payments")
 	}
 
 	return nil
