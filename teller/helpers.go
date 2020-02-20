@@ -99,8 +99,12 @@ func checkPayback() {
 
 		err := projectPayback(assetName, amount)
 		if err != nil {
-			log.Println("Error while paying amount back", err)
-			sendDevicePaybackFailedEmail()
+			log.Println("Error while paying amount back", err, "trying again")
+			time.Sleep(5 * time.Second)
+			err = projectPayback(assetName, amount)
+			if err != nil {
+				sendDevicePaybackFailedEmail()
+			}
 		}
 		time.Sleep(time.Duration(LocalProject.PaybackPeriod) * consts.OneWeekInSecond)
 	}
