@@ -155,8 +155,16 @@ func storeDataInIpfs(data string) (string, error) {
 	form.Add("token", Token)
 	form.Add("data", data)
 
+	var retdata []byte
+	var err error
 	// retdata, err := erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
-	retdata, err := erpc.PostForm("http://localhost:8080/ipfs/putdata", form)
+	if strings.Contains(ApiUrl, "localhost") {
+		// connect to openx which runs on http instead of opensolar
+		retdata, err = erpc.PostForm("http://localhost:8080/ipfs/putdata", form)
+	} else {
+		retdata, err = erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
+	}
+
 	if err != nil {
 		log.Println(err)
 		return "", err
