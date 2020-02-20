@@ -693,8 +693,8 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 	}
 }
 
-// addWaterfallAccount adds a waterfall account that the recipient must payback towards
-func addWaterfallAccount(projIndex int, pubkey string, amount float64) error {
+// AddWaterfallAccount adds a waterfall account that the recipient must payback towards
+func AddWaterfallAccount(projIndex int, pubkey string, amount float64) error {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
 		return errors.Wrap(err, "could not retrieve project, quitting")

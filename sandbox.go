@@ -77,6 +77,13 @@ func sandbox() error {
 		return err
 	}
 
+	err = core.AddWaterfallAccount(1, dev.U.StellarWallet.PublicKey, 3000)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	project.OneTimeUnlock = "x" // needed for the developer to be able for the developer to request money
 	project.MainDeveloperIndex = dev.U.Index
 	project.DeveloperIndices = append(project.DeveloperIndices, dev.U.Index)
 	project.RecipientIndex = recp.U.Index
@@ -91,6 +98,7 @@ func sandbox() error {
 
 	go xlm.GetXLM(inv.U.StellarWallet.PublicKey)
 	go xlm.GetXLM(recp.U.StellarWallet.PublicKey)
+	go xlm.GetXLM(dev.U.StellarWallet.PublicKey)
 
 	time.Sleep(10 * time.Second) // wait for the accounts to be setup
 

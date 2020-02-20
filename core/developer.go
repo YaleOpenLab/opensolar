@@ -27,14 +27,24 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 		return err
 	}
 
+	if project.AdminFlagged {
+		log.Println("project: ", projIndex, " has been flagged by admin")
+		return errors.New("project flagged, can't withdraw")
+	}
+
+	if project.WaterfallMap == nil {
+		project.WaterfallMap = make(map[string]float64)
+		return errors.New("waterfall map not initiated, no withdrawals as a result")
+	}
+
 	var valid bool
 
 	for key, elem := range project.WaterfallMap {
-		if key == entity.U.Name {
+		if key == entity.U.StellarWallet.PublicKey {
 			log.Println("developer name found in waterfall list")
 			if elem < amount {
-				log.Println("amount requested greater than that available, quitting")
-				return errors.New("amount requested greater than that available, quitting")
+				log.Println("amount requested greater than alotted, quitting")
+				return errors.New("amount requested greater than alotted, quitting")
 			}
 			log.Println("requesting transfer of: ", amount, " to the user from the escrow account")
 			valid = true
@@ -50,16 +60,6 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 		return errors.New("one time unlock not set, can't withdraw funds")
 	}
 
-	if project.AdminFlagged {
-		log.Println("project: ", projIndex, " has been flagged by admin")
-		return errors.New("project flagged, can't withdraw")
-	}
-
-	if project.WaterfallMap == nil {
-		project.WaterfallMap = make(map[string]float64)
-		return errors.New("waterfall map not initiated, no withdrawals as a result")
-	}
-
 	recipient, err := RetrieveRecipient(project.RecipientIndex)
 	if err != nil {
 		log.Println(err)
@@ -72,7 +72,7 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 		return errors.Wrap(err, "error while decrpyting seed")
 	}
 
-	if consts.Mainnet {
+	if !consts.Mainnet {
 		susdbalancex := xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
 		susdbalance, err := utils.ToFloat(susdbalancex)
 		if err != nil {
