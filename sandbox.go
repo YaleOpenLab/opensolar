@@ -173,11 +173,6 @@ func sandbox() error {
 	}
 
 	// start all the time consuming calls
-
-	go xlm.GetXLM(inv.U.StellarWallet.PublicKey)
-	go xlm.GetXLM(recp.U.StellarWallet.PublicKey)
-	go xlm.GetXLM(dev.U.StellarWallet.PublicKey)
-
 	time.Sleep(10 * time.Second) // wait for the accounts to be setup
 
 	if xlm.GetNativeBalance(inv.U.StellarWallet.PublicKey) < 1 {
