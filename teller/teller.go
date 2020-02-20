@@ -108,7 +108,7 @@ func autoComplete() readline.AutoCompleter {
 }
 
 func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
-	log.Println("starting mqtt subscriber")
+	log.Println("starting mqtt subscriber", mqttopts)
 	receiveCount := 0
 	receiver := make(chan [2]string)
 	var messages []string
@@ -119,11 +119,13 @@ func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num i
 
 	client := mqtt.NewClient(mqttopts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		log.Println("MQTT SUBSCRIBE ERROR: ", token.Error())
 		return token.Error()
 	}
 
 	token := client.Subscribe(topic, byte(qos), nil)
 	if token.Wait() && token.Error() != nil {
+		log.Println("MQTT SUBSCRIBE ERROR: ", token.Error())
 		return token.Error()
 	}
 

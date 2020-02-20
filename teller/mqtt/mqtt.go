@@ -12,7 +12,7 @@
  *    Mike Robertson
  */
 
-package mqtt
+package main
 
 import (
 	"log"
@@ -91,7 +91,7 @@ var opts struct {
 
 // set id to username when connecting
 
-func test() {
+func main() {
 	var err error
 	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {

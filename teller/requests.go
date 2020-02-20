@@ -170,7 +170,6 @@ func projectPayback(assetName string, amountx float64) error {
 	postdata.Set("seedpwd", LocalSeedPwd)
 	postdata.Set("amount", amount)
 
-	log.Println("CHECK THIS: ", projIndex, assetName, LocalSeedPwd, amount)
 	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[4][0], postdata)
 	if err != nil {
 		return err
