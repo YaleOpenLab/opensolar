@@ -142,11 +142,6 @@ func sandbox() error {
 		log.Fatal(err)
 	}
 
-	_, err = assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, devFee, devSeed)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	err = dev.Save()
 	if err != nil {
 		log.Println(err)
@@ -191,6 +186,12 @@ func sandbox() error {
 
 	if xlm.GetNativeBalance(recp.U.StellarWallet.PublicKey) < 1 {
 		return errors.New("recp account not setup")
+	}
+
+	log.Println("making developer trust the asset")
+	_, err = assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, devFee, devSeed)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	log.Println("loading test investor with stablecoin, pubkey: ", inv.U.StellarWallet.PublicKey)
