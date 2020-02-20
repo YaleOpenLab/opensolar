@@ -564,27 +564,6 @@ func getLatestBlockHash() (string, error) {
 	return blockhash, err
 }
 
-func askXLM() error {
-	data, err := httpsGet(orpc.UserRPC[10])
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	var status erpc.StatusResponse
-	err = json.Unmarshal(data, &status)
-	if err != nil {
-		log.Println(string(data), err)
-		return err
-	}
-
-	if status.Code == 200 {
-		return nil
-	}
-
-	return err
-}
-
 func getNativeBalance() (float64, error) {
 	data, err := httpsGet(orpc.UserRPC[3])
 	if err != nil {

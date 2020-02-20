@@ -38,36 +38,34 @@ func colorOutput(msg string, gColor color.Attribute) {
 	x.Fprintf(color.Output, "%s\n", msg)
 }
 
+var commands = []string{"qq", "help", "ping", "receive", "display", "info", "update", "hh"}
+
 // ParseInput parses user input
 func ParseInput(input []string) {
 	if len(input) == 0 {
-		fmt.Println("List of commands: ping, receive, display, update")
+		fmt.Println("List of commands: ", commands)
 		return
 	}
 
 	command := input[0]
 	switch command {
-	case "qq":
+	case commands[0]:
 		// handler to quit and test the teller without hashing the state and committing two transactions
 		// each time we start the teller
 		log.Fatal("qq emergency exit")
-	case "help":
-		fmt.Println("List of commands: ping, receive, display, info, update")
-	case "ping":
+	case commands[1]:
+		fmt.Println("List of commands: ", commands)
+	case commands[2]:
 		err := ping()
 		if err != nil {
 			log.Println(err)
 		}
-	case "receive":
+	case commands[3]:
 		if len(input) != 2 {
 			fmt.Println("USAGE: receive xlm")
 			return
 		}
-		err := askXLM() // the rpc allows people to only ask for coins to their publickey, so we should be okay here
-		if err != nil {
-			log.Println(err)
-		}
-	case "display":
+	case commands[4]:
 		if len(input) < 2 {
 			fmt.Println("USAGE: display <balance, info>")
 			return
@@ -89,7 +87,8 @@ func ParseInput(input []string) {
 			case "xlm":
 				balance, err = getNativeBalance()
 			default:
-				balance, err = getAssetBalance(subsubcommand)
+				log.Println("ASSET: ", subsubcommand)
+				balance, err = getAssetBalance(input[3])
 			}
 
 			if err != nil {
@@ -103,30 +102,28 @@ func ParseInput(input []string) {
 				return
 			}
 			colorOutput(balanceS, MagentaColor)
-		case "info":
-			fmt.Println("          PROJECT INDEX: ", LocalProject.Index)
-			fmt.Println("          Total Value: ", LocalProject.TotalValue)
-			fmt.Println("          Location: ", LocalProject.State)
-			fmt.Println("          Money Raised: ", LocalProject.MoneyRaised)
-			fmt.Println("          Metadata: ", LocalProject.Metadata)
-			fmt.Println("          Years: ", LocalProject.EstimatedAcquisition)
-			fmt.Println("          Auction Type: ", LocalProject.AuctionType)
-			fmt.Println("          Debt Asset Code: ", LocalProject.DebtAssetCode)
-			fmt.Println("          Payback Asset Code: ", LocalProject.PaybackAssetCode)
-			fmt.Println("          Balance Left: ", LocalProject.BalLeft)
-			fmt.Println("          Date Initiated: ", LocalProject.DateInitiated)
-			fmt.Println("          Date Last Paid: ", LocalProject.DateLastPaid)
 		default:
 			// handle defaults here
 			log.Println("Invalid command or need more parameters")
-		} // end of display
-	case "update":
+		}
+	case commands[6]:
+		fmt.Println("          PROJECT INDEX: ", LocalProject.Index)
+		fmt.Println("          Money Raised: ", LocalProject.MoneyRaised)
+		fmt.Println("          Metadata: ", LocalProject.Metadata)
+		fmt.Println("          Years: ", LocalProject.EstimatedAcquisition)
+		fmt.Println("          Debt Asset Code: ", LocalProject.DebtAssetCode)
+		fmt.Println("          Payback Asset Code: ", LocalProject.PaybackAssetCode)
+		fmt.Println("          Balance Left: ", LocalProject.BalLeft)
+		fmt.Println("          Date Initiated: ", LocalProject.DateInitiated)
+		fmt.Println("          Date Last Paid: ", LocalProject.DateLastPaid)
+	// end of display
+	case commands[7]:
 		if len(input) != 1 {
 			fmt.Println("USAGE: update")
 			return
 		}
 		updateState(true)
-	case "hh":
+	case commands[8]:
 		// hh = hashchain header
 		if len(input) != 1 {
 			fmt.Println("USAGE: hh")
