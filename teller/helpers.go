@@ -82,7 +82,7 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 	tx2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, secondHalf)
 	if err != nil {
 		return "", "", err
@@ -99,8 +99,12 @@ func checkPayback() {
 
 		err := projectPayback(assetName, amount)
 		if err != nil {
-			log.Println("Error while paying amount back", err)
-			sendDevicePaybackFailedEmail()
+			log.Println("Error while paying amount back", err, "trying again")
+			time.Sleep(5 * time.Second)
+			err = projectPayback(assetName, amount)
+			if err != nil {
+				sendDevicePaybackFailedEmail()
+			}
 		}
 		time.Sleep(time.Duration(LocalProject.PaybackPeriod) * consts.OneWeekInSecond)
 	}
@@ -134,6 +138,8 @@ func updateState(trigger bool) {
 		if err != nil {
 			log.Println(err)
 		}
+
+		time.Sleep(5 * time.Second)
 
 		hash2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[29:])
 		if err != nil {

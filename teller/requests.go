@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 
 	"github.com/pkg/errors"
 
@@ -163,14 +164,27 @@ func projectPayback(assetName string, amountx float64) error {
 	if err != nil {
 		return err
 	}
-	// retrieve project index
-	postdata := basePostData()
-	postdata.Set("projIndex", projIndex)
-	postdata.Set("assetName", assetName)
-	postdata.Set("seedpwd", LocalSeedPwd)
-	postdata.Set("amount", amount)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[4][0], postdata)
+	var data []byte
+	// retrieve project index
+	if strings.Contains(ApiUrl, "localhost") {
+		postdata := basePostData()
+		postdata.Set("projIndex", projIndex)
+		postdata.Set("assetName", assetName)
+		postdata.Set("seedpwd", LocalSeedPwd)
+		postdata.Set("amount", amount)
+
+		data, err = erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[4][0], postdata)
+	} else {
+		form := url.Values{}
+		form.Set("projIndex", projIndex)
+		form.Set("assetName", assetName)
+		form.Set("seedpwd", LocalSeedPwd)
+		form.Set("amount", amount)
+
+		data, err = erpc.PostForm(ApiUrl+rpc.RecpRPC[4][0], form)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -510,6 +524,26 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 		return "", err
 	}
 
+	if len(txhash) != 66 { // include the quotes at the start and end
+		data, err := httpsGet(orpc.UserRPC[7], "&destination="+
+			publickey, "&amount="+amount, "&seedpwd="+LocalSeedPwd)
+
+		if err != nil {
+			log.Println(err)
+			return "", err
+		}
+
+		var txhash string
+		err = json.Unmarshal(data, &txhash)
+		if err != nil {
+			log.Println(string(data), err)
+			return "", err
+		}
+
+		if len(txhash) != 66 { // include the quotes at the start and end
+			return txhash, errors.New("xlm transaction not broadcast")
+		}
+	}
 	return txhash, err
 }
 
@@ -528,27 +562,6 @@ func getLatestBlockHash() (string, error) {
 	}
 
 	return blockhash, err
-}
-
-func askXLM() error {
-	data, err := httpsGet(orpc.UserRPC[10])
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	var status erpc.StatusResponse
-	err = json.Unmarshal(data, &status)
-	if err != nil {
-		log.Println(string(data), err)
-		return err
-	}
-
-	if status.Code == 200 {
-		return nil
-	}
-
-	return err
 }
 
 func getNativeBalance() (float64, error) {
