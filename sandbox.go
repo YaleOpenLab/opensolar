@@ -28,25 +28,22 @@ func sandbox() error {
 	}
 
 	password := "password"
-	//pwhash := utils.SHA3hash(password)
 	seedpwd := "x"
-	// invAmount := 4000.0
+	invAmount := 4000.0
 	run := utils.GetRandomString(5)
 
 	txhash, err := assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, 100000000000, consts.PlatformSeed)
 	if err != nil {
 		return err
 	}
-
 	log.Println("tx for platform trusting stablecoin:", txhash)
-
-	//exchangeAmount := 1.0
 
 	inv, err := core.NewInvestor("inv"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+	// inv.U.Legal = true
 
 	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
 	if err != nil {
@@ -60,21 +57,37 @@ func sandbox() error {
 		return err
 	}
 
+	guar, err := core.NewGuarantor("guar"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	dev, err := core.NewDeveloper("inversol"+run, password, seedpwd, "varunramganesh@gmail.com")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	dev.PresentContractIndices = append(dev.PresentContractIndices, project.Index)
+
+	err = dev.Save()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	project.MainDeveloperIndex = dev.U.Index
+	project.DeveloperIndices = append(project.DeveloperIndices, dev.U.Index)
 	project.RecipientIndex = recp.U.Index
-	project.GuarantorIndex = 1
+	project.GuarantorIndex = guar.U.Index
 	err = project.Save()
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	// start all the teim consuming calls
-	// inv.U.Legal = true
-	err = inv.Save()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
+	// start all the time consuming calls
 
 	go xlm.GetXLM(inv.U.StellarWallet.PublicKey)
 	go xlm.GetXLM(recp.U.StellarWallet.PublicKey)
@@ -89,33 +102,29 @@ func sandbox() error {
 		return errors.New("recp account not setup")
 	}
 
-	log.Println("loading test investor with stablecoin")
-	log.Println("INVPUBKEY: ", inv.U.StellarWallet.PublicKey)
-	go stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, invSeed, 10000000)
+	log.Println("loading test investor with stablecoin, pubkey: ", inv.U.StellarWallet.PublicKey)
 
+	go stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, seedpwd, 10000000)
 	time.Sleep(35 * time.Second)
 
 	if xlm.GetAssetBalance(inv.U.StellarWallet.PublicKey, consts.StablecoinCode) < 1 {
 		return errors.New("stablecoin not present with the investor")
 	}
 
-	err = core.Invest(project.Index, inv.U.Index, 4000, invSeed)
+	err = core.Invest(project.Index, inv.U.Index, invAmount, invSeed)
 	if err != nil {
 		log.Println("did not invest in order", err)
 		return err
 	}
 
-	// now we have to wait for a while and then unlock the project
-
 	// get a token for the recipient
-
 	token, err := getToken(recp.U.Username)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	err = core.UnlockProject(recp.U.Username, token, 1, "x")
+	err = core.UnlockProject(recp.U.Username, token, 1, seedpwd)
 	if err != nil {
 		log.Println(err)
 		return err
