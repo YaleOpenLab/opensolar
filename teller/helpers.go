@@ -2,20 +2,22 @@ package main
 
 import (
 	"bufio"
+	"net/url"
+
 	//"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 
-	ipfs "github.com/Varunram/essentials/ipfs"
 	utils "github.com/Varunram/essentials/utils"
+
 	//	rpc "github.com/YaleOpenLab/openx/rpc"
+	erpc "github.com/Varunram/essentials/rpc"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
@@ -48,7 +50,7 @@ func endHandler() error {
 		"Ipfs HashChainHeader: " + HashChainHeader
 	// note that we don't commit the latest hash chain header's hash here because this gives us a tighter timeline
 	// to audit what really happened
-	ipfsHash, err := ipfs.IpfsAddString(hashString)
+	ipfsHash, err := storeDataInIpfs(hashString)
 	if err != nil {
 		log.Println(err)
 	}
@@ -114,7 +116,7 @@ func updateState(trigger bool) {
 		}
 		subcommand := string(data)
 		// TODO: replace this with real data rather than fake data that we have here
-		ipfsHash, err := ipfs.IpfsAddString("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
+		ipfsHash, err := storeDataInIpfs("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
 		if err != nil {
 			log.Println("Error while fetching ipfs hash", err)
 			time.Sleep(consts.TellerPollInterval)
@@ -147,111 +149,35 @@ func updateState(trigger bool) {
 	}
 }
 
-// storeDataLocal stores the data we observe in real time to a file
-func storeDataLocal() {
-	log.Println("storing a local copy of data")
-	path := consts.TellerHomeDir + "/data.txt"
+func storeDataInIpfs(data string) (string, error) {
+	form := url.Values{}
+	form.Add("username", LocalRecipient.U.Username)
+	form.Add("token", Token)
+	form.Add("data", data)
 
-	transport := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
-		DisableCompression: true,
-	}
-	client := &http.Client{Transport: transport}
-
-	body := "https://api.particle.io/v1/devices/events?access_token=3f7d69aa99956fd77c5466f3f52eb6132f500210"
-	resp, err := client.Get(body)
-	if err != nil {
-		log.Println("error while reading from streaming endpoint: ", err)
-		return
-	}
-
-	defer func() {
-		if ferr := resp.Body.Close(); ferr != nil {
-			err = ferr
-		}
-	}()
-
-	reader := bufio.NewReader(resp.Body)
-	x := make([]byte, 200)
-	// open and write to file
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		_, err = os.Create(path)
-		if err != nil {
-			log.Println("error while opening file", err)
-			return
-		}
+	var retdata []byte
+	var err error
+	// retdata, err := erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
+	if strings.Contains(ApiUrl, "localhost") {
+		// connect to openx which runs on http instead of opensolar
+		retdata, err = erpc.PostForm("http://localhost:8080/ipfs/putdata", form)
 	} else {
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			// don't start the teller if we can't read the last known hash since this would break continuity
-			log.Println(err)
-			return
-		}
-		HashChainHeader = string(data)
+		retdata, err = erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
 	}
 
-	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
-		log.Println("error while opening file", err)
-		return
+		log.Println(err)
+		return "", err
 	}
 
-	log.Println("starting to stream data from particle board: ")
-	// this loop waits for inputs (in this case from the particle API) and continually
-	// writes it to a data stream
-	for {
-		_, err = reader.Read(x)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		//log.Println("streaming data from particle board: ", string(x))
-		_, err = file.Write(x)
-		if err != nil {
-			log.Println("error while writing to file", err)
-			continue
-		}
-		size, err := file.Stat()
-		if err != nil {
-			log.Println(err)
-			continue
-		}
+	retdata = retdata[1:47]
+	log.Println("IPFS HASH: ", string(retdata))
 
-		// log.Println("File size is: ", size.Size())
-		if size.Size() >= int64(consts.TellerMaxLocalStorageSize) {
-			log.Println("flushing data to ipfs")
-			// close the file, store in ipfs, get hash, delete file and create same file again
-			// with the previous file's hash (so people can verify) as the first line
-			err = file.Close()
-			if err != nil {
-				log.Println("couldn't close file, trying again")
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			fileHash, err := ipfs.IpfsAddBytes([]byte(path))
-			if err != nil {
-				log.Println("Couldn't hash file: ", err)
-			}
-			HashChainHeader = fileHash
-			fileHash = "IPFSHASHCHAIN: " + fileHash + "\n" // the header of the ipfs hashchain that we form
-			// log.Println("HashChainHeader: ", HashChainHeader)
-			os.Remove(path)
-			_, err = os.Create(path)
-			if err != nil {
-				log.Println("error while opening file", err)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			file, err = os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-			if err != nil {
-				log.Println("error while opening file", err)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			file.Write([]byte(fileHash))
-		}
+	if len(string(retdata)) != 46 { // 46 is the length of an ipfs hash
+		return "", errors.New("ipfs hash storage failed")
 	}
+
+	return string(retdata), nil
 }
 
 // commitDataShutdown is called when the teller errors out and goes down
@@ -260,7 +186,7 @@ func commitDataShutdown() {
 	log.Println("printing data before shutdown")
 	path := consts.TellerHomeDir + "/data.txt"
 
-	fileHash, err := ipfs.IpfsAddBytes([]byte(path))
+	fileHash, err := storeDataInIpfs(path)
 	if err != nil {
 		log.Println("Couldn't hash file: ", err)
 	}
@@ -421,7 +347,7 @@ func updateEnergyData() error {
 				log.Println("couldn't close file, trying again")
 				break
 			}
-			fileHash, err := ipfs.IpfsAddBytes(hcData)
+			fileHash, err := storeDataInIpfs(string(hcData))
 			if err != nil {
 				log.Println("Couldn't hash file: ", err)
 			}

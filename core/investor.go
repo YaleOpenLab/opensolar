@@ -1,6 +1,8 @@
 package core
 
 import (
+	"log"
+
 	"github.com/pkg/errors"
 
 	tickers "github.com/Varunram/essentials/exchangetickers"
@@ -89,6 +91,14 @@ func NewInvestor(uname string, pwd string, seedpwd string, Name string) (Investo
 	a.U = &user
 	a.AmountInvested = -1.0
 	err = a.Save()
+	if err != nil {
+		log.Println(err)
+		return a, err
+	}
+	if !consts.Mainnet {
+		// automatically get funds if on testnet
+		go xlm.GetXLM(user.StellarWallet.PublicKey)
+	}
 	return a, err
 }
 

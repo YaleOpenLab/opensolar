@@ -17,7 +17,7 @@ type TokenResponse struct {
 }
 
 // GetTestStablecoin gets test stablecoin from openx, amountx in USD
-func GetTestStablecoin(username string, pubkey string, seed string, amountx float64) error {
+func GetTestStablecoin(username string, pubkey string, seedpwd string, amountx float64) error {
 	form := url.Values{}
 	form.Add("username", username)
 	form.Add("pwhash", utils.SHA3hash("password"))
@@ -45,8 +45,7 @@ func GetTestStablecoin(username string, pubkey string, seed string, amountx floa
 		return err
 	}
 
-	body := consts.OpenxURL + "/stablecoin/get?username=" + username + "&token=" + x.Token + "&seedpwd=x&amount=" + amount
-	log.Println("STABLECOIN REQ: ", body)
+	body := consts.OpenxURL + "/stablecoin/get?username=" + username + "&token=" + x.Token + "&seedpwd=" + seedpwd + "&amount=" + amount
 	go erpc.GetRequest(body)
 	return nil
 }

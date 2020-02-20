@@ -559,7 +559,8 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 	// TODO: we need to distribute funds which were paid back to all the parties involved, but we do so only for the investor here
 	err = DistributePayments(recipientSeed, project.EscrowPubkey, projIndex, amount)
 	if err != nil {
-		return errors.Wrap(err, "error while distributing payments")
+		// return errors.Wrap(err, "error while distributing payments")
+		log.Println("error while distributing payments")
 	}
 
 	return nil
@@ -693,8 +694,8 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 	}
 }
 
-// addWaterfallAccount adds a waterfall account that the recipient must payback towards
-func addWaterfallAccount(projIndex int, pubkey string, amount float64) error {
+// AddWaterfallAccount adds a waterfall account that the recipient must payback towards
+func AddWaterfallAccount(projIndex int, pubkey string, amount float64) error {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
 		return errors.Wrap(err, "could not retrieve project, quitting")

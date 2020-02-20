@@ -6,6 +6,8 @@ import (
 	"github.com/pkg/errors"
 
 	utils "github.com/Varunram/essentials/utils"
+	xlm "github.com/Varunram/essentials/xlm"
+	consts "github.com/YaleOpenLab/opensolar/consts"
 	openx "github.com/YaleOpenLab/openx/database"
 )
 
@@ -56,6 +58,14 @@ func NewRecipient(uname string, pwd string, seedpwd string, Name string) (Recipi
 	}
 	a.U = &user
 	err = a.Save()
+	if err != nil {
+		log.Println(err)
+		return a, err
+	}
+	if !consts.Mainnet {
+		// automatically get funds if on testnet
+		go xlm.GetXLM(user.StellarWallet.PublicKey)
+	}
 	return a, err
 }
 

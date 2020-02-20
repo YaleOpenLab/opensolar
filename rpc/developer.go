@@ -15,11 +15,14 @@ import (
 func setupDeveloperRPCs() {
 	withdrawdeveloper()
 	developerDashboard()
+	requestWaterfall()
 }
 
+// DevRPC contains a list of all the developer rpc endpoints
 var DevRPC = map[int][]string{
 	1: []string{"/developer/withdraw", "POST", "amount", "projIndex"}, // POST
 	2: []string{"/developer/dashboard", "GET"},                        // GET
+	3: []string{"/developer/money/request", "GET", "index", "amount"}, // GET
 }
 
 // withdrawdeveloper can be called by a developer wishing to withdraw funds from the platfomr
@@ -211,5 +214,40 @@ func developerDashboard() {
 			ret.YourProjects[i] = x
 		}
 		erpc.MarshalSend(w, ret)
+	})
+}
+
+// requestWaterfall requests that a developer be paid for their services
+func requestWaterfall() {
+	http.HandleFunc(DevRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
+		prepEntity, err := entityValidateHelper(w, r, DevRPC[3][2:], DevRPC[3][1])
+		if err != nil {
+			log.Println("Error while validating entity", err)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			return
+		}
+
+		projIndex, err := utils.ToInt(r.URL.Query()["index"][0])
+		if err != nil {
+			log.Println("project index not int, quitting")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		amount, err := utils.ToFloat(r.URL.Query()["amount"][0])
+		if err != nil {
+			log.Println("project index not int, quitting")
+			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			return
+		}
+
+		err = core.RequestWaterfallWithdrawal(prepEntity.U.Index, projIndex, amount)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

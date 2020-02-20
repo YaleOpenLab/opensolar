@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/Varunram/essentials/xlm"
-
 	"github.com/Varunram/essentials/utils"
 
 	core "github.com/YaleOpenLab/opensolar/core"
@@ -93,10 +91,6 @@ func demoData() error {
 		log.Println(err)
 		return err
 	}
-
-	go xlm.GetXLM(inv.U.StellarWallet.PublicKey)
-	go xlm.GetXLM(recp.U.StellarWallet.PublicKey)
-	go xlm.GetXLM(dev.U.StellarWallet.PublicKey)
 
 	inv.InvestedSolarProjectsIndices = append(inv.InvestedSolarProjectsIndices, project.Index)
 	recp.ReceivedSolarProjectIndices = append(recp.ReceivedSolarProjectIndices, project.Index)

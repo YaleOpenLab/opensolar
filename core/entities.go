@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"log"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -163,6 +164,14 @@ func newEntity(uname string, pwd string, seedpwd string, name string, role strin
 
 	a.U = &user
 	err = a.Save()
+	if err != nil {
+		log.Println(err)
+		return a, err
+	}
+	if !consts.Mainnet {
+		// automatically get funds if on testnet
+		go xlm.GetXLM(user.StellarWallet.PublicKey)
+	}
 	return a, err
 }
 
