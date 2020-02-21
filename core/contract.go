@@ -634,8 +634,8 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 
 		guarantor, err := RetrieveEntity(project.GuarantorIndex)
 		if err != nil {
-			log.Println("couldn't retrieve guarantor")
-			time.Sleep(consts.OneWeekInSecond)
+			log.Println("WARNING: couldn't retrieve guarantor")
+			// time.Sleep(consts.OneWeekInSecond)
 		}
 
 		period := float64(time.Duration(project.PaybackPeriod) * consts.OneWeekInSecond) // in seconds due to the const
