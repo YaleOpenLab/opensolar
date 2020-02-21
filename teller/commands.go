@@ -3,21 +3,30 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
-	utils "github.com/Varunram/essentials/utils"
 	"github.com/fatih/color"
 )
 
 var (
+	// color scheme follows
+	// cyan - non error logs
+	// red - error logs
+	// yellow - banners
+	// green - successful calls
+	// magenta - blockchain / hash messages
+	// white - others
+
 	// WhiteColor is a pretty handler for the default colors defined
-	WhiteColor = color.FgHiWhite
+	// WhiteColor = color.FgHiWhite
+
 	// GreenColor is a pretty handler for the default colors defined
 	GreenColor = color.FgHiGreen
 	// RedColor is a pretty handler for the default colors defined
 	RedColor = color.FgHiRed
 
 	// CyanColor is a pretty handler for the default colors defined
-	// CyanColor = color.FgHiCyan
+	CyanColor = color.FgHiCyan
 	// HiYellowColor is a pretty handler for the default colors defined
 	// HiYellowColor = color.FgHiYellow
 
@@ -33,9 +42,9 @@ var (
 )
 
 // colorOutput prints the string in the passed color
-func colorOutput(msg string, gColor color.Attribute) {
+func colorOutput(gColor color.Attribute, msg ...interface{}) {
 	x := color.New(gColor)
-	x.Fprintf(color.Output, "%s\n", msg)
+	x.Println(msg...)
 }
 
 var commands = []string{"qq", "help", "ping", "receive", "display", "info", "update", "hh"}
@@ -81,7 +90,7 @@ func ParseInput(input []string) {
 			subsubcommand := input[2]
 			var balance float64
 			var err error
-			colorOutput("Displaying balance in "+subsubcommand+" for user: ", WhiteColor)
+			colorOutput(MagentaColor, "Displaying balance in "+subsubcommand+" for user: ")
 
 			switch subsubcommand {
 			case "xlm":
@@ -94,13 +103,7 @@ func ParseInput(input []string) {
 				log.Println(err)
 				return
 			}
-
-			balanceS, err := utils.ToString(balance)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			colorOutput(balanceS, MagentaColor)
+			colorOutput(MagentaColor, balance)
 		default:
 			// handle defaults here
 			log.Println("Invalid command or need more parameters")
@@ -112,8 +115,8 @@ func ParseInput(input []string) {
 		fmt.Println("          Debt Asset Code: ", LocalProject.DebtAssetCode)
 		fmt.Println("          Payback Asset Code: ", LocalProject.PaybackAssetCode)
 		fmt.Println("          Balance Left: ", LocalProject.BalLeft)
-		fmt.Println("          Date Initiated: ", LocalProject.DateInitiated)
-		fmt.Println("          Date Last Paid: ", LocalProject.DateLastPaid)
+		fmt.Println("          Date Initiated: ", 0)
+		fmt.Println("          Date Last Paid: ", time.Unix(LocalProject.DateLastPaid, 0))
 	// end of display
 	case commands[6]:
 		if len(input) != 1 {

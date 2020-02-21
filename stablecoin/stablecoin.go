@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/url"
 
-	tickers "github.com/Varunram/essentials/exchangetickers"
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	"github.com/YaleOpenLab/opensolar/consts"
@@ -36,8 +35,8 @@ func GetTestStablecoin(username string, pubkey string, seedpwd string, amountx f
 		return err
 	}
 
-	rate := tickers.ExchangeXLMforUSD(1) // 1 XLM = rate USD
-	amountx = amountx / rate
+	exchangeValue := 10000000.0 // 1XLM = 10**7 USD, hardcoded
+	amountx = amountx / exchangeValue
 
 	amount, err := utils.ToString(amountx)
 	if err != nil {

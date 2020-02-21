@@ -84,10 +84,9 @@ func StartTeller() error {
 	// teller goes offline and we get notified
 	err = storeLocation(Mapskey) // stores DeviceLocation
 	if err != nil {
-		return errors.Wrap(err, "could not store location of teller")
+		colorOutput(RedColor, "could not store location of teller")
 	}
 
-	log.Println("STORED LOCATION SUCCESSFULLY")
 	err = getPlatformEmail()
 	if err != nil {
 		return errors.Wrap(err, "could not store platform email")

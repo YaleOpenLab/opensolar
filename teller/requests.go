@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"strings"
 
@@ -35,7 +34,7 @@ func httpsGet(request []string, xparams ...string) ([]byte, error) {
 	reqParams := request[2:len(request)]
 
 	if len(reqParams) != len(xparams) {
-		log.Println("length of required params not equal to passed params: ", endpoint, reqParams, xparams)
+		colorOutput(CyanColor, "length of required params not equal to passed params: ", endpoint, reqParams, xparams)
 		return nil, errors.New("length of required params not equal to passed params, quitting")
 	}
 
@@ -48,18 +47,18 @@ func httpsGet(request []string, xparams ...string) ([]byte, error) {
 }
 
 // GetLocation gets the teller's location
-func getLocation(mapskey string) string {
+func getLocation(mapskey string) error {
 	// see https://developers.google.com/maps/documentation/geolocation/intro on how
 	// to improve location accuracy
 	client := geo.NewGoogleGeo(mapskey)
 	res, err := client.Geolocate()
 	if err != nil {
-		log.Println("Error while getting location: ", err)
-		return ""
+		colorOutput(RedColor, "Error while getting location: ", err)
+		return err
 	}
 	location := fmt.Sprintf("Lat%fLng%f", res.Lat, res.Lng) // some random format, can be improved upon if necessary
 	DeviceLocation = location
-	return location
+	return nil
 }
 
 // ping pings the platform to see if its up
@@ -73,7 +72,7 @@ func ping() error {
 	// now data is in byte, we need the other structure now
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	// the result would be the status of the platform
@@ -81,7 +80,7 @@ func ping() error {
 	if err != nil {
 		return err
 	}
-	colorOutput("PLATFORM STATUS: "+codeString, GreenColor)
+	colorOutput(GreenColor, "PLATFORM STATUS: "+codeString)
 	return nil
 }
 
@@ -89,14 +88,14 @@ func ping() error {
 func getProjectIndex(assetName string) (int, error) {
 	data, err := httpsGet(rpc.ProjectRPC[2])
 	if err != nil {
-		log.Println("Error while making get request: ", err)
+		colorOutput(RedColor, "Error while making get request: ", err)
 		return -1, err
 	}
 
 	var x []opensolar.Project
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return -1, err
 	}
 	for _, elem := range x {
@@ -126,7 +125,7 @@ func login(username string, pwhash string) error {
 
 	err = json.Unmarshal(data, &LoginReturn)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 
@@ -140,7 +139,7 @@ func login(username string, pwhash string) error {
 	var x core.Recipient
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 
@@ -148,7 +147,7 @@ func login(username string, pwhash string) error {
 		return errors.New("couldn't validate recipient")
 	}
 
-	colorOutput("AUTHENTICATED RECIPIENT", GreenColor)
+	colorOutput(GreenColor, "AUTHENTICATED RECIPIENT")
 	LocalRecipient = x
 	return nil
 }
@@ -192,12 +191,12 @@ func projectPayback(assetName string, amountx float64) error {
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
-	log.Println("PAYBACK RESPONSE: ", x)
+	colorOutput(CyanColor, "PAYBACK RESPONSE: ", x)
 	if x.Code == 200 {
-		colorOutput("PAID!", GreenColor)
+		colorOutput(GreenColor, "PAID!")
 		return nil
 	}
 	return errors.New("Errored out")
@@ -212,11 +211,11 @@ func setDeviceId(username string, deviceId string) error {
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	if x.Code == 200 {
-		colorOutput("PAID!", GreenColor)
+		colorOutput(GreenColor, "PAID!")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -240,11 +239,11 @@ func storeStartTime() error {
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	if x.Code == 200 {
-		colorOutput("LOGGED START TIME SUCCESSFULLY!", GreenColor)
+		colorOutput(GreenColor, "LOGGED START TIME SUCCESSFULLY!")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -252,10 +251,14 @@ func storeStartTime() error {
 
 // StoreLocation stores the location of the teller
 func storeLocation(mapskey string) error {
-	location := getLocation(mapskey) // this happens to return null
+	err := getLocation(mapskey) // this happens to return null
+	if err != nil {
+		colorOutput(RedColor, err)
+		return err
+	}
 
 	postdata := basePostData()
-	postdata.Set("location", "l"+location) // handle google API failures this funky way
+	postdata.Set("location", "l"+DeviceLocation) // handle google API failures this funky way
 
 	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[7][0], postdata)
 	if err != nil {
@@ -265,11 +268,11 @@ func storeLocation(mapskey string) error {
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	if x.Code == 200 {
-		colorOutput("LOGGED LOCATION SUCCESSFULLY!", GreenColor)
+		colorOutput(GreenColor, "LOGGED LOCATION SUCCESSFULLY!")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -284,18 +287,18 @@ type PlatformEmailResponse struct {
 func getPlatformEmail() error {
 	data, err := httpsGet(orpc.UserRPC[13])
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return err
 	}
 
 	var x PlatformEmailResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 
-	colorOutput("PLATFORMEMAIL: "+x.Email, GreenColor)
+	colorOutput(YellowColor, "PLATFORMEMAIL: "+x.Email)
 	return nil
 }
 
@@ -310,18 +313,18 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 	data, err := httpsGet(rpc.ProjectRPC[6], "&projIndex="+projIndex,
 		"&deviceId="+DeviceId, "&tx1="+tx1, "&tx2="+tx2)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return err
 	}
 
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	if x.Code == 200 {
-		colorOutput("SENT STOP EMAIL SUCCESSFULLY", GreenColor)
+		colorOutput(RedColor, "SENT STOP EMAIL SUCCESSFULLY")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -338,13 +341,13 @@ func getLocalProjectDetails(projIndexx int) (opensolar.Project, error) {
 
 	data, err := httpsGet(rpc.ProjectRPC[3], "&index="+projIndex)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return x, err
 	}
 
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return x, err
 	}
 
@@ -361,18 +364,18 @@ func sendDevicePaybackFailedEmail() error {
 
 	data, err := httpsGet(rpc.ProjectRPC[7], "&projIndex="+projIndex, "&deviceId="+DeviceId)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return err
 	}
 
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 	if x.Code == 200 {
-		colorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
+		colorOutput(GreenColor, "SENT FAILED PAYBACK EMAIL")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -385,19 +388,19 @@ func storeStateHistory(hash string) error {
 
 	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[16][0], postdata)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return err
 	}
 
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return err
 	}
 
 	if x.Code == 200 {
-		colorOutput("SENT FAILED PAYBACK EMAIL", RedColor)
+		colorOutput(GreenColor, "SENT FAILED PAYBACK EMAIL")
 		return nil
 	}
 	return errors.New("Errored out, didn't receive 200")
@@ -408,14 +411,14 @@ func testSwytch() {
 	data, err := erpc.HttpsGet(client, baseUrl("swytch/accessToken")+"&clientId="+SwytchClientid+
 		"&clientSecret="+SwytchClientSecret+"&username="+SwytchUsername+"&password="+SwytchPassword)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return
 	}
 
 	var x1 rpc.GetAccessTokenData
 	err = json.Unmarshal(data, &x1)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
@@ -425,14 +428,14 @@ func testSwytch() {
 	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&"+
 		"refreshToken="+refreshToken)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return
 	}
 
 	var x2 rpc.GetAccessTokenData
 	err = json.Unmarshal(data, &x2)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
@@ -440,72 +443,72 @@ func testSwytch() {
 
 	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getuser?authToken="+accessToken)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return
 	}
 
 	var x3 rpc.GetSwytchUserStruct
 	err = json.Unmarshal(data, &x3)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
 	userId := x3.Data[0].Id
-	log.Println("USER ID: ", userId)
+	colorOutput(CyanColor, "USER ID: ", userId)
 	// we have the user id, query for assets
 
 	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getassets?authToken="+accessToken+"&userId="+userId)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return
 	}
 
 	var x4 rpc.GetAssetStruct
 	err = json.Unmarshal(data, &x4)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
 	assetId := x4.Data[0].Id
-	log.Println("ASSETID: ", assetId)
+	colorOutput(CyanColor, "ASSETID: ", assetId)
 	// we have the asset id, try to get some info
 	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getenergy?authToken="+accessToken+"&assetId="+assetId)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return
 	}
 
 	var x5 rpc.GetEnergyStruct
 	err = json.Unmarshal(data, &x5)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
-	log.Println("Energy data from installed asset: ", x4)
+	colorOutput(CyanColor, "Energy data from installed asset: ", x4)
 
 	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getattributes?authToken="+accessToken+"&assetId="+assetId)
 	if err != nil {
-		log.Println(err)
+		colorOutput(CyanColor, err)
 		return
 	}
 
 	var x6 rpc.GetEnergyAttributionData
 	err = json.Unmarshal(data, &x6)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return
 	}
 
-	log.Println("Energy Attribute data: ", x6)
+	colorOutput(CyanColor, "Energy Attribute data: ", x6)
 }
 
 func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 	amount, err := utils.ToString(amountx)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return "", err
 	}
 
@@ -513,14 +516,14 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 		publickey, "&amount="+amount, "&seedpwd="+LocalSeedPwd)
 
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return "", err
 	}
 
 	var txhash string
 	err = json.Unmarshal(data, &txhash)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return "", err
 	}
 
@@ -529,14 +532,14 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 			publickey, "&amount="+amount, "&seedpwd="+LocalSeedPwd)
 
 		if err != nil {
-			log.Println(err)
+			colorOutput(RedColor, err)
 			return "", err
 		}
 
 		var txhash string
 		err = json.Unmarshal(data, &txhash)
 		if err != nil {
-			log.Println(string(data), err)
+			colorOutput(RedColor, string(data), err)
 			return "", err
 		}
 
@@ -550,14 +553,14 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 func getLatestBlockHash() (string, error) {
 	data, err := httpsGet(orpc.UserRPC[33])
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return "", err
 	}
 
 	var blockhash string
 	err = json.Unmarshal(data, &blockhash)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return "", err
 	}
 
@@ -567,14 +570,14 @@ func getLatestBlockHash() (string, error) {
 func getNativeBalance() (float64, error) {
 	data, err := httpsGet(orpc.UserRPC[3])
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return -1, err
 	}
 
 	var balance float64
 	err = json.Unmarshal(data, &balance)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return -1, err
 	}
 
@@ -584,14 +587,14 @@ func getNativeBalance() (float64, error) {
 func getAssetBalance(asset string) (float64, error) {
 	data, err := httpsGet(orpc.UserRPC[4], "&asset="+asset)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return -1, err
 	}
 
 	var balance float64
 	err = json.Unmarshal(data, &balance)
 	if err != nil {
-		log.Println(string(data), err)
+		colorOutput(RedColor, string(data), err)
 		return -1, err
 	}
 
@@ -625,7 +628,7 @@ func putEnergy(energyx uint32) ([]byte, error) {
 
 	energy, err := utils.ToString(energyx)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return nil, err
 	}
 
