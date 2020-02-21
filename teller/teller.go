@@ -109,7 +109,7 @@ func autoComplete() readline.AutoCompleter {
 }
 
 func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
-	log.Println("starting mqtt subscriber", mqttopts)
+	colorOutput(CyanColor, "starting mqtt subscriber", mqttopts)
 	receiveCount := 0
 	receiver := make(chan [2]string)
 	var messages []string
@@ -120,13 +120,13 @@ func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num i
 
 	client := mqtt.NewClient(mqttopts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		log.Println("MQTT SUBSCRIBE ERROR: ", token.Error())
+		colorOutput(CyanColor, "MQTT SUBSCRIBE ERROR: ", token.Error())
 		return token.Error()
 	}
 
 	token := client.Subscribe(topic, byte(qos), nil)
 	if token.Wait() && token.Error() != nil {
-		log.Println("MQTT SUBSCRIBE ERROR: ", token.Error())
+		colorOutput(CyanColor, "MQTT SUBSCRIBE ERROR: ", token.Error())
 		return token.Error()
 	}
 
@@ -148,13 +148,13 @@ func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num i
 				return errors.Wrap(err, "could not write data to the hc file")
 			}
 		}
-		log.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
+		colorOutput(YellowColor, "RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 		receiveCount++
 	}
 
 	client.Disconnect(250)
-	log.Println("Subscriber Disconnected")
-	log.Println("MESSAGES: ", messages)
+	colorOutput(CyanColor, "Subscriber Disconnected")
+	colorOutput(CyanColor, "MESSAGES: ", messages)
 	return nil
 }
 
@@ -233,59 +233,72 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("---------------WELCOME TO THE TELLER INTERFACE---------------")
+	colorOutput(YellowColor, "---------------WELCOME TO THE TELLER INTERFACE---------------")
 	defer recoverPanic() // catch any panics that occur during the teller's runtime
 	err = StartTeller()  // login to the platform, set device id, etc
 	if err != nil {
 		log.Fatal(err)
 	}
-	colorOutput("TELLER PUBKEY: "+LocalRecipient.U.StellarWallet.PublicKey, GreenColor)
-	colorOutput("DEVICE ID: "+DeviceId, GreenColor)
+
+	colorOutput(YellowColor, "TELLER PUBKEY: "+LocalRecipient.U.StellarWallet.PublicKey)
+	colorOutput(YellowColor, "DEVICE ID: "+DeviceId)
 
 	signalChan := make(chan os.Signal, 1)
 	cleanupDone = make(chan struct{})
 	signal.Notify(signalChan, os.Interrupt)
 
-	StartHash, err = getLatestBlockHash()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	balance, err := getNativeBalance()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	var StartHash string
+	var balance float64
 	var usdBalance float64
+
+	go func() {
+		StartHash, err = getLatestBlockHash()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
+		balance, err = getNativeBalance()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	if consts.Mainnet {
-		usdBalance, err = getAssetBalance("USD")
-		if err != nil {
-			log.Fatal(err)
-		}
+		go func() {
+			usdBalance, err = getAssetBalance("USD")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
 	} else {
-		usdBalance, err = getAssetBalance("STABLEUSD")
-		if err != nil {
-			log.Fatal(err)
-		}
+		go func() {
+			usdBalance, err = getAssetBalance("STABLEUSD")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
 	}
 
-	log.Println("XLM BALANCE: ", balance)
-	log.Println("USD BALANCE: ", usdBalance)
-	log.Println("START HASH: ", StartHash)
+	time.Sleep(3 * time.Second)
+	colorOutput(MagentaColor, "XLM BALANCE: ", balance)
+	colorOutput(MagentaColor, "USD BALANCE: ", usdBalance)
+	colorOutput(MagentaColor, "START HASH: ", StartHash)
 
 	// run goroutines in the background to routinely check for payback, state updates and stuff
-	go checkPayback()
-	time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaenous txs
-	go updateState(true)
+	// go checkPayback()
+	// time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaenous txs
+	// go updateState(true)
 
 	if opts.Daemon {
-		log.Println("Running teller in daemon mode")
+		colorOutput(CyanColor, "Running teller in daemon mode")
 		go func() {
 			<-signalChan
-			log.Println("\nSigint received, calling endhandler!")
+			colorOutput(CyanColor, "\nSigint received, calling endhandler!")
 			err = endHandler()
 			for err != nil {
-				log.Println(err)
+				colorOutput(CyanColor, err)
 				err = endHandler()
 				<-cleanupDone
 			}
@@ -299,7 +312,7 @@ func main() {
 	// non daemon mode, CLI available.
 	go func() {
 		<-signalChan
-		log.Println("\nSigint received, not quitting without closing endhandler!")
+		colorOutput(CyanColor, "\nSigint received, not quitting without closing endhandler!")
 		close(cleanupDone)
 	}()
 
@@ -324,7 +337,7 @@ func main() {
 		if err != nil {
 			err := endHandler() // error, user wants to quit
 			for err != nil {
-				log.Println(err)
+				colorOutput(CyanColor, err)
 				err = endHandler()
 				<-cleanupDone // to prevent user from quitting when endhandler is running
 			}
@@ -337,7 +350,7 @@ func main() {
 		rl.SaveHistory(msg)
 
 		cmdslice := strings.Fields(msg)
-		colorOutput("entered command: "+msg, YellowColor)
+		colorOutput(YellowColor, "entered command: ", msg)
 
 		ParseInput(cmdslice)
 	}
@@ -348,10 +361,10 @@ func main() {
 func recoverPanic() {
 	if rec := recover(); rec != nil {
 		err := rec.(error) // recover the panic as an error
-		log.Println("unexpected error, invoking EndHandler", err)
+		colorOutput(CyanColor, "unexpected error, invoking EndHandler", err)
 		err = endHandler()
 		for err != nil { // run this loop until all endhandler functions are called
-			log.Println(err)
+			colorOutput(CyanColor, err)
 			err = endHandler()
 			<-cleanupDone // to prevent user from quitting when endhandler is running
 		}

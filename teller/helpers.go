@@ -29,7 +29,7 @@ func refreshLogin(username string, pwhash string) error {
 		time.Sleep(consts.TellerPollInterval)
 		err = login(username, pwhash)
 		if err != nil {
-			log.Println(err)
+			colorOutput(CyanColor, err)
 		}
 	}
 }
@@ -37,12 +37,12 @@ func refreshLogin(username string, pwhash string) error {
 // EndHandler runs when the teller shuts down. Records the start time and location of the
 // device in ipfs and commits it as two transactions to the Stellar blockchain
 func endHandler() error {
-	log.Println("Gracefully shutting down, please do not press any button in the process")
+	colorOutput(CyanColor, "Gracefully shutting down, please do not press any button in the process")
 	var err error
 
 	NowHash, err = getLatestBlockHash()
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 	}
 
 	hashString := "Device Shutting down. Info: " + DeviceInfo + " Device Location: " + DeviceLocation +
@@ -52,7 +52,7 @@ func endHandler() error {
 	// to audit what really happened
 	ipfsHash, err := storeDataInIpfs(hashString)
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 	}
 	memo := "IPFSHASH: " + ipfsHash
 
@@ -66,7 +66,7 @@ func endHandler() error {
 		log.Fatal("could not send device shutdown email: ", err)
 	}
 
-	log.Println("sent device shutdown notice")
+	colorOutput(CyanColor, "sent device shutdown notice")
 	commitDataShutdown()
 	// save last known state of the system in the recipient's list of known hashes. Call this
 	// last since there would still be data that we want to measure when the above commands are running
@@ -93,13 +93,13 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 
 func checkPayback() {
 	for {
-		log.Println("Payback interval reached. Paying back automatically")
+		colorOutput(CyanColor, "Payback interval reached. Paying back automatically")
 		assetName := LocalProject.DebtAssetCode
 		amount := oracle.MonthlyBill() // TODO: consumption data must be accumulated from zigbee in the future
 
 		err := projectPayback(assetName, amount)
 		if err != nil {
-			log.Println("Error while paying back", err, "trying again")
+			colorOutput(RedColor, "Error while paying back", err, "trying again")
 			time.Sleep(5 * time.Second)
 			err = projectPayback(assetName, amount)
 			if err != nil {
@@ -115,14 +115,14 @@ func updateState(trigger bool) {
 	for {
 		data, err := ioutil.ReadFile("data.txt")
 		if err != nil {
-			log.Println("error while trying to read data file")
+			colorOutput(RedColor, "error while trying to read data file")
 			time.Sleep(consts.TellerPollInterval)
 		}
 		subcommand := string(data)
 		// TODO: replace this with real data rather than fake data that we have here
 		ipfsHash, err := storeDataInIpfs("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
 		if err != nil {
-			log.Println("Error while fetching ipfs hash", err)
+			colorOutput(RedColor, "Error while fetching ipfs hash", err)
 			time.Sleep(consts.TellerPollInterval)
 		}
 
@@ -136,18 +136,18 @@ func updateState(trigger bool) {
 
 		hash1, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[:28])
 		if err != nil {
-			log.Println(err)
+			colorOutput(RedColor, err)
 		}
 
 		time.Sleep(5 * time.Second)
 
 		hash2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[29:])
 		if err != nil {
-			log.Println(err)
+			colorOutput(RedColor, err)
 		}
 
 		// we updated state as hash1 and hash2
-		colorOutput("Updated State: "+hash1+" "+hash2, MagentaColor)
+		colorOutput(MagentaColor, "Updated State: "+hash1+" "+hash2)
 		if trigger {
 			break // we trigerred this manually, don't want to keep doing this
 		}
@@ -172,12 +172,12 @@ func storeDataInIpfs(data string) (string, error) {
 	}
 
 	if err != nil {
-		log.Println(err)
+		colorOutput(RedColor, err)
 		return "", err
 	}
 
 	retdata = retdata[1:47]
-	log.Println("IPFS HASH: ", string(retdata))
+	colorOutput(CyanColor, "IPFS HASH: ", string(retdata))
 
 	if len(string(retdata)) != 46 { // 46 is the length of an ipfs hash
 		return "", errors.New("ipfs hash storage failed")
@@ -189,12 +189,12 @@ func storeDataInIpfs(data string) (string, error) {
 // commitDataShutdown is called when the teller errors out and goes down
 func commitDataShutdown() {
 	// retrieve data from local storage
-	log.Println("printing data before shutdown")
+	colorOutput(CyanColor, "printing data before shutdown")
 	path := consts.TellerHomeDir + "/data.txt"
 
 	fileHash, err := storeDataInIpfs(path)
 	if err != nil {
-		log.Println("Couldn't hash file: ", err)
+		colorOutput(RedColor, "Couldn't hash file: ", err)
 	}
 
 	defer func() {
@@ -205,13 +205,13 @@ func commitDataShutdown() {
 
 	_, err = os.Create(path)
 	if err != nil {
-		log.Println("error while opening file", err)
+		colorOutput(RedColor, "error while opening file", err)
 		return
 	}
 
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
-		log.Println("error while opening file", err)
+		colorOutput(RedColor, "error while opening file", err)
 		return
 	}
 
@@ -250,7 +250,7 @@ func checkDeviceID() error {
 	// checks whether we've set device id beforehand
 	if _, err := os.Stat(consts.TellerHomeDir); os.IsNotExist(err) {
 		// directory does not exist, create a device id
-		log.Println("Creating home directory for teller")
+		colorOutput(CyanColor, "Creating home directory for teller")
 		os.MkdirAll(consts.TellerHomeDir, os.ModePerm)
 		path := consts.TellerHomeDir + "/deviceid.hex"
 		file, err := os.Create(path)
@@ -261,7 +261,7 @@ func checkDeviceID() error {
 		if err != nil {
 			return errors.Wrap(err, "could not generate device id")
 		}
-		colorOutput("GENERATED UNIQUE DEVICE ID: "+deviceId, GreenColor)
+		colorOutput(GreenColor, "GENERATED UNIQUE DEVICE ID: "+deviceId)
 		_, err = file.Write([]byte(deviceId))
 		if err != nil {
 			return errors.Wrap(err, "could not write device id to file")
@@ -340,35 +340,35 @@ func updateEnergyData() error {
 	for {
 		size, err := hc.Stat()
 		if err != nil {
-			log.Println(err)
+			colorOutput(RedColor, err)
 			break
 		}
-		log.Println("File size is: ", size.Size())
+		colorOutput(CyanColor, "File size is: ", size.Size())
 		if size.Size() >= int64(consts.TellerMaxLocalStorageSize) {
-			log.Println("flushing data to ipfs")
+			colorOutput(CyanColor, "flushing data to ipfs")
 			// close the file, store in ipfs, get hash, delete file and create same file again
 			// with the previous file's hash (so people can verify) as the first line
 			err = hc.Close()
 			if err != nil {
-				log.Println("couldn't close file, trying again")
+				colorOutput(RedColor, "couldn't close file, trying again")
 				break
 			}
 			fileHash, err := storeDataInIpfs(string(hcData))
 			if err != nil {
-				log.Println("Couldn't hash file: ", err)
+				colorOutput(RedColor, "Couldn't hash file: ", err)
 			}
 			HashChainHeader = fileHash
 			fileHash = "IPFSHASHCHAIN: " + fileHash + "\n" // the header of the ipfs hashchain that we form
-			// log.Println("HashChainHeader: ", HashChainHeader)
+			// colorOutput(CyanColor, "HashChainHeader: ", HashChainHeader)
 			os.Remove(hcPath)
 			_, err = os.Create(hcPath)
 			if err != nil {
-				log.Println("error while opening file", err)
+				colorOutput(RedColor, "error while opening file", err)
 				continue
 			}
 			hc, err := os.OpenFile(hcPath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 			if err != nil {
-				log.Println("error while opening file", err)
+				colorOutput(RedColor, "error while opening file", err)
 				continue
 			}
 			defer hc.Close()
@@ -398,7 +398,7 @@ func updateEnergyData() error {
 			// which is further read by mosquitto_sub
 			line, _, err := reader.ReadLine()
 			if err != nil {
-				log.Println("reached end of file")
+				colorOutput(RedColor, "reached end of file")
 				err = os.Remove("data.txt")
 				if err != nil {
 					return err
@@ -430,20 +430,20 @@ func updateEnergyData() error {
 func readEnergyData() {
 	for {
 		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond)
-		log.Println("reading energy data from file")
+		colorOutput(CyanColor, "reading energy data from file")
 		err := updateEnergyData()
 		if err != nil {
-			log.Println("error while reading energy data: ", err)
+			colorOutput(RedColor, "error while reading energy data: ", err)
 			continue
 		}
 
 		// need to update remote with the energy data
-		log.Println("storing energy data on opensolar")
+		colorOutput(CyanColor, "storing energy data on opensolar")
 		data, err := putEnergy(EnergyValue)
 		if err != nil {
-			log.Println(err)
+			colorOutput(RedColor, err)
 			continue
 		}
-		log.Println(string(data))
+		colorOutput(CyanColor, string(data))
 	}
 }
