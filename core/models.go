@@ -216,7 +216,7 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 		return -1, errors.Wrap(err, "Unable to fetch oracle price, exiting")
 	}
 
-	log.Println("Retrieved average price from oracle: ", monthlyBill)
+	log.Println("YOUR BILL: ", monthlyBill)
 
 	if amount < monthlyBill {
 		return -1, errors.New("amount paid is less than amount needed. Please refill your main account")
@@ -246,16 +246,15 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	if StableBalance < amount {
 		if consts.Mainnet {
 			return -1, errors.New("need more stablecoin, exiting")
-		} else {
-			// need to exchange some XLM for stablecoin
-			balNeeded := amount - StableBalance + 5 // 5 for change, fees, etc
-			err := stablecoin.GetTestStablecoin(recipient.U.Username, recipient.U.StellarWallet.PublicKey, recipientSeed, balNeeded)
-			if err != nil {
-				log.Println(err)
-				return -1, errors.Wrap(err, "could not exchange xlm for stablecoin")
-			}
-			time.Sleep(20 * time.Second) // wait for the stablecoin daemon to  give stablecoin
 		}
+		// need to exchange some XLM for stablecoin
+		balNeeded := amount - StableBalance + 10 // some more for change, fees, etc
+		err := stablecoin.GetTestStablecoin(recipient.U.Username, recipient.U.StellarWallet.PublicKey, recipientSeed, balNeeded)
+		if err != nil {
+			log.Println(err)
+			return -1, errors.Wrap(err, "could not exchange xlm for stablecoin")
+		}
+		time.Sleep(30 * time.Second) // wait for the stablecoin daemon to give stablecoin
 	}
 
 	projIndexString, err := utils.ToString(projIndex)
@@ -265,12 +264,14 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 
 	var stablecoinHash string
 	if !consts.Mainnet {
-		_, stablecoinHash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
+		_, stablecoinHash, err = assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey,
+			escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
 		if err != nil {
 			return -1, errors.Wrap(err, "Error while sending STABLEUSD back")
 		}
 	} else {
-		_, stablecoinHash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress, escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
+		_, stablecoinHash, err = assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress,
+			escrowPubkey, amount, recipientSeed, "Opensolar payback: "+projIndexString)
 		if err != nil {
 			return -1, errors.Wrap(err, "Error while sending STABLEUSD back")
 		}
@@ -284,8 +285,6 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	}
 	log.Println("Paid", amount, " back to platform in DebtAsset, txhash", debtPaybackHash)
 
-	ownershipAmt := amount - monthlyBill
-	ownershipPct := ownershipAmt / totalValue
 	if recipient.U.Notification {
 		notif.SendPaybackNotifToRecipient(projIndex, recipient.U.Email, stablecoinHash, debtPaybackHash)
 	}
@@ -300,6 +299,9 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 			notif.SendPaybackNotifToInvestor(projIndex, investor.U.Email, stablecoinHash, debtPaybackHash)
 		}
 	}
+
+	ownershipAmt := amount - monthlyBill
+	ownershipPct := ownershipAmt / totalValue
 
 	return ownershipPct, nil
 }

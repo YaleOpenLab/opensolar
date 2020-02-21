@@ -575,11 +575,12 @@ func DistributePayments(recipientSeed string, escrowPubkey string, projIndex int
 		errors.Wrap(err, "couldn't retrieve project, quitting!")
 	}
 
-	if project.EscrowLock {
+	if !project.EscrowLock {
 		log.Println("project", project.Index, "'s escrow locked, can't send funds")
 		return errors.New("project escrow locked, can't send funds")
 	}
 
+	log.Println("distributing payments")
 	var fixedRate float64
 	if project.InterestRate != 0 {
 		fixedRate = project.InterestRate
@@ -590,12 +591,20 @@ func DistributePayments(recipientSeed string, escrowPubkey string, projIndex int
 	amountGivenBack := fixedRate * amount
 	for pubkey, percentage := range project.InvestorMap {
 		txAmount := percentage * amountGivenBack
+		log.Println("sending amount: ", txAmount, " back to investor: ", pubkey)
 		// here we send funds from the 2of2 multisig. Platform signs by default
-		err = escrow.SendFundsFromEscrow(project.EscrowPubkey, pubkey, recipientSeed, consts.PlatformSeed, txAmount, "returns")
+		if !consts.Mainnet {
+			err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, pubkey, consts.StablecoinPublicKey,
+				recipientSeed, consts.PlatformSeed, txAmount, "returns", consts.StablecoinCode)
+		} else {
+			err = escrow.SendAssetsFromEscrow(project.EscrowPubkey, pubkey, consts.StablecoinPublicKey,
+				recipientSeed, consts.PlatformSeed, txAmount, "returns", consts.AnchorUSDCode)
+		}
 		if err != nil {
 			log.Println("Error with payback to pubkey: ", pubkey, err) // if there is an error with one payback, doesn't mean we should stop and wait for the others
 			continue
 		}
+		time.Sleep(5 * time.Second) // to wait for a block
 	}
 	return nil
 }

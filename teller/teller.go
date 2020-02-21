@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
@@ -273,9 +274,9 @@ func main() {
 	log.Println("START HASH: ", StartHash)
 
 	// run goroutines in the background to routinely check for payback, state updates and stuff
-	// go checkPayback()
-	// time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaenous txs
-	// go updateState(true)
+	go checkPayback()
+	time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaenous txs
+	go updateState(true)
 
 	if opts.Daemon {
 		log.Println("Running teller in daemon mode")

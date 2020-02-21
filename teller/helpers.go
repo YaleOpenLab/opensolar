@@ -93,13 +93,13 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 
 func checkPayback() {
 	for {
-		log.Println("Paybck interval reached. Paying back automatically")
+		log.Println("Payback interval reached. Paying back automatically")
 		assetName := LocalProject.DebtAssetCode
 		amount := oracle.MonthlyBill() // TODO: consumption data must be accumulated from zigbee in the future
 
 		err := projectPayback(assetName, amount)
 		if err != nil {
-			log.Println("Error while paying amount back", err, "trying again")
+			log.Println("Error while paying back", err, "trying again")
 			time.Sleep(5 * time.Second)
 			err = projectPayback(assetName, amount)
 			if err != nil {

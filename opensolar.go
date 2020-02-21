@@ -180,6 +180,17 @@ func main() {
 				log.Fatal(err)
 			}
 		}
+
+		project, err := core.RetrieveProject(1)
+		if err != nil {
+			log.Fatal(err)
+		}
+		project.EscrowLock = true
+		project.OneTimeUnlock = "x"
+		err = project.Save()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// rpc.KillCode = "NUKE" // compile time nuclear code
