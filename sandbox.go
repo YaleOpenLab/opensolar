@@ -97,11 +97,13 @@ func sandbox() error {
 	stablecoinTrustLimit := 10000000000.0 // some very high limit, this isn't needed since we create the trust line on init, but still
 	devFee := 3000.0
 
-	txhash, err := assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, stablecoinTrustLimit, consts.PlatformSeed)
-	if err != nil {
-		return err
-	}
-	log.Println("tx for platform trusting stablecoin:", txhash)
+	go func() {
+		txhash, err1 := assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, stablecoinTrustLimit, consts.PlatformSeed)
+		if err != nil {
+			log.Fatal(err1)
+		}
+		log.Println("tx for platform trusting stablecoin:", txhash)
+	}()
 
 	inv, err := core.NewInvestor("dci"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
