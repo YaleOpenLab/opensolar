@@ -44,7 +44,7 @@ var (
 // colorOutput prints the string in the passed color
 func colorOutput(gColor color.Attribute, msg ...interface{}) {
 	x := color.New(gColor)
-	x.Println(msg)
+	x.Println(msg...)
 }
 
 var commands = []string{"qq", "help", "ping", "receive", "display", "info", "update", "hh"}
