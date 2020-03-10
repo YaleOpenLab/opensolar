@@ -41,6 +41,7 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 			if err != nil {
 				return errors.Wrap(err, "Unable to offer xlm to STABLEUSD excahnge for investor")
 			}
+			time.Sleep(30 * time.Second)
 		}
 	}
 

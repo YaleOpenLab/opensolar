@@ -332,7 +332,7 @@ func main() {
 	defer rl.Close()
 
 	for {
-		// setup reader with max 4K input chars
+		// setup readultier with max 4K input chars
 		msg, err := rl.Readline()
 		if err != nil {
 			err := endHandler() // error, user wants to quit
