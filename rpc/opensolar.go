@@ -291,6 +291,7 @@ type ExplorePageStub struct {
 	Tax              interface{}
 	Acquisition      interface{}
 	MainImage        interface{}
+	Stage            int
 	Index            int
 	Raised           float64
 	Total            float64
@@ -317,6 +318,7 @@ func explore() {
 		for _, project := range allProjects {
 			var x ExplorePageStub
 			x.StageDescription = project.Content.Details["Explore Tab"]["stage description"]
+			x.Stage = project.Stage
 			x.Name = project.Content.Details["Explore Tab"]["name"]
 			x.Location = project.Content.Details["Explore Tab"]["location"]
 			x.ProjectType = project.Content.Details["Explore Tab"]["project type"]
