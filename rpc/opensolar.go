@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 
@@ -60,7 +62,7 @@ func getProject() {
 	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query()["index"] == nil {
 			log.Println("index not passed")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ParamError("index"))
 			return
 		}
 
@@ -75,7 +77,7 @@ func getProject() {
 
 		uKey, err := utils.ToInt(index)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 		contract, err := core.RetrieveProject(uKey)
@@ -91,7 +93,6 @@ func getProject() {
 // getProjectsAtIndex gets projects at a specific stage
 func getProjectsAtIndex() {
 	http.HandleFunc(ProjectRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
-
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -109,7 +110,7 @@ func getProjectsAtIndex() {
 		stage, err := utils.ToInt(stagex)
 		if err != nil {
 			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -147,7 +148,7 @@ func addContractHash() {
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
 		if err != nil {
 			log.Println("passed project index not int, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -257,7 +258,7 @@ func getProjectDashboard() {
 		// no authorization required to get projects
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -358,14 +359,14 @@ func projectDetail() {
 
 		if r.URL.Query()["index"] == nil {
 			log.Println("project index not passed")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ParamError("index"))
 			return
 		}
 
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -379,7 +380,7 @@ func projectDetail() {
 		stageString, err := utils.ToString(project.Stage)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 			return
 		}
 

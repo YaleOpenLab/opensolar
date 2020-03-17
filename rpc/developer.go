@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	"github.com/YaleOpenLab/opensolar/consts"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -28,10 +30,14 @@ var DevRPC = map[int][]string{
 // withdrawdeveloper can be called by a developer wishing to withdraw funds from the platfomr
 func withdrawdeveloper() {
 	http.HandleFunc(DevRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		prepDev, err := entityValidateHelper(w, r, DevRPC[1][2:], DevRPC[1][1])
-		if err != nil {
+		prepEntity, err := entityValidateHelper(w, r, DevRPC[1][2:], DevRPC[1][1])
+		if err == nil {
+			if !prepEntity.Developer {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotDeveloperError)
+				return
+			}
+		} else {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -52,9 +58,9 @@ func withdrawdeveloper() {
 			return
 		}
 
-		err = core.RequestWaterfallWithdrawal(prepDev.U.Index, projIndex, amount)
+		err = core.RequestWaterfallWithdrawal(prepEntity.U.Index, projIndex, amount)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
 
@@ -106,9 +112,14 @@ type entityDashboardData struct {
 func developerDashboard() {
 	http.HandleFunc(DevRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, DevRPC[2][2:], DevRPC[2][1])
-		if err != nil {
+		if err == nil {
+			if !prepEntity.Developer {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotDeveloperError)
+				return
+			}
+		} else {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotEntityError)
 			return
 		}
 
@@ -221,9 +232,13 @@ func developerDashboard() {
 func requestWaterfall() {
 	http.HandleFunc(DevRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, DevRPC[3][2:], DevRPC[3][1])
-		if err != nil {
+		if err == nil {
+			if !prepEntity.Developer {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotDeveloperError)
+				return
+			}
+		} else {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 

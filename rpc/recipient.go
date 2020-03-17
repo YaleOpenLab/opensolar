@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -90,7 +92,7 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 
 	prepRecipient, err = core.ValidateRecipient(username, token)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotRecipientError)
 		log.Println("did not validate recipient", err)
 		return prepRecipient, err
 	}
@@ -201,12 +203,12 @@ func payback() {
 		recpIndex := prepRecipient.U.Index
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -255,7 +257,6 @@ func storeStartTime() {
 	http.HandleFunc(RecpRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[6][2:], RecpRPC[6][1])
 		if err != nil {
-			log.Println("COULDN'T VALIDATE THIS GUY")
 			return
 		}
 
@@ -410,7 +411,7 @@ func unlockOpenSolar() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -458,7 +459,7 @@ func finalizeProject() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -493,7 +494,7 @@ func originateProject() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -558,7 +559,7 @@ func setOneTimeUnlock() {
 
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -591,7 +592,7 @@ func storeTellerURL() {
 
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 			return
 		}
 
@@ -639,7 +640,7 @@ func storeTellerDetails() {
 
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 			return
 		}
 
@@ -786,7 +787,6 @@ func setCompanyBoolRecp() {
 	http.HandleFunc(RecpRPC[21][0], func(w http.ResponseWriter, r *http.Request) {
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[21][2:], RecpRPC[21][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -805,7 +805,6 @@ func setCompanyRecp() {
 	http.HandleFunc(RecpRPC[22][0], func(w http.ResponseWriter, r *http.Request) {
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[22][2:], RecpRPC[22][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -893,7 +892,7 @@ func storeTellerEnergy() {
 		energyInt, err := utils.ToInt(energy)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 			return
 		}
 

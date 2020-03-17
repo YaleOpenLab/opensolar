@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -40,7 +42,7 @@ func entityValidateHelper(w http.ResponseWriter, r *http.Request, options []stri
 
 	err := checkReqdParams(w, r, options, method)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotEntityError)
 		return prepEntity, errors.New("reqd params not present can't be empty")
 	}
 
@@ -51,12 +53,13 @@ func entityValidateHelper(w http.ResponseWriter, r *http.Request, options []stri
 		username, token = r.FormValue("username"), r.FormValue("token")
 	} else {
 		log.Println("method not recognized, quitting")
+		erpc.ResponseHandler(w, erpc.StatusBadRequest)
 		return prepEntity, errors.New("invalid method, quitting")
 	}
 
 	prepEntity, err = core.ValidateEntity(username, token)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotEntityError)
 		log.Println("did not validate investor", err)
 		return prepEntity, err
 	}
@@ -70,7 +73,6 @@ func validateEntity() {
 		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[1][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 		erpc.MarshalSend(w, prepEntity)
@@ -83,7 +85,6 @@ func getStage0Contracts() {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[2][2:], EntityRPC[2][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -103,7 +104,6 @@ func getStage1Contracts() {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[3][2:], EntityRPC[3][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -123,7 +123,6 @@ func getStage2Contracts() {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[4][2:], EntityRPC[4][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -147,7 +146,7 @@ func addCollateral() {
 		}
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[5][2:], EntityRPC[5][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
@@ -163,7 +162,7 @@ func addCollateral() {
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			log.Println("Error while converting string to float", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -190,7 +189,6 @@ func proposeOpensolarProject() {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[6][2:], EntityRPC[6][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -212,13 +210,13 @@ func proposeOpensolarProject() {
 		x, err := core.RetrieveProject(projIndex)
 		if err != nil {
 			log.Println("couldn't retrieve project with index")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 		}
 
 		fee, err := utils.ToFloat(feex)
 		if err != nil {
 			log.Println("fee passed not integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 		}
 
 		x.TotalValue += fee

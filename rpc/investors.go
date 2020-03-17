@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -55,7 +57,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 
 	err = checkReqdParams(w, r, options, method)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotInvestorError)
 		return prepInvestor, errors.New("reqd params not present can't be empty")
 	}
 
@@ -68,7 +70,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 
 	prepInvestor, err = core.ValidateInvestor(username, token)
 	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotInvestorError)
 		log.Println("did not validate investor", err)
 		return prepInvestor, err
 	}
@@ -95,7 +97,7 @@ func registerInvestor() {
 			// user already exists on the platform, need to retrieve the user
 			user, err := core.ValidateUser(username, token) // check whether this person is a user and has params
 			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
 				return
 			}
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
@@ -151,7 +153,6 @@ func getAllInvestors() {
 	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		_, err := InvValidateHelper(w, r, InvRPC[3][2:], InvRPC[3][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 		investors, err := core.RetrieveAllInvestors()
@@ -169,7 +170,6 @@ func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		investor, err := InvValidateHelper(w, r, InvRPC[4][2:], InvRPC[4][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
 			return
 		}
 
@@ -187,13 +187,13 @@ func invest() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -225,7 +225,6 @@ func voteTowardsProject() {
 	http.HandleFunc(InvRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		investor, err := InvValidateHelper(w, r, InvRPC[5][2:], InvRPC[5][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -235,13 +234,13 @@ func voteTowardsProject() {
 		votes, err := utils.ToFloat(votesx)
 		if err != nil {
 			log.Println("votes not float, quitting")
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 			return
 		}
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -261,7 +260,6 @@ func addLocalAssetInv() {
 	http.HandleFunc(InvRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:], InvRPC[6][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -284,7 +282,6 @@ func invAssetInv() {
 	http.HandleFunc(InvRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][2:], InvRPC[7][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -302,7 +299,7 @@ func invAssetInv() {
 
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -333,7 +330,6 @@ func sendEmail() {
 	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][2:], InvRPC[8][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -343,7 +339,7 @@ func sendEmail() {
 		err = notif.SendEmail(message, to, prepInvestor.U.Name)
 		if err != nil {
 			log.Println("did not send email", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -410,7 +406,7 @@ func invDashboard() {
 			stageString, err := utils.ToString(project.Stage)
 			if err != nil {
 				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
 				return
 			}
 			temp.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
@@ -473,7 +469,7 @@ func invDashboard() {
 		xlmUSD, err := tickers.BinanceTicker()
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
 		}
 
 		primNativeBalance := xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) * xlmUSD
@@ -531,7 +527,6 @@ func setCompanyBool() {
 	http.HandleFunc(InvRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[10][2:], InvRPC[10][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -550,7 +545,6 @@ func setCompany() {
 	http.HandleFunc(InvRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[11][2:], InvRPC[11][1])
 		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 

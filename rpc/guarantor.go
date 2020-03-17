@@ -6,6 +6,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	"github.com/YaleOpenLab/opensolar/messages"
 	// core "github.com/YaleOpenLab/opensolar/core"
 )
 
@@ -23,9 +24,13 @@ var GuaRPC = map[int][]string{
 func depositXLMGuarantor() {
 	http.HandleFunc(GuaRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, GuaRPC[1][2:], GuaRPC[1][1])
-		if err != nil {
+		if err == nil {
+			if !prepEntity.Guarantor {
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotGuarantorError)
+				return
+			}
+		} else {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -36,14 +41,14 @@ func depositXLMGuarantor() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -64,7 +69,6 @@ func depositAssetGuarantor() {
 		prepEntity, err := entityValidateHelper(w, r, GuaRPC[2][2:], GuaRPC[2][1])
 		if err != nil {
 			log.Println("Error while validating entity", err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -76,14 +80,14 @@ func depositAssetGuarantor() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
