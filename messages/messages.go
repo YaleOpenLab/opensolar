@@ -2,7 +2,12 @@ package messages
 
 var (
 	NotAdminError     = "You are not an admin on opensolar"
-	NotDeveloperError = "You are not registered as the specified entity"
+	NotDeveloperError = "You are not registered as a developer"
+	NotGuarantorError = "You are not registered as a guarantor"
+	NotInvestorError  = "You are not registered as a investor"
+	NotRecipientError = "You are not registered as a recipient"
+	NotUserError      = "You are not registered as a user"
+	TickerError       = "Unable to fetch exchange rate from ticker"
 	NotEntityError    = "You are not registered as the specified entity"
 	ConversionError   = "Error while converting between types"
 )
