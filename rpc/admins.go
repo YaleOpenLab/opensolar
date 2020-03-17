@@ -1,9 +1,11 @@
 package rpc
 
 import (
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/YaleOpenLab/opensolar/messages"
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -28,12 +30,12 @@ func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, er
 	user, err := core.ValidateUser(username, token)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.NotAdminError)
 		return user, err
 	}
 
 	if !user.Admin {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotAdminError)
 		return user, errors.New("unauthorized")
 	}
 
@@ -50,13 +52,13 @@ func flagProject() {
 		user, err := adminValidateHelper(w, r)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotAdminError)
 		}
 
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ParamError("projIndex"))
 			return
 		}
 
