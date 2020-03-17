@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/messages"
+
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
@@ -37,7 +39,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	err := checkReqdParams(w, r, options, method)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
 		return user, err
 	}
 
@@ -51,7 +53,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	user, err = core.ValidateUser(username, token)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
 		return user, err
 	}
 
@@ -146,7 +148,7 @@ func reportProject() {
 		projIndex, err := utils.ToInt(projIndexx)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
 			return
 		}
 
@@ -216,7 +218,6 @@ func registerUser() {
 		err := erpc.CheckPost(w, r)
 		if err != nil {
 			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
 			return
 		}
 
@@ -231,7 +232,7 @@ func registerUser() {
 		for _, option := range UserRPC[4][2:] {
 			if r.FormValue(option) == "" {
 				log.Println("required param: ", option, " not found")
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.ParamError(option))
 				return
 			}
 		}

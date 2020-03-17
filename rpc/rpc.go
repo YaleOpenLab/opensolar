@@ -2,9 +2,11 @@ package rpc
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/YaleOpenLab/opensolar/messages"
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -29,7 +31,7 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 		}
 
 		if r.URL.Query() == nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.URLEmptyError)
 			return errors.New("url query can't be empty")
 		}
 
@@ -37,18 +39,18 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 
 		for _, option := range options {
 			if r.URL.Query()[option] == nil {
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.ParamError(option))
 				return errors.New("required param: " + option + " not specified, quitting")
 			}
 
 			if lenParseCheck(r.URL.Query()[option][0]) != nil {
-				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.TooLongError)
 				return errors.New("length of param: " + option + " too long")
 			}
 		}
 
 		if len(r.URL.Query()["token"][0]) != 32 {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.TokenError)
 			return errors.New("token length not 32, quitting")
 		}
 	} else if method == "POST" {
@@ -65,23 +67,23 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 		}
 
 		if r.FormValue("username") == "" || r.FormValue("token") == "" {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.ParamError("username or token"))
 			return errors.New("required params username or token missing")
 		}
 
 		if len(r.FormValue("token")) != 32 {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.TokenError)
 			return errors.New("token length not 32, quitting")
 		}
 
 		for _, option := range options {
 			if r.FormValue(option) == "" {
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.EmptyValueError)
 				return errors.New("required param: " + option + " not specified, quitting")
 			}
 
 			if lenParseCheck(r.FormValue(option)) != nil {
-				erpc.ResponseHandler(w, erpc.StatusBadRequest)
+				erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.TooLongError)
 				return errors.New("length of param: " + option + " too long")
 			}
 		}
@@ -105,7 +107,7 @@ func relayRequest() {
 			data, err := erpc.GetRequest(body)
 			if err != nil {
 				log.Println("could not relay get request", err)
-				erpc.ResponseHandler(w, http.StatusInternalServerError)
+				erpc.ResponseHandler(w, http.StatusInternalServerError, messages.RelayError)
 				return
 			}
 
