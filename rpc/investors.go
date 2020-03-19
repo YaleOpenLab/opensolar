@@ -596,7 +596,7 @@ func setCompany() {
 			adminEmail = r.FormValue("adminemail")
 		}
 		if r.FormValue("phonenumber") != "" {
-			phoneNumber = r.FormValue("phoneNumber")
+			phoneNumber = r.FormValue("phonenumber")
 		}
 		if r.FormValue("taxidnumber") != "" {
 			taxIDNumber = r.FormValue("taxidnumber")
