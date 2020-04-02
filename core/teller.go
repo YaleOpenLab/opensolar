@@ -17,7 +17,8 @@ type statusResponse struct {
 	Status string
 }
 
-// MonitorTeller monitors a teller and checks whether its live. If not, send an email to platform admins
+// MonitorTeller monitors a teller and checks whether its live. If not,
+// sends an email to platform admins
 func MonitorTeller(projIndex int, tellerUrl string) {
 	// call this function only after a specific order has been accepted by the recipient
 	log.Println("monitoring the teller")

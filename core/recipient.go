@@ -69,7 +69,8 @@ func NewRecipient(uname string, pwd string, seedpwd string, Name string) (Recipi
 	return a, err
 }
 
-// SetOneTimeUnlock sets a one time seedpwd that can be used to automatically unlock the project once an investment comes in
+// SetOneTimeUnlock sets a one time seedpwd that can be used to
+// automatically unlock the project once an investment comes in
 func (a *Recipient) SetOneTimeUnlock(projIndex int, seedpwd string) error {
 	log.Println("setting one time unlock for project with index: ", projIndex)
 	project, err := RetrieveProject(projIndex)
@@ -96,7 +97,7 @@ func (a *Recipient) SetCompany() error {
 	return a.Save()
 }
 
-// SetCompanyDetails sets the company detail struct of the recipient class
+// SetCompanyDetails stores the company details in the recipient class
 func (a *Recipient) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 	country, city, zipCode, taxIDNumber, role string) error {
 

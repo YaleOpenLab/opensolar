@@ -19,7 +19,10 @@ func RetrieveUser(key int) (openx.User, error) {
 	if err != nil {
 		return user, err
 	}
-	body := consts.OpenxURL + "/platform/user/retrieve?code=" + consts.TopSecretCode + "&key=" + keyString
+	body := consts.OpenxURL + "/platform/user/retrieve?code=" +
+		consts.TopSecretCode + "&key=" + keyString
+
+	log.Println(body)
 	data, err := erpc.GetRequest(body)
 	if err != nil {
 		return user, err
@@ -40,7 +43,9 @@ func RetrieveUser(key int) (openx.User, error) {
 // ValidateUser validates a user with openx's database
 func ValidateUser(name string, token string) (openx.User, error) {
 	var user openx.User
-	body := consts.OpenxURL + "/platform/user/validate?code=" + consts.TopSecretCode + "&username=" + name + "&token=" + token
+	body := consts.OpenxURL + "/platform/user/validate?code=" +
+		consts.TopSecretCode + "&username=" + name + "&token=" + token
+
 	log.Println(body)
 	data, err := erpc.GetRequest(body)
 	if err != nil {
@@ -61,7 +66,7 @@ func ValidateUser(name string, token string) (openx.User, error) {
 	return user, nil
 }
 
-// NewUser creates a new user in openx's database
+// NewUser creates a new user on openx
 func NewUser(name string, pwhash string, seedpwd string, email string) (openx.User, error) {
 	var user openx.User
 	body := consts.OpenxURL + "/platform/user/new?code=" + consts.TopSecretCode + "&username=" + name + "&pwhash=" + pwhash +
@@ -86,9 +91,11 @@ func NewUser(name string, pwhash string, seedpwd string, email string) (openx.Us
 	return user, nil
 }
 
-// CheckUsernameCollision checks for username collisions in openx's database
+// CheckUsernameCollision checks for username collisions while creating a new user
 func CheckUsernameCollision(name string) bool {
-	body := consts.OpenxURL + "/platform/user/collision?code=" + consts.TopSecretCode + "&username=" + name
+	body := consts.OpenxURL + "/platform/user/collision?code=" +
+		consts.TopSecretCode + "&username=" + name
+
 	log.Println(body)
 	data, err := erpc.GetRequest(body)
 	if err != nil {

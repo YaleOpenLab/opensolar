@@ -141,7 +141,7 @@ func (a *Investor) SetCompany() error {
 	return a.Save()
 }
 
-// SetCompanyDetails sets the company struct of the investor class
+// SetCompanyDetails sets the company struct details of the investor class
 func (a *Investor) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 	country, city, zipCode, taxIDNumber, role string) error {
 

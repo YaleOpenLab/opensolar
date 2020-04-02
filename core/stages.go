@@ -6,10 +6,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// StageXtoY promtoes a contract's stage by one
+// StageXtoY promotes a contract's stage by one
 func StageXtoY(index int) error {
-	// check for out of bound errors
-	// retrieve the project
 	project, err := RetrieveProject(index)
 	if err != nil {
 		return errors.Wrap(err, "couldn't retrieve project")
@@ -84,21 +82,6 @@ func StageXtoY(index int) error {
 	return project.SetStage(finalStage.Number)
 }
 
-// Stage0 is the Handshake stage
-var Stage0 = Stage{
-	Number:       0,
-	FriendlyName: "Handshake",
-	Name:         "Idea Consolidation",
-	Activities: []string{
-		"[Originator] proposes project and either secures or agrees to serve as [Solar Developer]. NOTE: Originator is the community leader or catalyst for the project, they may opt to serve as the solar developer themselves, or pass that responsibility off, going forward we will use solar developer to represent the interest of both.",
-		"[Solar Developer] creates general estimation of project (eg. with an automatic calculation through Google Project Sunroof, PV) ",
-		"If [Originator]/[Solar Developer] is not landowner [Host] states legal ownership of site (hard proof is optional at this stage)",
-	},
-	StateTrigger: []string{
-		"Matching of originator with receiver, and mutual approval/intention of interest.",
-	},
-}
-
 // GetStageDescription gets the description of a particular stage
 func GetStageDescription(stage int) string {
 	switch stage {
@@ -123,6 +106,21 @@ func GetStageDescription(stage int) string {
 	default:
 		return "Invalid Stage"
 	}
+}
+
+// Stage0 is the Handshake stage
+var Stage0 = Stage{
+	Number:       0,
+	FriendlyName: "Handshake",
+	Name:         "Idea Consolidation",
+	Activities: []string{
+		"[Originator] proposes project and either secures or agrees to serve as [Solar Developer]. NOTE: Originator is the community leader or catalyst for the project, they may opt to serve as the solar developer themselves, or pass that responsibility off, going forward we will use solar developer to represent the interest of both.",
+		"[Solar Developer] creates general estimation of project (eg. with an automatic calculation through Google Project Sunroof, PV) ",
+		"If [Originator]/[Solar Developer] is not landowner [Host] states legal ownership of site (hard proof is optional at this stage)",
+	},
+	StateTrigger: []string{
+		"Matching of originator with receiver, and mutual approval/intention of interest.",
+	},
 }
 
 // Stage1 is the engagement stage

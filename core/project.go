@@ -9,9 +9,6 @@ import (
 
 // Project defines the project investment structure in opensolar
 type Project struct {
-	// The project is split into two parts - parts which are used in the smart contract and parts which are not
-	// we define them as critparams and noncritparams
-
 	// Index is the project index
 	Index int
 
@@ -161,7 +158,8 @@ type Project struct {
 
 	// Content contains the bulk of the non smart contract data
 	Content CMS
-	// below are all the non critical params only used on the frontend
+
+	// below are non critical params only used on the frontend
 	Name               string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
 	City               string    `json:"City"`                 // the city in which the project is located at
 	State              string    `json:"State"`                // the state in which the project has been installed in
@@ -182,7 +180,7 @@ type CMS struct {
 	Details map[string]map[string]interface{}
 }
 
-// Feedback defines a structure that is used for providing feedback
+// Feedback defines a structure used for providing feedback
 type Feedback struct {
 	// Content is the content of the feedback
 	Content string
@@ -200,7 +198,7 @@ type Feedback struct {
 	Contract []Project
 }
 
-// Stage is the evolution of the erstwhile static stage integer construction
+// Stage contains the details of different stages on Opensolar
 type Stage struct {
 	Number          int
 	FriendlyName    string   // the informal name that one can use while referring to the stage
