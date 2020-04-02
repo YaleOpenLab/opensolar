@@ -65,4 +65,4 @@ The CLI that the teller offers is a bit limited in comparison to the emulator si
 
 ## What the teller aims to achieve
 
-The aim of the teller package is to be as light as possible and at the same time collect data and ensure that it can facilitate the triggering of smart contracts which is essential to the project flow. One can also think of the teller as a mini emulator (although it can function as a full emulator if need be) which has some functions automated and not within direct control of users on the platform.
+The aim of the teller package is to be as light as possible and at the same time collect data and ensure that it can facilitate the triggering of smart contracts which is essential to the project flow. One can also think of the teller as a mini emulator (although it can function as a full emulator if need be) which has some functions automated and not within direct control of users.

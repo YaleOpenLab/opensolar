@@ -25,6 +25,7 @@ func setupEntityRPCs() {
 	registerEntity()
 }
 
+// EntityRPC is a list of endpoints that can be called by an entity
 var EntityRPC = map[int][]string{
 	1: []string{"/entity/validate", "GET"},                                                                  // GET
 	2: []string{"/entity/stage0", "GET"},                                                                    // GET
@@ -36,8 +37,10 @@ var EntityRPC = map[int][]string{
 	8: []string{"/entity/contractor/dashboard", "GET"},                                                      // GET
 }
 
-// entityValidateHelper is a helper that helps validate an entity
-func entityValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (core.Entity, error) {
+// entityValidateHelper is a helper that helps validate an entity, and returns
+// an entity struct if successful
+func entityValidateHelper(w http.ResponseWriter,
+	r *http.Request, options []string, method string) (core.Entity, error) {
 	var prepEntity core.Entity
 
 	err := checkReqdParams(w, r, options, method)
@@ -67,7 +70,7 @@ func entityValidateHelper(w http.ResponseWriter, r *http.Request, options []stri
 	return prepEntity, nil
 }
 
-// validateEntity is an endpoint that vlaidates is a specific entity is registered on the platform
+// validateEntity is an endpoint that validates if an entity is registered
 func validateEntity() {
 	http.HandleFunc(EntityRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, []string{}, EntityRPC[1][1])
@@ -79,7 +82,7 @@ func validateEntity() {
 	})
 }
 
-// getStage0Contracts gets a list of all the pre origianted contracts on the platform
+// getStage0Contracts gets a list of all pre originated contracts
 func getStage0Contracts() {
 	http.HandleFunc(EntityRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[2][2:], EntityRPC[2][1])
@@ -98,7 +101,7 @@ func getStage0Contracts() {
 	})
 }
 
-// getStage1Contracts gets a list of all the originated contracts on the platform
+// getStage1Contracts gets a list of all originated contracts
 func getStage1Contracts() {
 	http.HandleFunc(EntityRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[3][2:], EntityRPC[3][1])
@@ -117,7 +120,7 @@ func getStage1Contracts() {
 	})
 }
 
-// getStage2Contracts gets a list of all the proposed contracts on the platform
+// getStage2Contracts gets a list of proposed contracts
 func getStage2Contracts() {
 	http.HandleFunc(EntityRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, EntityRPC[4][2:], EntityRPC[4][1])
@@ -136,7 +139,7 @@ func getStage2Contracts() {
 	})
 }
 
-// addCollateral is a route that a contractor can use to add collateral
+// addCollateral is a route that a contractor calls to add collateral against a project
 func addCollateral() {
 	http.HandleFunc(EntityRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
@@ -177,7 +180,7 @@ func addCollateral() {
 	})
 }
 
-// proposeOpensolarProject creates a contract which the contractor proposes towards a particular project
+// proposeOpensolarProject is called by a contractor and creates a stage 2 contract
 func proposeOpensolarProject() {
 	http.HandleFunc(EntityRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
@@ -234,7 +237,7 @@ func proposeOpensolarProject() {
 	})
 }
 
-// registerEntity creates and stores a new entity on the platform
+// registerEntity creates and stores a new entity
 func registerEntity() {
 	http.HandleFunc(EntityRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
@@ -257,7 +260,7 @@ func registerEntity() {
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
-			// user already exists on the platform, need to retrieve the user
+			// user already exists , need to retrieve the user
 			user, err := userValidateHelper(w, r, nil, RecpRPC[2][1]) // check whether this person is a user and has params
 			if err != nil {
 				return

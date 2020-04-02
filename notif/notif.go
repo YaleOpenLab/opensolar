@@ -147,7 +147,7 @@ func SendUnlockNotifToRecipient(projIndex int, to string) error {
 		"We're writing to let you know that project number: " + projIndexString + " has been invested in\n\n" +
 		"You are required to logon to the platform within a period of 3(THREE) days in order to accept the investment\n\n" +
 		"If you choose to not accept the given investment in your project, please be warned that your reputation score " +
-		"will be decreased and this may affect future proposals that you seek funding for on the platform.\n\n" +
+		"will be decreased and this may affect future proposals that you seek funding for.\n\n" +
 		footerString
 	return SendMail(body, to)
 }

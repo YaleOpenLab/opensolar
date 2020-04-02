@@ -361,7 +361,7 @@ func populateStaticData10MW() error {
 	}
 	project.MoneyRaised = 0
 
-	// Define the various entities that are associated with a specific project
+	// Define the various entities that are associated with a project
 	project.RecipientIndex = 27
 	project.OriginatorIndex = 30
 	project.GuarantorIndex = 34
@@ -398,7 +398,7 @@ func populateStaticData100KW() error {
 		return err
 	}
 	project.MoneyRaised = 0
-	// Define the various entities that are associated with a specific project
+	// Define the various entities that are associated with a project
 	project.RecipientIndex = 38
 	project.OriginatorIndex = 43
 	// project.GuarantorIndex = guarantor1.U.Index
@@ -747,7 +747,7 @@ func populateDynamicData1mw() error {
 		return err
 	}
 
-	// Define the various entities that are associated with a specific project
+	// Define the various entities that are associated with a project
 	project.RecipientIndices = append(project.RecipientIndices, recipient2.U.Index)
 	err = project.Save()
 	if err != nil {
@@ -775,7 +775,7 @@ func populateDynamicData10kw() error {
 	if err != nil {
 		return err
 	}
-	// Define the various entities that are associated with a specific project
+	// Define the various entities that are associated with a project
 	project.RecipientIndices = append(project.RecipientIndices, recipient2.U.Index)
 	err = project.Save()
 	if err != nil {

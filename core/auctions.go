@@ -76,7 +76,7 @@ func SelectContractTime(arr []Project) (Project, error) {
 	return a, nil
 }
 
-// SetAuctionType sets the auction type of a specific project. There are four options
+// SetAuctionType sets the auction type of a project. There are four options
 // blind, civkrey, english and dutch.
 func (project *Project) SetAuctionType(auctionType string) error {
 	switch auctionType {

@@ -10,14 +10,14 @@ Openx in itself, needs a couple things in order for it to function correctly:
 Openx leaves it to implementations to take care of the following:
 
 1. The storage layer of entities that are internal to the system
-2. The contracts that define what kind of investments that can be made on the platform
+2. The contracts that define what kind of investments that can be made
 
 Other stuff like commitment schemes and similar are internal to the system and do not affect the functioning of openx as a whole. For opensolar and Stellar, we use the following parameters to define the opensolar platform:
 
 1. Assets on Stellar
 2. Secondary markets based on fungible asset creation
 3. Data storage enabled by ipfs
-4. Running a semi trusted smart contract on the platform side and committing transaction at specific intervals to the blockchain
+4. Running a semi trusted smart contract side and committing transaction at intervals to the blockchain
 
 The opensolar platform is, as a result semi trusted, since the investors and recipients trust the platform to not lie about project parameters but do not trust the platform enough to allow custodianship of money. The Stellar blockchain is a good fit for this use case since:
 
@@ -59,7 +59,7 @@ All assumptions hold as above but this would mean that these investors need not 
 
 #### Investing in a project
 
-When an investor wants to invest in a specific project, he can:
+When an investor wants to invest in a project, he can:
 
 1. Push funds in their existing channel with the lighning hub
 2. Route payments to the lightning hub

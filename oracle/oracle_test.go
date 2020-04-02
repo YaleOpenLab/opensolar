@@ -3,7 +3,7 @@
 package oracle
 
 // this test function actually does nothing, since the oracle itself is a placeholder
-// until we arrive at consensus on how it should be structured and stuff
+// until we arrive at a consensus on how it should be structured
 import (
 	"testing"
 )

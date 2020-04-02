@@ -21,7 +21,7 @@ import (
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
-// MunibondInvest invests in a specific munibond. Sends USD to the platform, receives INVAssets
+// MunibondInvest invests in a munibond. Sends USD to the platform, receives INVAssets
 // in return, and sends an email to the investor's email id confirming investment if it succeeds.
 func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount float64,
 	projIndex int, invAssetCode string, totalValue float64, seedInvestmentFactor float64, seed bool) error {

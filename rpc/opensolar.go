@@ -57,7 +57,7 @@ func getAllProjects() {
 	})
 }
 
-// getProject gets the details of a specific project.
+// getProject gets the details of a project.
 func getProject() {
 	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query()["index"] == nil {
@@ -90,7 +90,7 @@ func getProject() {
 	})
 }
 
-// getProjectsAtIndex gets projects at a specific stage
+// getProjectsAtIndex gets projects at a stage
 func getProjectsAtIndex() {
 	http.HandleFunc(ProjectRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -129,7 +129,7 @@ func getProjectsAtIndex() {
 	})
 }
 
-// addContractHash adds a specific contract hash to the database
+// addContractHash adds a contract hash to the database
 func addContractHash() {
 	http.HandleFunc(ProjectRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -299,7 +299,7 @@ type ExplorePageStub struct {
 	Backers          int
 }
 
-// explore is the endpoint called on the frontend to show a comprehensive description of all the project on the platform
+// explore is the endpoint called on the frontend to show a comprehensive description of all the project
 func explore() {
 	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)

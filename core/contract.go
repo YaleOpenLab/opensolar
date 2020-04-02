@@ -36,7 +36,7 @@ func VerifyBeforeAuthorizing(projIndex int) bool {
 	return false
 }
 
-// RecipientAuthorize allows a recipient to authorize a specific project. Promotes
+// RecipientAuthorize allows a recipient to authorize a project. Promotes
 // the stage of the project from stage 0 to stage 1. Assigns the originator to the
 // project based on project.OriginatorIndex.
 func RecipientAuthorize(projIndex int, recpIndex int) error {
@@ -72,7 +72,7 @@ func RecipientAuthorize(projIndex int, recpIndex int) error {
 }
 
 // VoteTowardsProposedProject is a handler that an investor can use to vote towards a
-// specific proposed project on the platform. Returns an error if the proejct's voting
+// proposed project. Returns an error if the proejct's voting
 // blaance can't be changed.
 func VoteTowardsProposedProject(invIndex int, votes float64, projectIndex int) error {
 	inv, err := RetrieveInvestor(invIndex)

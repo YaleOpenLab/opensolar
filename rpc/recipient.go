@@ -100,7 +100,7 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	return prepRecipient, nil
 }
 
-// getAllRecipients gets a list of all the recipients who have registered on the platform
+// getAllRecipients gets a list of all the recipients who have registered
 func getAllRecipients() {
 	http.HandleFunc(RecpRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		_, err := recpValidateHelper(w, r, RecpRPC[1][2:], RecpRPC[1][1])
@@ -117,7 +117,7 @@ func getAllRecipients() {
 	})
 }
 
-// registerRecipient creates and stores a new recipient on the platform
+// registerRecipient creates and stores a new recipient
 func registerRecipient() {
 	http.HandleFunc(RecpRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := checkReqdParams(w, r, RecpRPC[2][2:], RecpRPC[2][1])
@@ -133,7 +133,7 @@ func registerRecipient() {
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
-			// user already exists on the platform, need to retrieve the user
+			// user already exists, need to retrieve the user
 			user, err := userValidateHelper(w, r, nil, RecpRPC[2][1]) // check whether this person is a user and has params
 			if err != nil {
 				return
@@ -176,7 +176,7 @@ func registerRecipient() {
 	})
 }
 
-// validateRecipient validates a recipient on the platform
+// validateRecipient validates a recipient
 func validateRecipient() {
 	http.HandleFunc(RecpRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[3][2:], RecpRPC[3][1])
@@ -446,7 +446,7 @@ func addEmail() {
 	})
 }
 
-// finalizeProject finalizes (ie moves from stage 2 to 3) a specific project
+// finalizeProject finalizes (ie moves from stage 2 to 3) a project
 func finalizeProject() {
 	http.HandleFunc(RecpRPC[13][0], func(w http.ResponseWriter, r *http.Request) {
 		_, err := recpValidateHelper(w, r, RecpRPC[13][2:], RecpRPC[13][1])
@@ -509,7 +509,7 @@ func originateProject() {
 	})
 }
 
-// calculateTrustLimit calculates the trust limit associated with a specific asset.
+// calculateTrustLimit calculates the trust limit associated with a asset.
 func calculateTrustLimit() {
 	http.HandleFunc(RecpRPC[15][0], func(w http.ResponseWriter, r *http.Request) {
 		recipient, err := recpValidateHelper(w, r, RecpRPC[15][2:], RecpRPC[15][1])

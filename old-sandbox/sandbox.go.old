@@ -357,7 +357,7 @@ func parseJsonText(fileName string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-// seed additional data for a few specific investors that are useful for showing in demos
+// seed additional data for a few investors that are useful for showing in demos
 func populateAdditionalData() error {
 	openlab, err := core.RetrieveInvestor(46)
 	if err != nil {
@@ -379,7 +379,7 @@ func populateAdditionalData() error {
 		return err
 	}
 
-	// insert data for one specific recipient
+	// insert data for one recipient
 	pasto, err := core.RetrieveRecipient(47)
 	if err != nil {
 		return err

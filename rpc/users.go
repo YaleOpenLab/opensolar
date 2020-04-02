@@ -212,7 +212,7 @@ func userInfo() {
 	})
 }
 
-// registerUser creates a new user on the platform
+// registerUser creates a new user
 func registerUser() {
 	http.HandleFunc(UserRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckPost(w, r)
@@ -260,7 +260,7 @@ type UserRoleStruct struct {
 	Entity    core.Entity
 }
 
-// getUserRoles gets a list of the roles that an investor partakes on the platform
+// getUserRoles gets a list of the roles that an investor partakes
 func getUserRoles() {
 	http.HandleFunc(UserRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		user, err := userValidateHelper(w, r, UserRPC[5][2:], UserRPC[5][1])
@@ -270,7 +270,7 @@ func getUserRoles() {
 
 		var ret UserRoleStruct
 		// we now have the user struct, search invetors, recipients, entities for what role the
-		// user is on the platform
+		// user is
 
 		ret.User = user
 		inv, err := core.SearchForInvestor(user.Username)

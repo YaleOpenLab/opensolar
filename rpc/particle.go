@@ -125,11 +125,11 @@ type ParticleEventStream struct {
 	Coreid      string `json:"coreid"`
 }
 
-// listAllDevices lists all the devices registered to the user holding the specific access token
+// listAllDevices lists all the devices registered to the user holding the access token
 func listAllDevices() {
 	// make a curl request out to lcoalhost and get the ping response
 	http.HandleFunc(ParticleRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		// validate if the person requesting this is a vlaid user on the platform
+		// validate if the person requesting this is a vlaid user
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -173,10 +173,10 @@ func listProductInfo() {
 	})
 }
 
-// getDeviceInfo returns the information of a specific device. REquires device id and the accesstoken
+// getDeviceInfo returns the information of a device. REquires device id and the accesstoken
 func getDeviceInfo() {
 	http.HandleFunc(ParticleRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
-		// validate if the person requesting this is a vlaid user on the platform
+		// validate if the person requesting this is a vlaid user
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -198,7 +198,7 @@ func getDeviceInfo() {
 	})
 }
 
-// pingDevice pings a specific device and sees whether its up. Could be useful to create a monitoring
+// pingDevice pings a device and sees whether its up. Could be useful to create a monitoring
 // dashboard of sorts where people can see if their devices are online or not
 func pingDevice() {
 	http.HandleFunc(ParticleRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
@@ -286,7 +286,7 @@ func serialNumberInfo() {
 	})
 }
 
-// getDiagnosticsLast gets a list of the last diagnostic report that belongs to the specific device
+// getDiagnosticsLast gets a list of the last diagnostic report that belongs to the device
 func getDiagnosticsLast() {
 	http.HandleFunc(ParticleRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)

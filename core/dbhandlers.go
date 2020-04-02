@@ -302,7 +302,7 @@ func RetrieveAllProjects() ([]Project, error) {
 	return projects, nil
 }
 
-// RetrieveProjectsAtStage retrieves projects at a specific stage from the database
+// RetrieveProjectsAtStage retrieves projects at a stage from the database
 func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -324,7 +324,7 @@ func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 }
 
 // RetrieveContractorProjects retrieves projects that are associated
-// with a specific contractor from the db
+// with a contractor from the db
 func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -346,7 +346,7 @@ func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 }
 
 // RetrieveOriginatorProjects retrieves projects that are associated
-// with a specific originator from the database
+// with a originator from the database
 func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -368,7 +368,7 @@ func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 }
 
 // RetrieveRecipientProjects retrieves projects that are associated
-// with a specific recipient from the database.
+// with a recipient from the database.
 func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this

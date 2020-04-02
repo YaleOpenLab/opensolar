@@ -17,10 +17,12 @@ func setupAdminHandlers() {
 	flagProject()
 }
 
+// AdminRPC is a list of all the endpoints that can be called by admins
 var AdminRPC = map[int][]string{
 	1: []string{"/admin/flag", "GET", "projIndex"}, // GET
 }
 
+// adminValidateHelper is a helper that validates if the caller is an admin, and returns the user struct if so
 func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, error) {
 	var user openx.User
 
@@ -42,6 +44,7 @@ func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, er
 	return user, nil
 }
 
+// flagProject flags a project. Flagging a project stops automated signing by the platform.
 func flagProject() {
 	http.HandleFunc(AdminRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := checkReqdParams(w, r, AdminRPC[1][2:], AdminRPC[1][1])

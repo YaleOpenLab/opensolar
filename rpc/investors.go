@@ -50,7 +50,7 @@ var InvRPC = map[int][]string{
 		"name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
 }
 
-// InvValidateHelper is a helper used to validate an investor on the platform
+// InvValidateHelper is a helper used to validate an investor
 func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (core.Investor, error) {
 	var prepInvestor core.Investor
 	var err error
@@ -94,7 +94,7 @@ func registerInvestor() {
 
 		// check for username collision here. If the username already exists, fetch details from that and register as investor
 		if core.CheckUsernameCollision(username) {
-			// user already exists on the platform, need to retrieve the user
+			// user already exists, need to retrieve the user
 			user, err := core.ValidateUser(username, token) // check whether this person is a user and has params
 			if err != nil {
 				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
@@ -325,7 +325,7 @@ func invAssetInv() {
 	})
 }
 
-// sendEmail sends an email to a specific entity
+// sendEmail sends an email to a entity
 func sendEmail() {
 	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][2:], InvRPC[8][1])

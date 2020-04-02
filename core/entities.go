@@ -189,7 +189,7 @@ func TopReputationEntitiesWithoutRole() ([]Entity, error) {
 }
 
 // TopReputationEntities returns the list of all the entities belonging to a
-// specific role in descending order of reputation
+// role in descending order of reputation
 func TopReputationEntities(role string) ([]Entity, error) {
 	allEntities, err := RetrieveAllEntities(role)
 	if err != nil {

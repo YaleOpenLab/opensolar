@@ -1,6 +1,6 @@
 # Installing the teller
 
-The teller is and endpoint which interacts directly with IoT devices to stream data and trigger the smart contract run on the platform.
+The teller is and endpoint which interacts directly with IoT devices to stream data and trigger the smart contract run.
 
 ### Prerequisites
 
@@ -17,4 +17,4 @@ The teller is and endpoint which interacts directly with IoT devices to stream d
 
 ### Setting up config params
 
-Duplicate [dummyconfig.yaml](dummyconfig.yaml), rename to config.yaml and replace the relevant values with those relevant to the specific project.
+Duplicate [dummyconfig.yaml](dummyconfig.yaml), rename to config.yaml and replace the relevant values with those relevant to the project.
