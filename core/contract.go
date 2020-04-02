@@ -18,7 +18,8 @@ import (
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
-// VerifyBeforeAuthorizing verifies information on the originator before upgrading the project stage
+// VerifyBeforeAuthorizing verifies information on the originator. Returns
+// true if the originator has gone through KYC or is banned
 func VerifyBeforeAuthorizing(projIndex int) bool {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -35,7 +36,9 @@ func VerifyBeforeAuthorizing(projIndex int) bool {
 	return false
 }
 
-// RecipientAuthorize allows a recipient to authorize a specific project
+// RecipientAuthorize allows a recipient to authorize a specific project. Promotes
+// the stage of the project from stage 0 to stage 1. Assigns the originator to the
+// project based on project.OriginatorIndex.
 func RecipientAuthorize(projIndex int, recpIndex int) error {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -68,8 +71,9 @@ func RecipientAuthorize(projIndex int, recpIndex int) error {
 	return nil
 }
 
-// VoteTowardsProposedProject is a handler that an investor would use to vote towards a
-// specific proposed project on the platform.
+// VoteTowardsProposedProject is a handler that an investor can use to vote towards a
+// specific proposed project on the platform. Returns an error if the proejct's voting
+// blaance can't be changed.
 func VoteTowardsProposedProject(invIndex int, votes float64, projectIndex int) error {
 	inv, err := RetrieveInvestor(invIndex)
 	if err != nil {
@@ -102,7 +106,12 @@ func VoteTowardsProposedProject(invIndex int, votes float64, projectIndex int) e
 	return nil
 }
 
-// preInvestmentCheck associated with the opensolar platform when an Investor bids an investment amount of a specific project
+// preInvestmentCheck is a handler that performs checks before proceeding to the investment
+// stage of the contract. Checks if
+// 1. The investor can invest in the project
+// 2. The investor has the required balance
+// 3. The proejct has been flagged by admins
+// and initializes and funds the issuer associated with the project.
 func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed string) (Project, error) {
 	var project Project
 	var investor Investor
@@ -166,7 +175,8 @@ func preInvestmentCheck(projIndex int, invIndex int, invAmount float64, seed str
 	}
 }
 
-// SeedInvest is the seed investment function of the opensolar platform
+// SeedInvest is the seed investment function of the opensolar platform. Calls
+// the associated investment model associated with the project.
 func SeedInvest(projIndex int, invIndex int, invAmount float64, invSeed string) error {
 
 	project, err := preInvestmentCheck(projIndex, invIndex, invAmount, invSeed)
@@ -208,7 +218,10 @@ func SeedInvest(projIndex int, invIndex int, invAmount float64, invSeed string) 
 	return errors.New("other chain investments not supported  yet")
 }
 
-// Invest is the main invest function of the opensolar platform
+// Invest is the main invest function of the opensolar platform. Invest first
+// calls the preInvestmentCheck function to check if the project and investor are eligbile
+// to be invested in an invest in the project respectively. Calls the investment function
+// associated with the platform after completing preliminary checks.
 func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) error {
 	var err error
 
@@ -248,7 +261,10 @@ func Invest(projIndex int, invIndex int, invAmount float64, invSeed string) erro
 	return errors.New("other chain investments not supported right now")
 }
 
-// updateAfterInvestment updates project db params after investment
+// updateAfterInvestment updates the project's internal database after investment. Checks
+// if the project's net amount invested is equal to the project threshold and if so, calls
+// the handlers needed to send funds to the escrow and assets to the receiver. Gets asset
+// balances from the blockchain and updates an internal map that stores returns to publickeys.
 func (project *Project) updateAfterInvestment(invAmount float64, invIndex int, seed bool) error {
 	var err error
 	project.MoneyRaised += invAmount
@@ -311,8 +327,8 @@ func (project *Project) updateAfterInvestment(invAmount float64, invIndex int, s
 	return nil
 }
 
-// sendRecipientNotification sends the notification to the recipient requesting them
-// to logon to the platform and unlock the project that has just been invested in
+// sendRecipientNotification sends a notification to a recipient requesting them
+// to logon to the platform and unlock the project that has just been invested in.
 func (project *Project) sendRecipientNotification() error {
 	var recipient Recipient
 	var err error
@@ -331,7 +347,9 @@ func (project *Project) sendRecipientNotification() error {
 	return nil
 }
 
-// UnlockProject unlocks a specific project that has just been invested in
+// UnlockProject unlocks a project that has just been invested. This function needs to be
+// called via the RPC-APIs when the recipient clicks on their email to accept the investment,
+// unlock the project and provide their seedpwd (so the platform can send assets to them).
 func UnlockProject(username string, token string, projIndex int, seedpwd string) error {
 	log.Println("UNLOCKING PROJECT")
 	project, err := RetrieveProject(projIndex)
@@ -376,7 +394,7 @@ func UnlockProject(username string, token string, projIndex int, seedpwd string)
 	return nil
 }
 
-// checkSeedPwd checks whether the seedpwd supplied actually unlocks the seed
+// checkSeedPwd checks whether the seedpwd supplied by the recipient unlocks their account.
 func checkSeedPwd(project Project, pwd string) error {
 	// check if the one time unlock actually works
 	recipient, err := RetrieveRecipient(project.RecipientIndex)
@@ -405,8 +423,11 @@ func checkSeedPwd(project Project, pwd string) error {
 	return nil
 }
 
-// sendRecipientAssets sends a recipient the debt asset and the payback asset associated with
-// the opensolar platform
+// sendRecipientAssets sends a recipient DebtAssets and PaybackAssets. Calls the checkSeedPwd
+// function at the start to make sure the seedpwd supplied can unlock the recipient's account. Runs
+// a loop that waits for the recipient to provide their seedpwd and unlock the project. If unlocked,
+// extracts the recipient's seed, sets the seedpwd in memory to nil, sets up the project escrow and
+// transfers assets to the recipient.
 func sendRecipientAssets(projIndex int) error {
 	startTime := utils.Unix()
 	project, err := RetrieveProject(projIndex)
@@ -496,7 +517,8 @@ func sendRecipientAssets(projIndex int) error {
 	return nil
 }
 
-// updateProjectAfterAcceptance updates the project after the recipient accepts investment into the project
+// updateProjectAfterAcceptance updates the project after the recipient accepts
+// investment in the project. Spins a thread monitoring paybacks.
 func (project *Project) updateProjectAfterAcceptance() error {
 
 	// update balleft with SeedMoneyRaised
@@ -512,11 +534,10 @@ func (project *Project) updateProjectAfterAcceptance() error {
 	return nil
 }
 
-// Payback pays the platform back in STABLEUSD and DebtAsset and receives PaybackAssets
-// in return. Price to be paid per month depends on the electricity consumed by the recipient
-// in the particular time frame.
-
-// Payback is called by the recipient when they choose to pay towards the project according to the payback interval
+// Payback is called by the recipient when they choose to pay towards the project
+// according to the payback interval. Payback calls the payback function associated
+// with a project's desired investment model. Distributes funds to investors
+// at the end.
 func Payback(recpIndex int, projIndex int, assetName string, amount float64, recipientSeed string) error {
 
 	project, err := RetrieveProject(projIndex)
@@ -556,7 +577,6 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 		return errors.Wrap(err, "coudln't save project")
 	}
 
-	// TODO: we need to distribute funds which were paid back to all the parties involved, but we do so only for the investor here
 	err = DistributePayments(recipientSeed, project.EscrowPubkey, projIndex, amount)
 	if err != nil {
 		// return errors.Wrap(err, "error while distributing payments")
@@ -566,7 +586,8 @@ func Payback(recpIndex int, projIndex int, assetName string, amount float64, rec
 	return nil
 }
 
-// DistributePayments distributes the return promised as part of the project back to investors and pays the other entities involved in the project
+// DistributePayments distributes returns to investors and pays the other entities
+// involved in the project.
 func DistributePayments(recipientSeed string, escrowPubkey string, projIndex int, amount float64) error {
 	// this should act as the service which redistributes payments received out to the parties involved
 	// amount is the amount that we want to give back to the investors and other entities involved
@@ -616,8 +637,9 @@ func (project Project) CalculatePayback(amount float64) float64 {
 	return amountPB
 }
 
-// monitorPaybacks monitors whether the user is paying back regularly towards the given project
-// thread has to be isolated since if this fails, we stop tracking paybacks by the recipient.
+// monitorPaybacks monitors whether the user is paying back regularly towards a project. This
+// thread has to be isolated since if this fails, we stop tracking paybacks by the recipient. Also
+// sends notifications to entities involved in the project about recipient payback status.
 func monitorPaybacks(recpIndex int, projIndex int) {
 	for {
 		project, err := RetrieveProject(projIndex)
@@ -703,7 +725,8 @@ func monitorPaybacks(recpIndex int, projIndex int) {
 	}
 }
 
-// AddWaterfallAccount adds a waterfall account that the recipient must payback towards
+// AddWaterfallAccount adds a waterfall account that is eligible for funds distributed when
+// the recipientp ays back towards a project.
 func AddWaterfallAccount(projIndex int, pubkey string, amount float64) error {
 	project, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -757,7 +780,6 @@ func CoverFirstLoss(projIndex int, entityIndex int, amount float64) error {
 		}
 	}
 
-	log.Println("txhash of guarantor kick in:", txhash)
-
+	log.Println("txhash of guarantor payment:", txhash)
 	return nil
 }

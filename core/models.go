@@ -21,7 +21,8 @@ import (
 	oracle "github.com/YaleOpenLab/opensolar/oracle"
 )
 
-// MunibondInvest invests in a specific munibond
+// MunibondInvest invests in a specific munibond. Sends USD to the platform, receives INVAssets
+// in return, and sends an email to the investor's email id confirming investment if it succeeds.
 func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount float64,
 	projIndex int, invAssetCode string, totalValue float64, seedInvestmentFactor float64, seed bool) error {
 
@@ -96,7 +97,8 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 	return nil
 }
 
-// MunibondReceive sends assets to the recipient
+// MunibondReceive sends Debt and Payback assets to the recipient. Sends a notification email
+// to the recipient containing the tx hashes of all transactions involved.
 func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetId string,
 	paybackAssetId string, years int, recpSeed string, totalValue float64, paybackPeriod time.Duration) error {
 
@@ -169,11 +171,11 @@ func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetI
 	return nil
 }
 
-// sendPaymentNotif sends a notification every payback period to the recipient to remind them to payback towards the project
+// sendPaymentNotif sends a notification every payback period to the recipient to remind them
+// to payback towards the project.
 func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod time.Duration, email string) {
 	paybackTimes := 0
 	for {
-
 		_, err := RetrieveRecipient(recpIndex)
 		if err != nil {
 			log.Println("Error while retrieving recipient from database", err)
@@ -197,8 +199,8 @@ func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod time.Duration,
 	}
 }
 
-// MunibondPayback is used by the recipient to pay the platform back. Here, we pay the
-// project escrow instead of the platform since it is responsible for redistribution of funds
+// MunibondPayback is used by the recipient to pay the platform back. Pays the
+// project escrow USD, and the project issuer DebtAsset and Payback Asset.
 func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipientSeed string, projIndex int,
 	assetName string, projectInvestors []int, totalValue float64, escrowPubkey string) (float64, error) {
 
@@ -307,7 +309,7 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	return ownershipPct, nil
 }
 
-// SendUSDToPlatform sends STABLEUSD back to the platform
+// SendUSDToPlatform sends STABLEUSD to the platform. Used by investors investing in projects.
 func SendUSDToPlatform(invSeed string, invAmount float64, memo string) (string, error) {
 	// send stableusd to the platform (not the issuer) since the issuer will be locked
 	// and we can't use the funds. We also need ot be able to redeem the stablecoin for fiat
