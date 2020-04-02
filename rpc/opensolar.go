@@ -38,7 +38,7 @@ var ProjectRPC = map[int][]string{
 	10: []string{"/project/detail", "GET", "index"},                               // GET
 }
 
-// getAllProjects gets a list of all the projects in the database
+// getAllProjects gets a list of all projects
 func getAllProjects() {
 	http.HandleFunc(ProjectRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -57,7 +57,7 @@ func getAllProjects() {
 	})
 }
 
-// getProject gets the details of a project.
+// getProject retrieves details of a project when passed the index
 func getProject() {
 	http.HandleFunc(ProjectRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query()["index"] == nil {
@@ -72,7 +72,6 @@ func getProject() {
 			return
 		}
 
-		// no authorization required to get projects
 		index := r.URL.Query()["index"][0]
 
 		uKey, err := utils.ToInt(index)
@@ -90,7 +89,7 @@ func getProject() {
 	})
 }
 
-// getProjectsAtIndex gets projects at a stage
+// getProjectsAtIndex gets projects belonging to one stage
 func getProjectsAtIndex() {
 	http.HandleFunc(ProjectRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -129,7 +128,7 @@ func getProjectsAtIndex() {
 	})
 }
 
-// addContractHash adds a contract hash to the database
+// addContractHash adds a contract hash to a project's stage data
 func addContractHash() {
 	http.HandleFunc(ProjectRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -246,7 +245,8 @@ func sendTellerFailedPaybackEmail() {
 	})
 }
 
-// getProjectDashboard gets the project details stub that is displayed on the explore page of opensolar
+// getProjectDashboard gets the project details stub that is displayed on the
+// explore page of the frontend
 func getProjectDashboard() {
 	http.HandleFunc(ProjectRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		err := checkReqdParams(w, r, ProjectRPC[8][2:], ProjectRPC[8][1])
@@ -255,7 +255,6 @@ func getProjectDashboard() {
 			return
 		}
 
-		// no authorization required to get projects
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
 		if err != nil {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
@@ -273,7 +272,8 @@ func getProjectDashboard() {
 	})
 }
 
-// ExplorePageStub is used to show brief descriptions of the project on an explore page
+// ExplorePageStub is used to show brief descriptions of the project on
+// the frontend's explore page
 type ExplorePageStub struct {
 	StageDescription interface{}
 	Name             interface{}
@@ -299,7 +299,8 @@ type ExplorePageStub struct {
 	Backers          int
 }
 
-// explore is the endpoint called on the frontend to show a comprehensive description of all the project
+// explore is the endpoint called on the frontend to show a comprehensive
+// description of all projects
 func explore() {
 	http.HandleFunc(ProjectRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -344,11 +345,10 @@ func explore() {
 		}
 
 		erpc.MarshalSend(w, arr)
-		// need to compile a structure of the things required
 	})
 }
 
-// projectDetail is an endpoint that fetches all the details needed on the frontend
+// projectDetail is an endpoint that fetches details required by the frontend
 func projectDetail() {
 	http.HandleFunc(ProjectRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)

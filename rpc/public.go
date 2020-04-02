@@ -9,12 +9,13 @@ import (
 )
 
 func setupPublicRoutes() {
-	getAllInvestorsPublic()      // GET
-	getAllRecipientsPublic()     // GET
-	getInvTopReputationPublic()  // GET
-	getRecpTopReputationPublic() // GET
+	getAllInvestorsPublic()
+	getAllRecipientsPublic()
+	getInvTopReputationPublic()
+	getRecpTopReputationPublic()
 }
 
+// PublicRpc contains a list of all public RPC endpoints
 var PublicRpc = map[int][]string{
 	1: []string{"/public/investor/all"},             // GET
 	2: []string{"/public/recipient/all"},            // GET
@@ -87,7 +88,7 @@ func sanitizeAllRecipients(recipients []core.Recipient) []SnRecipient {
 	return arr
 }
 
-// getAllInvestors gets a list of all the investors in the database
+// getAllInvestors gets a list of all investors
 func getAllInvestorsPublic() {
 	http.HandleFunc(PublicRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -106,7 +107,7 @@ func getAllInvestorsPublic() {
 	})
 }
 
-// getAllRecipients gets a list of all the investors in the database
+// getAllRecipients gets a list of all investors
 func getAllRecipientsPublic() {
 	http.HandleFunc(PublicRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -125,7 +126,8 @@ func getAllRecipientsPublic() {
 	})
 }
 
-// getRecpTopReputationPublic gets a list of the recipients sorted by descending order of reputation
+// getRecpTopReputationPublic gets a list of the recipients sorted by
+// descending order of reputation
 func getRecpTopReputationPublic() {
 	http.HandleFunc(PublicRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
@@ -144,7 +146,8 @@ func getRecpTopReputationPublic() {
 	})
 }
 
-// getInvTopReputationPublic gets a list of the investors sorted by descending order of reputation
+// getInvTopReputationPublic gets a list of the investors sorted by
+// descending order of reputation
 func getInvTopReputationPublic() {
 	http.HandleFunc(PublicRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)

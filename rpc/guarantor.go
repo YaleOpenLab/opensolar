@@ -15,12 +15,14 @@ func setupGuarantorRPCs() {
 	depositAssetGuarantor()
 }
 
+// GuaRPC contains a list of all guarantor related RPC endpoints
 var GuaRPC = map[int][]string{
 	1: []string{"/guarantor/deposit/xlm", "POST", "amount", "projIndex", "seedpwd"},                // POST
 	2: []string{"/guarantor/deposit/asset", "POST", "amount", "projIndex", "seedpwd", "assetCode"}, // POST
 }
 
-// depositXLMGuarantor is called by a guarantor when they wish to refill the escrow account with xlm
+// depositXLMGuarantor is called by a guarantor when they wish to refill
+// the escrow account with xlm
 func depositXLMGuarantor() {
 	http.HandleFunc(GuaRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, GuaRPC[1][2:], GuaRPC[1][1])
@@ -63,7 +65,8 @@ func depositXLMGuarantor() {
 	})
 }
 
-// depositAssetGuarantor is called by a guarantor when they wish to refill the escrow account with an asset
+// depositAssetGuarantor is called by a guarantor when they wish to refill
+// the escrow account with an asset
 func depositAssetGuarantor() {
 	http.HandleFunc(GuaRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		prepEntity, err := entityValidateHelper(w, r, GuaRPC[2][2:], GuaRPC[2][1])

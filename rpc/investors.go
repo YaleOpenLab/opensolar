@@ -50,7 +50,7 @@ var InvRPC = map[int][]string{
 		"name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
 }
 
-// InvValidateHelper is a helper used to validate an investor
+// InvValidateHelper is a helper that validates an investor and returns the investor struct if successful
 func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (core.Investor, error) {
 	var prepInvestor core.Investor
 	var err error
@@ -78,6 +78,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 	return prepInvestor, nil
 }
 
+// registerInvestor creates a new investor
 func registerInvestor() {
 	http.HandleFunc(InvRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := checkReqdParams(w, r, InvRPC[1][2:], InvRPC[1][1])
@@ -137,7 +138,7 @@ func registerInvestor() {
 	})
 }
 
-// validateInvestor validates the username and pwhash of a given investor
+// validateInvestor validates the username and token of an investor
 func validateInvestor() {
 	http.HandleFunc(InvRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[2][2:], InvRPC[2][1])
@@ -148,7 +149,7 @@ func validateInvestor() {
 	})
 }
 
-// getAllInvestors gets a list of all the investors in the database
+// getAllInvestors gets a list of all investors in the database
 func getAllInvestors() {
 	http.HandleFunc(InvRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		_, err := InvValidateHelper(w, r, InvRPC[3][2:], InvRPC[3][1])
@@ -165,7 +166,7 @@ func getAllInvestors() {
 	})
 }
 
-// Invest invests in a project of the investor's choice
+// invest invests in a project
 func invest() {
 	http.HandleFunc(InvRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		investor, err := InvValidateHelper(w, r, InvRPC[4][2:], InvRPC[4][1])
@@ -220,7 +221,7 @@ func invest() {
 	})
 }
 
-// voteTowardsProject votes towards a proposed project of the user's choice.
+// voteTowardsProject votes towards a proposed project
 func voteTowardsProject() {
 	http.HandleFunc(InvRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		investor, err := InvValidateHelper(w, r, InvRPC[5][2:], InvRPC[5][1])
@@ -254,8 +255,8 @@ func voteTowardsProject() {
 	})
 }
 
-// addLocalAssetInv adds a local asset that can be traded in a p2p fashion wihtout direct involvement
-// from the platform
+// addLocalAssetInv adds a local asset that can be traded in a p2p fashion
+// without direct involvement from the platform
 func addLocalAssetInv() {
 	http.HandleFunc(InvRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[6][2:], InvRPC[6][1])
@@ -277,7 +278,7 @@ func addLocalAssetInv() {
 	})
 }
 
-// invAssetInv sends a local asset to a remote peer
+// invAssetInv sends a local asset to a peer
 func invAssetInv() {
 	http.HandleFunc(InvRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[7][2:], InvRPC[7][1])
@@ -325,7 +326,7 @@ func invAssetInv() {
 	})
 }
 
-// sendEmail sends an email to a entity
+// sendEmail sends an email to another entity on the platform
 func sendEmail() {
 	http.HandleFunc(InvRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[8][2:], InvRPC[8][1])
@@ -385,7 +386,7 @@ type invDashboardStruct struct {
 	InvestedProjects []invDHelper `json:"Your Invested Projects"`
 }
 
-// invDashboard returns the parameters needed for displaying details on the frontend
+// invDashboard returns the parameters needed for displaying the investor dashboard.
 func invDashboard() {
 	http.HandleFunc(InvRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[9][2:], InvRPC[9][1])
@@ -523,6 +524,7 @@ func invDashboard() {
 	})
 }
 
+// setCompanyBool sets the company bool in the investor struct to true
 func setCompanyBool() {
 	http.HandleFunc(InvRPC[10][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[10][2:], InvRPC[10][1])
@@ -541,6 +543,7 @@ func setCompanyBool() {
 	})
 }
 
+// setCompany sets thecompany details in the company field of an investor struct
 func setCompany() {
 	http.HandleFunc(InvRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
 		prepInvestor, err := InvValidateHelper(w, r, InvRPC[11][2:], InvRPC[11][1])
