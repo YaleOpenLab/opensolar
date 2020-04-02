@@ -124,25 +124,3 @@ var LoginRefreshInterval = time.Duration(5 * 60 * time.Second)
 
 // ProjectReportThreshold is the threshold above which admins are allowed to flag the project
 var ProjectReportThreshold = 10
-
-// TellerListenNum is the number of messages the mqtt client will listen for from the broker
-var TellerListenNum = 100
-
-// TellerQos is the quality of service that the mqtt client must expect. Set to 0 (worst). Goes up until 2
-var TellerQos = 0
-
-// SetTnConsts sets constants that are relevant for staring opensolar on testnet
-func SetTnConsts() {
-	HomeDir = os.Getenv("HOME") + "/.opensolar/testnet"
-	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
-	OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
-	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
-}
-
-// SetMnConsts sets constants that are relevant for staring opensolar on mainnet // THIS IS UNUSED
-func SetMnConsts() {
-	HomeDir = os.Getenv("HOME") + "/.opensolar/mainnet"
-	DbDir = HomeDir + "/database/"                   // the directory where the database is stored (project info, user info, etc)
-	OpenSolarIssuerDir = HomeDir + "/projects/"      // the directory where we store opensolar projects' issuer seeds
-	PlatformSeedFile = HomeDir + "/platformseed.hex" // where the platform's seed is stored
-}
