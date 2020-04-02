@@ -21,7 +21,8 @@ var ProjectsBucket = []byte("Projects")
 // ContractorBucket is the contractor bucket
 var ContractorBucket = []byte("Contractors")
 
-// CreateHomeDir creates a home directory
+// CreateHomeDir creates a home directory at $HOME. If the user does not have permissions
+// to write to home, execution is stopped.
 func CreateHomeDir() {
 	edb.CreateDirs(consts.HomeDir, consts.DbDir, consts.OpenSolarIssuerDir)
 	log.Println("creating db at: ", consts.DbDir+consts.DbName)
@@ -32,7 +33,7 @@ func CreateHomeDir() {
 	db.Close()
 }
 
-// OpenDB opens the db, calls essentials for helpers
+// OpenDB opens the database at the home directory.
 func OpenDB() (*bolt.DB, error) {
 	return edb.OpenDB(consts.DbDir + consts.DbName)
 }

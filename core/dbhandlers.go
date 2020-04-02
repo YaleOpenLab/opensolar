@@ -51,7 +51,7 @@ func (a *Entity) Save() error {
 	return edb.Save(consts.DbDir+consts.DbName, ContractorBucket, a, a.U.Index)
 }
 
-// RetrieveInvestor retrieves an investor from the database
+// RetrieveInvestor retrieves an investor by index from the database
 func RetrieveInvestor(key int) (Investor, error) {
 	var inv Investor
 	user, err := RetrieveUser(key)
@@ -73,7 +73,7 @@ func RetrieveInvestor(key int) (Investor, error) {
 	return inv, inv.Save()
 }
 
-// SearchForInvestor searches for an investor in the database
+// SearchForInvestor searches for an investor by name in the database
 func SearchForInvestor(name string) (Investor, error) {
 	var inv Investor
 
@@ -95,7 +95,7 @@ func SearchForInvestor(name string) (Investor, error) {
 	return inv, errors.New("could not find an investor while searching by username")
 }
 
-// SearchForRecipient searches for a recipient in the database
+// SearchForRecipient searches for a recipient by name in the database
 func SearchForRecipient(name string) (Recipient, error) {
 	var recp Recipient
 
@@ -117,7 +117,7 @@ func SearchForRecipient(name string) (Recipient, error) {
 	return recp, errors.New("could not find an investor while searching by username")
 }
 
-// SearchForEntity searches for an investor in the database
+// SearchForEntity searches for an investor by name in the database
 func SearchForEntity(name string) (Entity, error) {
 	var et Entity
 
@@ -140,7 +140,7 @@ func SearchForEntity(name string) (Entity, error) {
 	return et, errors.New("could not find an investor while searching by username")
 }
 
-// RetrieveRecipient retrieves a recipient from the database
+// RetrieveRecipient retrieves a recipient by index from the database
 func RetrieveRecipient(key int) (Recipient, error) {
 	var recp Recipient
 	user, err := RetrieveUser(key)
@@ -270,7 +270,7 @@ func ValidateRecipient(name string, token string) (Recipient, error) {
 	return RetrieveRecipient(user.Index)
 }
 
-// RetrieveProject retrieves a project from the database
+// RetrieveProject retrieves a project by index from the database
 func RetrieveProject(key int) (Project, error) {
 	var inv Project
 	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ProjectsBucket, key)
@@ -323,7 +323,8 @@ func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveContractorProjects retrieves projects that are associated with a specific contractor from the db
+// RetrieveContractorProjects retrieves projects that are associated
+// with a specific contractor from the db
 func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -344,7 +345,8 @@ func RetrieveContractorProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveOriginatorProjects retrieves projects that are associated with a specific originator from the db
+// RetrieveOriginatorProjects retrieves projects that are associated
+// with a specific originator from the database
 func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -365,7 +367,8 @@ func RetrieveOriginatorProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveRecipientProjects retrieves projects that are associated with a specific recipient from the db
+// RetrieveRecipientProjects retrieves projects that are associated
+// with a specific recipient from the database.
 func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	var arr []Project
 	if stage > 9 { // check for this and fail early instead of wasting compute time on this
@@ -386,7 +389,8 @@ func RetrieveRecipientProjects(stage int, index int) ([]Project, error) {
 	return arr, nil
 }
 
-// RetrieveLockedProjects retrieves all the projects that are locked and are waiting for the recipient to unlock them
+// RetrieveLockedProjects retrieves all the projects that are locked
+// and are waiting for the recipient to provide the seedpwd and unlock them.
 func RetrieveLockedProjects() ([]Project, error) {
 	var arr []Project
 
@@ -404,7 +408,7 @@ func RetrieveLockedProjects() ([]Project, error) {
 	return arr, nil
 }
 
-// SaveOriginatorMoU saves the MoU's hash in the database
+// SaveOriginatorMoU saves the MoU's IPFS hash in the database
 func SaveOriginatorMoU(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -414,7 +418,7 @@ func SaveOriginatorMoU(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveContractHash saves a contract's hash in the database
+// SaveContractHash saves a contract's IPFS hash in the database
 func SaveContractHash(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -424,7 +428,7 @@ func SaveContractHash(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveInvPlatformContract saves the investor-platform contract's hash in the database
+// SaveInvPlatformContract saves the investor-platform contract's IPFS hash in the database
 func SaveInvPlatformContract(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -434,7 +438,7 @@ func SaveInvPlatformContract(projIndex int, hash string) error {
 	return a.Save()
 }
 
-// SaveRecPlatformContract saves the recipient-platform contract's hash in the database
+// SaveRecPlatformContract saves the recipient-platform contract's IPFS hash in the database
 func SaveRecPlatformContract(projIndex int, hash string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -460,7 +464,7 @@ func MarkFlagged(projIndex int, adminIndex int) error {
 	return a.Save()
 }
 
-// UserMarkFlagged is used by users to mark the project as flagged
+// UserMarkFlagged is used by users to mark a project as flagged
 func UserMarkFlagged(projIndex int, userIndex int) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {
@@ -472,7 +476,7 @@ func UserMarkFlagged(projIndex int, userIndex int) error {
 	return a.Save()
 }
 
-// AddTellerDetails adds teller details to the backend
+// AddTellerDetails adds teller details to a project.
 func AddTellerDetails(projIndex int, url string, brokerurl string, topic string) error {
 	a, err := RetrieveProject(projIndex)
 	if err != nil {

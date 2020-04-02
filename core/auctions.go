@@ -4,7 +4,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// SelectContractBlind selects the winning bid based on blind auction rules (in a blind auction, the bid with the highest price wins)
+// SelectContractBlind selects the winning bid based on blind auction rules. In a
+// blind auction, the bid with the highest price wins
 func SelectContractBlind(arr []Project) (Project, error) {
 	var a Project
 	if len(arr) == 0 {
@@ -21,7 +22,8 @@ func SelectContractBlind(arr []Project) (Project, error) {
 	return a, nil
 }
 
-// SelectContractVickrey selects the winning bid based on vickrey auction rules (in a vickrey auction, the bid with the second highest price wins)
+// SelectContractVickrey selects the winning bid based on vickrey auction rules. In a
+// vickrey auction, the bid with the second highest price is paid by the highest bidder.
 func SelectContractVickrey(arr []Project) (Project, error) {
 	var winningContract Project
 	if len(arr) == 0 {
@@ -37,9 +39,8 @@ func SelectContractVickrey(arr []Project) (Project, error) {
 			continue
 		}
 	}
-	// here we have the highest bidder. Now we need to delete this guy from the array
+	// we have the highest bidder. Now we need to delete this guy from the array
 	// and get the second highest bidder
-	// delete a[pos] from arr
 	arr = append(arr[:pos], arr[pos+1:]...)
 	if len(arr) == 0 {
 		// means only one contract was proposed for this project, so fall back to blind auction
@@ -57,7 +58,8 @@ func SelectContractVickrey(arr []Project) (Project, error) {
 	return winningContract, winningContract.Save()
 }
 
-// SelectContractTime selects the winning contract based on the least time proposed for completion
+// SelectContractTime selects the winning contract based on the least time
+// proposed for completion of installation.
 func SelectContractTime(arr []Project) (Project, error) {
 	var a Project
 	if len(arr) == 0 {
@@ -74,7 +76,8 @@ func SelectContractTime(arr []Project) (Project, error) {
 	return a, nil
 }
 
-// SetAuctionType sets the auction type of a specific project
+// SetAuctionType sets the auction type of a specific project. There are four options
+// blind, civkrey, english and dutch.
 func (project *Project) SetAuctionType(auctionType string) error {
 	switch auctionType {
 	case "blind":

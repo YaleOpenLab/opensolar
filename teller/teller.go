@@ -288,7 +288,7 @@ func main() {
 
 	// run goroutines in the background to routinely check for payback, state updates and stuff
 	// go checkPayback()
-	// time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaenous txs
+	// time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaneous txs
 	// go updateState(true)
 
 	if opts.Daemon {

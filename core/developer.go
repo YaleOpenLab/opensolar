@@ -13,7 +13,10 @@ import (
 	consts "github.com/YaleOpenLab/opensolar/consts"
 )
 
-// RequestWaterfallWithdrawal requests withdrawal of funds from the escrow account
+// RequestWaterfallWithdrawal requests withdrawal of funds from the escrow account. This
+// is used to pay developers, contractors and other entities that the recipient wishes to pay. Checks
+// if the project is flagged and if not, decrypts the recipient's seed, signs the transaction and
+// sends the transaction to the platform to sign and broadcast.
 func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) error {
 	entity, err := RetrieveEntity(entityIndex)
 	if err != nil {
@@ -43,8 +46,8 @@ func RequestWaterfallWithdrawal(entityIndex int, projIndex int, amount float64) 
 		if key == entity.U.StellarWallet.PublicKey {
 			log.Println("developer name found in waterfall list")
 			if elem < amount {
-				log.Println("amount requested greater than alotted, quitting")
-				return errors.New("amount requested greater than alotted, quitting")
+				log.Println("amount requested greater than allotted, quitting")
+				return errors.New("amount requested greater than allotted, quitting")
 			}
 			log.Println("requesting transfer of: ", amount, " to the user from the escrow account")
 			valid = true

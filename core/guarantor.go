@@ -24,8 +24,10 @@ func (a *Entity) AddFirstLossGuarantee(seedpwd string, amount float64) error {
 	return a.Save()
 }
 
-// RefillEscrowAsset refills the escrow with a specific asset
-func (a *Entity) RefillEscrowAsset(projIndex int, asset string, amount float64, seedpwd string) error {
+// RefillEscrowAsset refills the escrow with USD from the guarantor's account. Escrow
+// should already have a trustline set with the stablecoin provider
+func (a *Entity) RefillEscrowAsset(projIndex int, asset string,
+	amount float64, seedpwd string) error {
 	if !a.Guarantor {
 		log.Println("caller not guarantor")
 		return errors.New("caller not guarantor, quitting")
@@ -55,18 +57,27 @@ func (a *Entity) RefillEscrowAsset(projIndex int, asset string, amount float64, 
 		return err
 	}
 
-	_, txhash, err := assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey,
-		project.EscrowPubkey, amount, seed, "guarantor refund")
-	if err != nil {
-		log.Println(err)
-		return err
+	if !consts.Mainnet {
+		_, txhash, err := assets.SendAsset(consts.StablecoinCode, consts.StablecoinPublicKey,
+			project.EscrowPubkey, amount, seed, "guarantor refund")
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		log.Println("txhash: ", txhash)
+	} else {
+		_, txhash, err := assets.SendAsset(consts.AnchorUSDCode, consts.AnchorUSDAddress,
+			project.EscrowPubkey, amount, seed, "guarantor refund")
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		log.Println("txhash: ", txhash)
 	}
-
-	log.Println("txhash: ", txhash)
 	return nil
 }
 
-// RefillEscrowXLM refills the escrow with XLM
+// RefillEscrowXLM refills the escrow with XLM from the guarantor's account
 func (a *Entity) RefillEscrowXLM(projIndex int, amount float64, seedpwd string) error {
 	if !a.Guarantor {
 		log.Println("caller not guarantor")

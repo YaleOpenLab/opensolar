@@ -44,7 +44,7 @@ type Investor struct {
 	SeedInvestedSolarProjectsIndices []int
 }
 
-// Company is a struct that is used if an ivnestor/recipient is acting on behalf of their company
+// Company is a struct that is used if an investor/recipient is acting on behalf of their company
 type Company struct {
 	// CompanyType is the type of the company
 	CompanyType string
@@ -80,7 +80,7 @@ type Company struct {
 	Role string
 }
 
-// NewInvestor creates a new investor based on params passed
+// NewInvestor creates a new investor
 func NewInvestor(uname string, pwd string, seedpwd string, Name string) (Investor, error) {
 	var a Investor
 	var err error
@@ -104,48 +104,44 @@ func NewInvestor(uname string, pwd string, seedpwd string, Name string) (Investo
 
 // ChangeVotingBalance changes the voting balance of a user
 func (a *Investor) ChangeVotingBalance(votes float64) error {
-	// this function is caled when we want to refund the user with the votes once
+	// this function is caled when we want to refund the user with their votes once
 	// an order has been finalized.
 	a.VotingBalance += votes
 	if a.VotingBalance < 0 {
-		a.VotingBalance = 0 // to ensure no one has negative votes or something
+		a.VotingBalance = 0 // to ensure no one has negative votes
 	}
 	return a.Save()
 }
 
 // CanInvest checks whether an investor has the required funds to invest in a project
 func (a *Investor) CanInvest(targetBalance float64) bool {
+
+	// if !a.U.Legal {
+	// 	log.Println("user has not accepted terms and conditions associated with the platform")
+	// 	return false
+	// }
+
 	if !consts.Mainnet {
-		// testnet
 		usdBalance := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, "STABLEUSD")
 		xlmBalance := xlm.GetNativeBalance(a.U.StellarWallet.PublicKey)
-
-		// if !a.U.Legal {
-		// 	log.Println("user has not accepted terms and conditions associated with the platform")
-		// 	return false
-		// }
-
 		// need to fetch the oracle price here for the order
 		oraclePrice := tickers.ExchangeXLMforUSD(xlmBalance)
-		if usdBalance > targetBalance-1 || oraclePrice > targetBalance {
-			// return true since the user has enough USD balance to pay for the order
-			return true
-		}
-		return false
+		return usdBalance > targetBalance+1 || oraclePrice > targetBalance
 	}
 
 	// mainnet
 	usdBalance := xlm.GetAssetBalance(a.U.StellarWallet.PublicKey, openxconsts.AnchorUSDCode)
-	return usdBalance > targetBalance
+	return usdBalance > targetBalance+1
 }
 
-// SetCompany sets the company bool to true
+// SetCompany sets the company bool to true. This enables the creation of investors who
+// can act on behalf of a company
 func (a *Investor) SetCompany() error {
 	a.Company = true
 	return a.Save()
 }
 
-// SetCompanyDetails sets the company detail struct of the investor class
+// SetCompanyDetails sets the company struct of the investor class
 func (a *Investor) SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 	country, city, zipCode, taxIDNumber, role string) error {
 

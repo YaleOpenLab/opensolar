@@ -65,7 +65,8 @@ type Entity struct {
 	FirstLossGuaranteeAmt float64
 }
 
-// RetrieveAllEntitiesWithoutRole retrieves all the entities from the database
+// RetrieveAllEntitiesWithoutRole retrieves all the entities (contractors, developers,
+// originators, and guarantors) from the database
 func RetrieveAllEntitiesWithoutRole() ([]Entity, error) {
 	var users []Entity
 	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ContractorBucket)
@@ -111,18 +112,6 @@ func RetrieveAllEntities(role string) ([]Entity, error) {
 	return entities, nil
 }
 
-// RetrieveEntityHelper is a helper associated with the RetrieveEntity function
-func RetrieveEntityHelper(key int) (Entity, error) {
-	var entity Entity
-	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ContractorBucket, key)
-	if err != nil {
-		return entity, errors.Wrap(err, "error while retrieving key from bucket")
-	}
-
-	err = json.Unmarshal(x, &entity)
-	return entity, err
-}
-
 // RetrieveEntity retrieves an entity from the database
 func RetrieveEntity(key int) (Entity, error) {
 	var entity Entity
@@ -131,7 +120,12 @@ func RetrieveEntity(key int) (Entity, error) {
 		return entity, err
 	}
 
-	entity, err = RetrieveEntityHelper(key)
+	x, err := edb.Retrieve(consts.DbDir+consts.DbName, ContractorBucket, key)
+	if err != nil {
+		return entity, errors.Wrap(err, "error while retrieving key from bucket")
+	}
+
+	err = json.Unmarshal(x, &entity)
 	if err != nil {
 		return entity, err
 	}
@@ -140,7 +134,7 @@ func RetrieveEntity(key int) (Entity, error) {
 	return entity, entity.Save()
 }
 
-// newEntity creates a new entity based on the role passed
+// newEntity is a helper function that creates a new entity based on the passed roles
 func newEntity(uname string, pwd string, seedpwd string, name string, role string) (Entity, error) {
 	var a Entity
 	var err error
@@ -175,7 +169,8 @@ func newEntity(uname string, pwd string, seedpwd string, name string, role strin
 	return a, err
 }
 
-// TopReputationEntitiesWithoutRole returns the list of all the entities in descending order of reputation
+// TopReputationEntitiesWithoutRole returns the list of all the entities in
+// descending order of reputation
 func TopReputationEntitiesWithoutRole() ([]Entity, error) {
 	allEntities, err := RetrieveAllEntitiesWithoutRole()
 	if err != nil {
@@ -193,7 +188,8 @@ func TopReputationEntitiesWithoutRole() ([]Entity, error) {
 	return allEntities, nil
 }
 
-// TopReputationEntities returns the list of all the entities belonging to a specific role in descending order of reputation
+// TopReputationEntities returns the list of all the entities belonging to a
+// specific role in descending order of reputation
 func TopReputationEntities(role string) ([]Entity, error) {
 	allEntities, err := RetrieveAllEntities(role)
 	if err != nil {
@@ -211,7 +207,7 @@ func TopReputationEntities(role string) ([]Entity, error) {
 	return allEntities, nil
 }
 
-// ValidateEntity validates the username and pwhash of the entity
+// ValidateEntity validates the username and token of the entity
 func ValidateEntity(name string, token string) (Entity, error) {
 	var rec Entity
 	user, err := ValidateUser(name, token)
@@ -221,7 +217,8 @@ func ValidateEntity(name string, token string) (Entity, error) {
 	return RetrieveEntity(user.Index)
 }
 
-// AgreeToContractConditions agrees to some specified contract conditions
+// AgreeToContractConditions agrees to specified contract conditions. This is a precursor to
+// a legeal contract template
 func AgreeToContractConditions(contractHash string, projIndex string,
 	debtAssetCode string, entityIndex int, seedpwd string) error {
 	// we need to display this on the frontend and once the user presses agree, commit
