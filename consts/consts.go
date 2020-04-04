@@ -113,6 +113,9 @@ var CutDownPeriod = time.Duration(4838400 * time.Second)
 // TellerHomeDir is the home directory of the teller
 var TellerHomeDir = HomeDir + "/teller" // the home directory of the teller executable
 
+// TellerDeviceIDLen is set to 16
+var TellerDeviceIDLen = 16
+
 // TellerMaxLocalStorageSize is the max file storage limit on the teller before we hash the entire thing to ipfs
 var TellerMaxLocalStorageSize = 2000
 

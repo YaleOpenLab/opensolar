@@ -240,7 +240,7 @@ type statusResponse struct {
 
 // generateDeviceID generates a random 16 character device ID
 func generateDeviceID() (string, error) {
-	rs := utils.GetRandomString(16)
+	rs := utils.GetRandomString(consts.TellerDeviceIDLen)
 	upperCase := strings.ToUpper(rs)
 	return upperCase, nil
 }
@@ -289,12 +289,12 @@ func getDeviceID() (string, error) {
 		}
 	}()
 	// read the hex string from the file
-	data := make([]byte, 32)
+	data := make([]byte, consts.TellerDeviceIDLen)
 	readBytes, err := file.Read(data)
 	if err != nil {
 		return "", errors.Wrap(err, "could not read from file")
 	}
-	if readBytes != 32 {
+	if readBytes != consts.TellerDeviceIDLen {
 		return "", errors.New("length of strings doesn't match, quitting")
 	}
 	return string(data), nil
