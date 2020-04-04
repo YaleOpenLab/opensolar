@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
 	"strings"
 
@@ -204,10 +205,20 @@ func projectPayback(assetName string, amountx float64) error {
 
 // SetDeviceId sets the device id of the teller
 func setDeviceId(username string, deviceId string) error {
-	data, err := httpsGet(rpc.RecpRPC[5], "&deviceid="+deviceId)
+
+	postdata := url.Values{}
+	log.Println(LocalRecipient.U.Username)
+	log.Println(Token)
+	postdata.Set("username", LocalRecipient.U.Username)
+	postdata.Set("token", Token)
+	log.Println("deviceid", deviceId)
+	postdata.Set("deviceId", deviceId)
+
+	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[5][0], postdata)
 	if err != nil {
 		return err
 	}
+
 	var x erpc.StatusResponse
 	err = json.Unmarshal(data, &x)
 	if err != nil {
