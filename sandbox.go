@@ -105,7 +105,7 @@ func sandbox() error {
 		log.Println("tx for platform trusting stablecoin:", txhash)
 	}()
 
-	inv, err := core.NewInvestor("dci"+run, password, seedpwd, "varunramganesh@gmail.com")
+	inv, err := core.NewInvestor("mitdci"+run, password, seedpwd, "dci@media.mit.edu")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -118,13 +118,13 @@ func sandbox() error {
 		return err
 	}
 
-	recp, err := core.NewRecipient("aibonito"+run, password, seedpwd, "varunramganesh@gmail.com")
+	recp, err := core.NewRecipient("fabideas"+run, password, seedpwd, "martin.wainstein@yale.edu")
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	guar, err := core.NewGuarantor("guar"+run, password, seedpwd, "varunramganesh@gmail.com")
+	guar, err := core.NewGuarantor("guarantor"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -199,6 +199,8 @@ func sandbox() error {
 	if xlm.GetAssetBalance(inv.U.StellarWallet.PublicKey, consts.StablecoinCode) < 1 {
 		return errors.New("stablecoin not present with the investor")
 	}
+
+	go stablecoin.GetTestStablecoin(recp.U.Username, recp.U.StellarWallet.PublicKey, seedpwd, exchangeRate)
 
 	err = core.Invest(project.Index, inv.U.Index, invAmount, invSeed)
 	if err != nil {
