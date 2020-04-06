@@ -2,9 +2,12 @@ package main
 
 import (
 	"log"
+	"os"
+	"time"
 
 	"github.com/pkg/errors"
 
+	erpc "github.com/Varunram/essentials/rpc"
 	wallet "github.com/Varunram/essentials/xlm/wallet"
 )
 
@@ -12,6 +15,7 @@ import (
 func StartTeller() error {
 	var err error
 
+	client = erpc.SetupLocalHttpsClient(os.Getenv("HOME")+"/go/src/github.com/YaleOpenLab/opensolar/server.crt", 60*time.Second)
 	err = login(loginUsername, loginPwhash)
 	if err != nil {
 		return errors.Wrap(err, "Error while logging on to the platform")
