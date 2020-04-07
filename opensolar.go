@@ -162,6 +162,7 @@ func main() {
 		}
 	} else {
 		log.Println("initializing testnet")
+
 		err = loader.Testnet()
 		if err != nil {
 			log.Fatal(err)

@@ -1,6 +1,9 @@
 package rpc
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -10,6 +13,7 @@ import (
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/YaleOpenLab/opensolar/oracle"
 
+	tickers "github.com/Varunram/essentials/exchangetickers"
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -732,8 +736,64 @@ func recpDashboard() {
 			ret.YourProfile.Name = prepRecipient.U.Name
 		}
 		ret.YourProfile.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
-		ret.YourEnergy.TiCP = "845 kWh"
-		ret.YourEnergy.AllTime = "10,150 MWh"
+
+		data, err := erpc.GetRequest("https://api.openx.solar/user/tellerfile")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		type energyStruct struct {
+			EnergyTimestamp string `json:"energy_timestamp"`
+			Unit            string `json:"unit"`
+			Value           uint32 `json:"value"`
+			OwnerId         string `json:"owner_id"`
+			AssetId         string `json:"asset_id"`
+		}
+
+		var EnergyValue uint32
+		EnergyValue = 0
+		log.Println(string(data))
+
+		reader := bufio.NewReader(bytes.NewReader(data))
+
+		for {
+			var data1 []byte
+
+			for i := 0; i < 7; i++ { // formatted according to the responses received from the lumen unit
+				// which is further read by mosquitto_sub
+				line, _, err := reader.ReadLine()
+				if err != nil {
+					break
+				}
+				data1 = append(data1, line...)
+			}
+
+			var x energyStruct
+			err = json.Unmarshal(data1, &x)
+			if err != nil {
+				break
+			}
+
+			EnergyValue += x.Value
+		}
+
+		ret.YourEnergy.AllTime, err = utils.ToString(EnergyValue)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		prepRecipient.TellerEnergy = EnergyValue
+		err = prepRecipient.Save()
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		ret.YourEnergy.TiCP = ret.YourEnergy.AllTime
+
 		ret.YourWallet.AutoReload = "On"
 		ret.NActions.Notification = "None"
 		ret.NActions.ActionsRequired = "None"
@@ -773,43 +833,74 @@ func recpDashboard() {
 			x.PSA.Stage = "Project is in Stage: " + sStage
 			x.PSA.Actions = []string{"Contractor Actions", "No pending action"}
 			x.ProjectWallets.Certificates = make([][]string, 2)
-			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
-			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
+			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates", "0"}
 
-			pp, err := utils.ToString(float64(prepRecipient.TellerEnergy) * oracle.MonthlyBill())
+			pp, err := utils.ToString(float64(EnergyValue) * oracle.MonthlyBill() / 1000) // /1000 is for kWh
 			if err != nil {
 				log.Println(err)
 				erpc.MarshalSend(w, erpc.StatusInternalServerError)
 				return
 			}
 
-			var dlp string
+			var temp int64
 			if project.DateLastPaid == 0 {
-				i, err := strconv.ParseInt(project.DateFunded, 10, 64)
+				layout := "Monday, 02-Jan-06 15:04:05 MST"
+				t, err := time.Parse(layout, project.DateFunded)
 				if err != nil {
 					log.Println(err)
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
-				dlp = time.Unix(i, 0).String()
+				temp = t.Unix()
 			} else {
-				dlp, err := utils.ToString(project.DateLastPaid + 2419200) // consts.FourWeeksInSecond
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-
-				i, err := strconv.ParseInt(dlp, 10, 64)
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-				dlp = time.Unix(i, 0).String()
+				temp = project.DateLastPaid
 			}
 
-			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp}
+			dlp, err := utils.ToString(temp + 2419200) // consts.FourWeeksInSecond
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			dlpI, err := strconv.ParseInt(dlp, 10, 64)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			dlp = time.Unix(dlpI, 0).String()[0:10]
+
+			xlmUSD, err := tickers.BinanceTicker()
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
+			}
+
+			primNativeBalance := xlm.GetNativeBalance(prepRecipient.U.StellarWallet.PublicKey) * xlmUSD
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+
+			secNativeBalance := xlm.GetNativeBalance(prepRecipient.U.SecondaryWallet.PublicKey) * xlmUSD
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+
+			primUsdBalance := xlm.GetAssetBalance(prepRecipient.U.StellarWallet.PublicKey, consts.StablecoinCode)
+			if primUsdBalance < 0 {
+				primUsdBalance = 0
+			}
+
+			accBal, err := utils.ToString(primUsdBalance + primNativeBalance)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp, "Your Account Balance", accBal, "Energy Tariff", "20 ct/kWh"}
 			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
 			x.Documents = project.Content.Details["Documents"]
