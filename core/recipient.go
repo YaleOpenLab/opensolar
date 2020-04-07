@@ -47,6 +47,9 @@ type Recipient struct {
 	// PastTellerEnergy contains a list of the energy values accumulated by the project
 	PastTellerEnergy []uint32
 
+	// NextPaymentInterval stores the date of the next payment interval
+	NextPaymentInterval string
+
 	// Autoreload is a bool to denote whether the recipient wants to reload balance from their secondary account
 	Autoreload bool
 }

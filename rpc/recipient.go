@@ -4,8 +4,11 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/YaleOpenLab/opensolar/messages"
+	"github.com/YaleOpenLab/opensolar/oracle"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -773,7 +776,40 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 
-			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", "$203 due on April 30"}
+			pp, err := utils.ToString(float64(prepRecipient.TellerEnergy) * oracle.MonthlyBill())
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			var dlp string
+			if project.DateLastPaid == 0 {
+				i, err := strconv.ParseInt(project.DateFunded, 10, 64)
+				if err != nil {
+					log.Println(err)
+					erpc.MarshalSend(w, erpc.StatusInternalServerError)
+					return
+				}
+				dlp = time.Unix(i, 0).String()
+			} else {
+				dlp, err := utils.ToString(project.DateLastPaid + 2419200) // consts.FourWeeksInSecond
+				if err != nil {
+					log.Println(err)
+					erpc.MarshalSend(w, erpc.StatusInternalServerError)
+					return
+				}
+
+				i, err := strconv.ParseInt(dlp, 10, 64)
+				if err != nil {
+					log.Println(err)
+					erpc.MarshalSend(w, erpc.StatusInternalServerError)
+					return
+				}
+				dlp = time.Unix(i, 0).String()
+			}
+
+			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp}
 			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
 			x.Documents = project.Content.Details["Documents"]
