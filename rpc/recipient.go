@@ -1,6 +1,9 @@
 package rpc
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -733,8 +736,55 @@ func recpDashboard() {
 			ret.YourProfile.Name = prepRecipient.U.Name
 		}
 		ret.YourProfile.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
-		ret.YourEnergy.TiCP = "845 kWh"
-		ret.YourEnergy.AllTime = "10,150 MWh"
+
+		data, err := erpc.GetRequest("https://api.openx.solar/user/tellerfile")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		type energyStruct struct {
+			EnergyTimestamp string `json:"energy_timestamp"`
+			Unit            string `json:"unit"`
+			Value           uint32 `json:"value"`
+			OwnerId         string `json:"owner_id"`
+			AssetId         string `json:"asset_id"`
+		}
+
+		var EnergyValue uint32
+		log.Println(string(data))
+
+		reader := bufio.NewReader(bytes.NewReader(data))
+
+		for {
+			var data1 []byte
+
+			for i := 0; i < 7; i++ { // formatted according to the responses received from the lumen unit
+				// which is further read by mosquitto_sub
+				line, _, err := reader.ReadLine()
+				if err != nil {
+					break
+				}
+				data1 = append(data1, line...)
+			}
+
+			var x energyStruct
+			err = json.Unmarshal(data1, &x)
+			if err != nil {
+				break
+			}
+
+			EnergyValue += x.Value
+		}
+
+		ret.YourEnergy.AllTime, err = utils.ToString(EnergyValue)
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		ret.YourEnergy.TiCP = ret.YourEnergy.AllTime
+
 		ret.YourWallet.AutoReload = "On"
 		ret.NActions.Notification = "None"
 		ret.NActions.ActionsRequired = "None"
