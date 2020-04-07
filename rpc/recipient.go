@@ -751,6 +751,7 @@ func recpDashboard() {
 		}
 
 		var EnergyValue uint32
+		EnergyValue = 0
 		log.Println(string(data))
 
 		reader := bufio.NewReader(bytes.NewReader(data))
@@ -870,7 +871,7 @@ func recpDashboard() {
 				return
 			}
 
-			dlp = time.Unix(dlpI, 0).String()[0:19]
+			dlp = time.Unix(dlpI, 0).String()[0:10]
 
 			xlmUSD, err := tickers.BinanceTicker()
 			if err != nil {
