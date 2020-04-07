@@ -900,7 +900,7 @@ func recpDashboard() {
 				return
 			}
 
-			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp, "Your Account Balance", accBal, "Energy Tariff", "0.20 ct/kWh"}
+			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp, "Your Account Balance", accBal, "Energy Tariff", "20 ct/kWh"}
 			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
 			x.Documents = project.Content.Details["Documents"]
