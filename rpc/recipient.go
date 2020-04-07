@@ -833,8 +833,7 @@ func recpDashboard() {
 			x.PSA.Stage = "Project is in Stage: " + sStage
 			x.PSA.Actions = []string{"Contractor Actions", "No pending action"}
 			x.ProjectWallets.Certificates = make([][]string, 2)
-			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
-			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
+			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates", "0"}
 
 			pp, err := utils.ToString(float64(EnergyValue) * oracle.MonthlyBill() / 1000) // /1000 is for kWh
 			if err != nil {
