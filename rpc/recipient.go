@@ -772,6 +772,7 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates = make([][]string, 2)
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
+
 			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", "$203 due on April 30"}
 			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
@@ -897,6 +898,7 @@ func storeTellerEnergy() {
 		}
 
 		recipient.TellerEnergy = uint32(energyInt)
+		recipient.PastTellerEnergy = append(recipient.PastTellerEnergy, uint32(energyInt))
 
 		err = recipient.Save()
 		if err != nil {

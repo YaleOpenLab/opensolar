@@ -193,5 +193,7 @@ func main() {
 	  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
 		`)
 	fmt.Println(`Starting Opensolar`)
+
+	go core.MonitorPaybacks(330, 1) // montior test project payback
 	rpc.StartServer(port, insecure)
 }

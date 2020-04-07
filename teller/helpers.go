@@ -403,7 +403,7 @@ func updateEnergyData() error {
 				if err != nil {
 					return err
 				}
-				file, err := os.Create("data.txt")
+				file, err := os.Create("data.txt") // create a new file to reset TellerEnergy
 				if err != nil {
 					return err
 				}

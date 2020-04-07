@@ -530,7 +530,7 @@ func (project *Project) updateProjectAfterAcceptance() error {
 		return errors.Wrap(err, "couldn't save project")
 	}
 
-	go monitorPaybacks(project.RecipientIndex, project.Index)
+	go MonitorPaybacks(project.RecipientIndex, project.Index)
 	return nil
 }
 
@@ -637,10 +637,10 @@ func (project Project) CalculatePayback(amount float64) float64 {
 	return amountPB
 }
 
-// monitorPaybacks monitors whether the user is paying back regularly towards a project. This
+// MonitorPaybacks monitors whether the user is paying back regularly towards a project. This
 // thread has to be isolated since if this fails, we stop tracking paybacks by the recipient. Also
 // sends notifications to entities involved in the project about recipient payback status.
-func monitorPaybacks(recpIndex int, projIndex int) {
+func MonitorPaybacks(recpIndex int, projIndex int) {
 	for {
 		project, err := RetrieveProject(projIndex)
 		if err != nil {

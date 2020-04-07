@@ -44,6 +44,9 @@ type Recipient struct {
 	// TellerEnergy contains the net energy consumed during a given period
 	TellerEnergy uint32
 
+	// PastTellerEnergy contains a list of the energy values accumulated by the project
+	PastTellerEnergy []uint32
+
 	// Autoreload is a bool to denote whether the recipient wants to reload balance from their secondary account
 	Autoreload bool
 }
