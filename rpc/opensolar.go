@@ -319,7 +319,15 @@ func explore() {
 		var arr []ExplorePageStub
 		for _, project := range allProjects {
 			var x ExplorePageStub
-			x.StageDescription = project.Content.Details["Explore Tab"]["stage description"]
+
+			stageString, err := utils.ToString(project.Stage)
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			x.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
 			x.Stage = project.Stage
 			x.Name = project.Content.Details["Explore Tab"]["name"]
 			x.Location = project.Content.Details["Explore Tab"]["location"]
