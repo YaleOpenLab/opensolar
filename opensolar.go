@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	"github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
@@ -165,18 +164,6 @@ func main() {
 		log.Println("initializing testnet")
 
 		err = loader.Testnet()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		project, err := core.RetrieveProject(1)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		project.DateFunded = utils.Timestamp()
-
-		err = project.Save()
 		if err != nil {
 			log.Fatal(err)
 		}

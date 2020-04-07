@@ -783,6 +783,14 @@ func recpDashboard() {
 			return
 		}
 
+		prepRecipient.TellerEnergy = EnergyValue
+		err = prepRecipient.Save()
+		if err != nil {
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
+		}
+
 		ret.YourEnergy.TiCP = ret.YourEnergy.AllTime
 
 		ret.YourWallet.AutoReload = "On"
@@ -827,7 +835,7 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 			x.ProjectWallets.Certificates[1] = []string{"Carbon & Climate Certificates (****BBDJL)", "0"}
 
-			pp, err := utils.ToString(float64(prepRecipient.TellerEnergy) * oracle.MonthlyBill())
+			pp, err := utils.ToString(float64(EnergyValue) * oracle.MonthlyBill() / 1000) // /1000 is for kWh
 			if err != nil {
 				log.Println(err)
 				erpc.MarshalSend(w, erpc.StatusInternalServerError)
