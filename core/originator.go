@@ -2,8 +2,6 @@ package core
 
 import (
 	"github.com/pkg/errors"
-
-	utils "github.com/Varunram/essentials/utils"
 )
 
 // Originate creates and saves a new origin contract
@@ -22,7 +20,7 @@ func (contractor *Entity) Originate(panelSize string, totalValue float64, locati
 	pc.State = location
 	pc.EstimatedAcquisition = years
 	pc.Metadata = metadata
-	pc.DateInitiated = utils.Timestamp()
+	// pc.DateInitiated = utils.Timestamp()
 	iRecipient, err := RetrieveRecipient(recIndex)
 	if err != nil {
 		return pc, errors.Wrap(err, "couldn't retrieve recipient from db")

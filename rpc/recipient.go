@@ -10,6 +10,7 @@ import (
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/YaleOpenLab/opensolar/oracle"
 
+	tickers "github.com/Varunram/essentials/exchangetickers"
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	xlm "github.com/Varunram/essentials/xlm"
@@ -783,33 +784,65 @@ func recpDashboard() {
 				return
 			}
 
-			var dlp string
+			var temp int64
 			if project.DateLastPaid == 0 {
-				i, err := strconv.ParseInt(project.DateFunded, 10, 64)
+				layout := "Monday, 02-Jan-06 15:04:05 MST"
+				t, err := time.Parse(layout, project.DateFunded)
 				if err != nil {
 					log.Println(err)
 					erpc.MarshalSend(w, erpc.StatusInternalServerError)
 					return
 				}
-				dlp = time.Unix(i, 0).String()
+				temp = t.Unix()
 			} else {
-				dlp, err := utils.ToString(project.DateLastPaid + 2419200) // consts.FourWeeksInSecond
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-
-				i, err := strconv.ParseInt(dlp, 10, 64)
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-				dlp = time.Unix(i, 0).String()
+				temp = project.DateLastPaid
 			}
 
-			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp}
+			dlp, err := utils.ToString(temp + 2419200) // consts.FourWeeksInSecond
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			dlpI, err := strconv.ParseInt(dlp, 10, 64)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			dlp = time.Unix(dlpI, 0).String()[0:19]
+
+			xlmUSD, err := tickers.BinanceTicker()
+			if err != nil {
+				log.Println(err)
+				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
+			}
+
+			primNativeBalance := xlm.GetNativeBalance(prepRecipient.U.StellarWallet.PublicKey) * xlmUSD
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+
+			secNativeBalance := xlm.GetNativeBalance(prepRecipient.U.SecondaryWallet.PublicKey) * xlmUSD
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+
+			primUsdBalance := xlm.GetAssetBalance(prepRecipient.U.StellarWallet.PublicKey, consts.StablecoinCode)
+			if primUsdBalance < 0 {
+				primUsdBalance = 0
+			}
+
+			accBal, err := utils.ToString(primUsdBalance + primNativeBalance)
+			if err != nil {
+				log.Println(err)
+				erpc.MarshalSend(w, erpc.StatusInternalServerError)
+				return
+			}
+
+			x.BillsRewards.PendingPayments = []string{"Your Pending Payment", pp + " due on " + dlp, "Your Account Balance", accBal}
 			x.BillsRewards.Link = "https://testnet.steexp.com/account/" + prepRecipient.U.StellarWallet.PublicKey + "#transactions"
 			x.Documents = make(map[string]interface{})
 			x.Documents = project.Content.Details["Documents"]

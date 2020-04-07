@@ -164,6 +164,11 @@ func main() {
 	} else {
 		log.Println("initializing testnet")
 
+		err = loader.Testnet()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		project, err := core.RetrieveProject(1)
 		if err != nil {
 			log.Fatal(err)
@@ -172,11 +177,6 @@ func main() {
 		project.DateFunded = utils.Timestamp()
 
 		err = project.Save()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = loader.Testnet()
 		if err != nil {
 			log.Fatal(err)
 		}
