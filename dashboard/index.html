@@ -6,19 +6,28 @@
     </head>
 	<body>
         <div>
-            <h3><a href={{.OpenxStatus.Link}} target=_blank>{{.OpenxStatus.Text}}</a></h3>
-        </div>
-		<div>
-            <h3><a href={{.OpensStatus.Link}} target=_blank>{{.OpensStatus.Text}}</a></h3>
-        </div>
-        <div>
-            <h3><a href={{.Validate.Link}} target=_blank>{{.Validate.Text}}</a></h3>
+            <h2>Platforms Status</h2>
+            <h4><a href={{.OpenxStatus.Link}} target=_blank>{{.OpenxStatus.Text}}</a></h4>
+            <h4><a href={{.OpensStatus.Link}} target=_blank>{{.OpensStatus.Text}}</a></h4>
         </div>
         <div>
-            <h3><a href={{.Validate.Link}} target=_blank>{{.TellerEnergy.Text}}</a></h3>
+            <h2>Recipient Status</h2>
+            <h4><a href={{.Validate.Link}} target=_blank>{{.Validate.Text}}</a></h4>
+            <h4>{{.DateLastPaid.Text}}</h4>
+            <h4>{{.NextInterval.Text}}</h4>
+            <h4>Primary Wallet Balance(USD): {{.AccountBalance1.Text}}</h4>
+            <h4>Secondary Wallet Balance(USD): {{.AccountBalance2.Text}}</h4>
         </div>
         <div>
-            <h3><a href={{.Validate.Link}} target=_blank>{{.DateLastStart.Text}}</a></h3>
+            <h2><a href={{.Validate.Link}} target=_blank>Teller Info</a></h2>
+            <h4>{{.TellerEnergy.Text}}</h4>
+            <h4>{{.DateLastStart.Text}}</h4>
+            <h4>{{.DeviceID.Text}}</h4>
+        </div>
+        <div>
+            <h2>Blockchain Status</h2>
+            <h4><a href={{.DABalance.Link}} target="_blank">Debt Asset Balance: </a>{{.DABalance.Text}}</h4>
+            <h4><a href={{.DABalance.Link}} target="_blank">Payback Asset Balance: </a>{{.PBBalance.Text}}</h4>
         </div>
         <ul>
             {{range .Fruit}}
