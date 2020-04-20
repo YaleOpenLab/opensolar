@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -46,7 +47,11 @@ func frontend() {
 		w.Header().Add("Content Type", "text/html")
 		// The template name "template" does not matter here
 		templates := template.New("template")
-		// "doc" is the constant that holds the HTML content
+		doc, err := renderHTML()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		templates.New("doc").Parse(doc)
 
 		ping := "Platform is Down"
@@ -67,24 +72,10 @@ func frontend() {
 	})
 }
 
-const doc = `
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>{{.Title}}</title>
-		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    </head>
-	<body>
-		<div>
-			<h3><a href={{.PlatformStatusLink}} target=_blank>{{.PlatformStatus}}</a></h3>
-        <ul>
-            {{range .Fruit}}
-                <li>{{.}}</li>
-            {{end}}
-        </ul>
-    </body>
-</html>
-`
+func renderHTML() (string, error) {
+	doc, err := ioutil.ReadFile("index.html")
+	return string(doc), err
+}
 
 func StartServer(portx int, insecure bool) {
 	frontend()

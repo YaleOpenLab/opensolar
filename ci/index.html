@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{.Title}}</title>
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+	<body>
+		<div>
+			<h3><a href={{.PlatformStatusLink}} target=_blank>{{.PlatformStatus}}</a></h3>
+        <ul>
+            {{range .Fruit}}
+                <li>{{.}}</li>
+            {{end}}
+        </ul>
+    </body>
+</html>
