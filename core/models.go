@@ -306,6 +306,12 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	ownershipAmt := amount - monthlyBill
 	ownershipPct := ownershipAmt / totalValue
 
+	recipient.NextPaymentInterval = utils.IntToHumanTime(utils.Unix() + 2419200)
+	err = recipient.Save()
+	if err != nil {
+		log.Println(err)
+	}
+
 	return ownershipPct, nil
 }
 
