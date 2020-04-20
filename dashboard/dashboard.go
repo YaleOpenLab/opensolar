@@ -22,15 +22,18 @@ type LinkFormat struct {
 }
 
 type Content struct {
-	Title       string
-	Name        string
-	OpensStatus LinkFormat
-	OpenxStatus LinkFormat
-	Validate    LinkFormat
-	Fruit       [3]string
+	Title         string
+	Name          string
+	OpensStatus   LinkFormat
+	OpenxStatus   LinkFormat
+	Validate      LinkFormat
+	TellerEnergy  LinkFormat
+	DateLastStart LinkFormat
+	Fruit         [3]string
 }
 
 var platformURL = "https://api2.openx.solar"
+var Recipient core.Recipient
 
 func opensPing() bool {
 	data, err := erpc.GetRequest(platformURL + "/ping")
@@ -102,15 +105,14 @@ func validateRecp(username, token string) (string, error) {
 		return "", err
 	}
 
-	var x core.Recipient
-	err = json.Unmarshal(data, &x)
+	err = json.Unmarshal(data, &Recipient)
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	if x.U != nil {
-		if x.U.Index != 0 {
+	if Recipient.U != nil {
+		if Recipient.U.Index != 0 {
 			return "Validated Recipient", nil
 		}
 	}
@@ -132,7 +134,7 @@ func frontend() {
 
 		var x Content
 
-		x.Title = "My fruits"
+		x.Title = "Opensolar status dashboard"
 		x.Fruit = [3]string{"Apple", "Lemon", "Orange"}
 		x.Name = "John"
 
@@ -162,6 +164,16 @@ func frontend() {
 
 		x.Validate.Text = val
 		x.Validate.Link = platformURL + "/recipient/validate?username=" + username + "&token=" + token
+
+		x.TellerEnergy.Text, err = utils.ToString(Recipient.TellerEnergy)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.TellerEnergy.Text = "Energy generated till date: " + x.TellerEnergy.Text + " Wh"
+
+		x.DateLastStart.Text = utils.StringToHumanTime(Recipient.DeviceStarts[len(Recipient.DeviceStarts)-1])
+		x.DateLastStart.Text = "Teller Last Start Time: " + x.DateLastStart.Text
 
 		templates.Lookup("doc").Execute(w, x)
 	})

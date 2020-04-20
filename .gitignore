@@ -10,4 +10,4 @@ config.yaml
 legal/legal
 teller/mqtt/mqtt
 teller/data.txt
-ci/ci
+dashboard/dashboard
