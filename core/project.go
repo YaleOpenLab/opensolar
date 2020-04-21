@@ -141,7 +141,7 @@ type Project struct {
 	// Reports is the total number of reports against this particular project
 	Reports int
 
-	// TellerUrl isthe url of the teller
+	// TellerUrl is the url of the teller
 	TellerUrl string
 
 	// BrokerUrl isthe url of the MQTT broker

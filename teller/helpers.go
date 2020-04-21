@@ -80,13 +80,22 @@ func splitAndSend2Tx(memo string) (string, string, error) {
 	secondHalf := memo[28:]
 	tx1, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, firstHalf)
 	if err != nil {
-		return "", "", err
+		tx1, err = sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, firstHalf)
+		if err != nil {
+			return "", "", err
+		}
 	}
+
 	time.Sleep(5 * time.Second)
+
 	tx2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, secondHalf)
 	if err != nil {
-		return "", "", err
+		tx2, err = sendXLM(LocalRecipient.U.StellarWallet.PublicKey, 1, secondHalf)
+		if err != nil {
+			return "", "", err
+		}
 	}
+
 	log.Printf("tx hash: %s, tx2 hash: %s", tx1, tx2)
 	return tx1, tx2, nil
 }
@@ -95,8 +104,7 @@ func checkPayback() {
 	for {
 		colorOutput(CyanColor, "Payback interval reached. Paying back automatically")
 		assetName := LocalProject.DebtAssetCode
-		amount := oracle.MonthlyBill() // TODO: consumption data must be accumulated from zigbee in the future
-
+		amount := float64(EnergyValue)*oracle.MonthlyBill()/1000000 + 1
 		refreshLogin(loginUsername, loginPwhash)
 		err := projectPayback(assetName, amount)
 		if err != nil {
@@ -235,8 +243,6 @@ func commitDataShutdown() {
 		return
 	}
 }
-
-const tellerUrl = "https://localhost"
 
 type statusResponse struct {
 	Code   int
