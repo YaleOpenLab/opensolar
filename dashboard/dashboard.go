@@ -208,7 +208,11 @@ func frontend() {
 		if Recipient.NextPaymentInterval == 0 {
 			x.NextInterval.Text = "Next Payment Interval: First Payment not yet made"
 		} else {
-			x.NextInterval.Text = "Next Payment Interval: " + Recipient.NextPaymentInterval
+			npiS, err := utils.ToString(Recipient.NextPaymentInterval)
+			if err != nil {
+				log.Fatal(err)
+			}
+			x.NextInterval.Text = "Next Payment Interval: " + npiS
 		}
 
 		x.TellerEnergy.Text, err = utils.ToString(Recipient.TellerEnergy)
