@@ -39,6 +39,7 @@ type Content struct {
 	PBBalance       LinkFormat
 	AccountBalance1 LinkFormat
 	AccountBalance2 LinkFormat
+	EscrowBalance   LinkFormat
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -219,7 +220,7 @@ func frontend() {
 		x.DateLastStart.Text = utils.StringToHumanTime(Recipient.DeviceStarts[len(Recipient.DeviceStarts)-1])
 		x.DateLastStart.Text = "Last Boot Time: " + x.DateLastStart.Text
 
-		x.DeviceID.Text = "Device ID: " + Recipient.DeviceId
+		x.DeviceID.Text = Recipient.DeviceId
 
 		x.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
 		if err != nil {
@@ -288,6 +289,19 @@ func frontend() {
 		x.AccountBalance1.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 		x.AccountBalance2.Text = "XLM: " + snbS + " STABLEUSD: " + subS
 		x.AccountBalance2.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
+
+		escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
+		if escrowBalance < 0 {
+			escrowBalance = 0
+		}
+
+		escrowBalanceS, err := utils.ToString(escrowBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.EscrowBalance.Text = escrowBalanceS
+		x.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
 
 		templates.Lookup("doc").Execute(w, x)
 	})

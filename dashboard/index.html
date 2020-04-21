@@ -7,11 +7,15 @@
             body {
                 margin: 10px 10px 10px 20px;
             }
+            .center {
+                text-align: center;
+            }
         </style>
     </head>
 	<body>
+        <h1 class="center">Testnet Dashboard - Aibonito</h1>
         <div>
-            <h2>Platforms Status</h2>
+            <h2>Platform Status</h2>
             <h4><a href={{.OpenxStatus.Link}} target=_blank>{{.OpenxStatus.Text}}</a></h4>
             <h4><a href={{.OpensStatus.Link}} target=_blank>{{.OpensStatus.Text}}</a></h4>
         </div>
@@ -25,14 +29,15 @@
         </div>
         <div>
             <h2><a href={{.Validate.Link}} target=_blank>Teller Info</a></h2>
-            <h4>{{.TellerEnergy.Text}}</h4>
+            <h4>Device ID: {{.DeviceID.Text}}</h4>
             <h4>{{.DateLastStart.Text}}</h4>
-            <h4>{{.DeviceID.Text}}</h4>
+            <h4>{{.TellerEnergy.Text}}</h4>
         </div>
         <div>
             <h2>Blockchain Status</h2>
             <h4><a href={{.DABalance.Link}} target="_blank">Debt Asset Balance: </a>{{.DABalance.Text}}</h4>
             <h4><a href={{.DABalance.Link}} target="_blank">Payback Asset Balance: </a>{{.PBBalance.Text}}</h4>
+            <h4><a href={{.EscrowBalance.Link}} target="_blank">Escrow Balance (USD): </a>{{.EscrowBalance.Text}}</h4>
         </div>
     </body>
 </html>
