@@ -737,9 +737,11 @@ func recpDashboard() {
 		}
 		ret.YourProfile.ActiveProjects = len(prepRecipient.ReceivedSolarProjectIndices)
 
-		data, err := erpc.GetRequest("https://api.openx.solar/user/tellerfile")
+		data, err := erpc.GetRequest(consts.OpenxURL + "/user/tellerfile")
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			erpc.MarshalSend(w, erpc.StatusInternalServerError)
+			return
 		}
 
 		type energyStruct struct {
@@ -752,7 +754,6 @@ func recpDashboard() {
 
 		var EnergyValue uint32
 		EnergyValue = 0
-		log.Println(string(data))
 
 		reader := bufio.NewReader(bytes.NewReader(data))
 
@@ -778,14 +779,6 @@ func recpDashboard() {
 		}
 
 		ret.YourEnergy.AllTime, err = utils.ToString(EnergyValue)
-		if err != nil {
-			log.Println(err)
-			erpc.MarshalSend(w, erpc.StatusInternalServerError)
-			return
-		}
-
-		prepRecipient.TellerEnergy = EnergyValue
-		err = prepRecipient.Save()
 		if err != nil {
 			log.Println(err)
 			erpc.MarshalSend(w, erpc.StatusInternalServerError)
@@ -835,7 +828,7 @@ func recpDashboard() {
 			x.ProjectWallets.Certificates = make([][]string, 2)
 			x.ProjectWallets.Certificates[0] = []string{"Carbon & Climate Certificates", "0"}
 
-			pp, err := utils.ToString(float64(EnergyValue) * oracle.MonthlyBill() / 1000) // /1000 is for kWh
+			pp, err := utils.ToString(float64(EnergyValue) * oracle.MonthlyBill() / 1000000) // /1000 is for kWh
 			if err != nil {
 				log.Println(err)
 				erpc.MarshalSend(w, erpc.StatusInternalServerError)

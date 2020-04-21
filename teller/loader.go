@@ -41,7 +41,6 @@ func StartTeller() error {
 	}
 
 	go refreshLogin(loginUsername, loginPwhash) // update local copy of the recipient every 5 minutes
-	go readEnergyData()
 
 	seed, err := wallet.DecryptSeed(LocalRecipient.U.StellarWallet.EncryptedSeed, LocalSeedPwd)
 	if err != nil {
