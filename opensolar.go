@@ -196,17 +196,17 @@ func main() {
 		`)
 	fmt.Println(`Starting Opensolar`)
 
-	recp, err := core.RetrieveRecipient(330)
+	project, err := core.RetrieveProject(1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	recp.NextPaymentInterval = utils.IntToHumanTime(1586021403 + 2419200)
-	err = recp.Save()
+	project.DateInitiated = utils.IntToHumanTime(1586021403)
+	project.PaybackPeriod = 4
+	err = project.Save()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	go core.MonitorPaybacks(330, 1) // montior test project payback
 	rpc.StartServer(port, insecure)
 }

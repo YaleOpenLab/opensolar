@@ -95,8 +95,11 @@ var OneHour = time.Duration(1 * 60 * 60)
 // PaybackInterval is the default teller payback interval
 var PaybackInterval = time.Duration(1 * 60 * 60 * 24 * 30)
 
-// OneWeekInSecond is one week in seconds
+// OneWeekInSecond is one week in time seconds
 var OneWeekInSecond = time.Duration(604800 * time.Second)
+
+// OneWeek is one week in raw seconds
+var OneWeek = 604800
 
 // TwoWeeksInSecond is two weeks in seconds
 var TwoWeeksInSecond = time.Duration(1209600 * time.Second)

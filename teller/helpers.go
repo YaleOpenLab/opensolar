@@ -31,6 +31,10 @@ func refreshLogin(username string, pwhash string) error {
 		if err != nil {
 			colorOutput(CyanColor, err)
 		}
+		LocalProject, err = getLocalProjectDetails(loginProjIndex)
+		if err != nil {
+			colorOutput(CyanColor, err)
+		}
 	}
 }
 

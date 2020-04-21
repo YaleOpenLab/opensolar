@@ -660,14 +660,16 @@ func MonitorPaybacks(recpIndex int, projIndex int) {
 			// time.Sleep(consts.OneWeekInSecond)
 		}
 
-		period := float64(time.Duration(project.PaybackPeriod) * consts.OneWeekInSecond) // in seconds due to the const
+		period := project.PaybackPeriod.Seconds()
 		if period == 0 {
 			period = 1 // for the test suite
 		}
+
 		timeElapsed := utils.Unix() - project.DateLastPaid // this would be in seconds (unix time)
 		if project.DateLastPaid == 0 {
-			timeElapsed = 0
+			timeElapsed = utils.StringToIntTime(project.DateInitiated)
 		}
+
 		factor := float64(timeElapsed) / period
 		project.AmountOwed += factor * oracle.MonthlyBill() * float64(recipient.TellerEnergy) // add the amount owed only if the time elapsed is more than one payback period
 		// Reputation adjustments based on payback history:
@@ -676,7 +678,7 @@ func MonitorPaybacks(recpIndex int, projIndex int) {
 			log.Println("User: ", recipient.U.Email, "is on track paying towards order: ", projIndex)
 			// maybe even update reputation here on a fractional basis depending on a user's timely payments
 		} else if factor > NormalThreshold && factor < AlertThreshold {
-			// person has not paid back for one-two consecutive period, send gentle reminder
+			// person has not paid back for one-two consecutive cycles, send gentle reminder
 			notif.SendNicePaybackAlertEmail(projIndex, recipient.U.Email)
 			time.Sleep(consts.OneWeekInSecond)
 		} else if factor >= SternAlertThreshold && factor < DisconnectionThreshold {
