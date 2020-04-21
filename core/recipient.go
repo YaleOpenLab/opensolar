@@ -48,7 +48,7 @@ type Recipient struct {
 	PastTellerEnergy []uint32
 
 	// NextPaymentInterval stores the date of the next payment interval
-	NextPaymentInterval int64
+	NextPaymentInterval string
 
 	// Autoreload is a bool to denote whether the recipient wants to reload balance from their secondary account
 	Autoreload bool

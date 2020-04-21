@@ -205,14 +205,10 @@ func frontend() {
 			x.DateLastPaid.Text = "Date Last Paid: " + utils.IntToHumanTime(Project.DateLastPaid)
 		}
 
-		if Recipient.NextPaymentInterval == 0 {
+		if Recipient.NextPaymentInterval == "" {
 			x.NextInterval.Text = "Next Payment Interval: First Payment not yet made"
 		} else {
-			npiS, err := utils.ToString(Recipient.NextPaymentInterval)
-			if err != nil {
-				log.Fatal(err)
-			}
-			x.NextInterval.Text = "Next Payment Interval: " + npiS
+			x.NextInterval.Text = "Next Payment Interval: " + Recipient.NextPaymentInterval
 		}
 
 		x.TellerEnergy.Text, err = utils.ToString(Recipient.TellerEnergy)

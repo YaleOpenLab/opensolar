@@ -97,10 +97,12 @@ func checkPayback() {
 		assetName := LocalProject.DebtAssetCode
 		amount := oracle.MonthlyBill() // TODO: consumption data must be accumulated from zigbee in the future
 
+		refreshLogin(loginUsername, loginPwhash)
 		err := projectPayback(assetName, amount)
 		if err != nil {
 			colorOutput(RedColor, "Error while paying back", err, "trying again")
 			time.Sleep(5 * time.Second)
+			refreshLogin(loginUsername, loginPwhash)
 			err = projectPayback(assetName, amount)
 			if err != nil {
 				sendDevicePaybackFailedEmail()
@@ -119,11 +121,11 @@ func updateState(trigger bool) {
 			time.Sleep(consts.TellerPollInterval)
 		}
 		subcommand := string(data)
-		// TODO: replace this with real data rather than fake data that we have here
+		refreshLogin(loginUsername, loginPwhash)
 		ipfsHash, err := storeDataInIpfs("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
 		if err != nil {
 			colorOutput(RedColor, "Error while fetching ipfs hash", err)
-			time.Sleep(consts.TellerPollInterval)
+			// time.Sleep(consts.TellerPollInterval)
 		}
 
 		ipfsHash = "STATUPD: " + ipfsHash
@@ -139,6 +141,7 @@ func updateState(trigger bool) {
 			colorOutput(RedColor, err)
 		}
 
+		log.Println(hash1)
 		time.Sleep(5 * time.Second)
 
 		hash2, err := sendXLM(LocalRecipient.U.StellarWallet.PublicKey, float64(utils.Unix()), ipfsHash[29:])
@@ -146,11 +149,13 @@ func updateState(trigger bool) {
 			colorOutput(RedColor, err)
 		}
 
+		log.Println(hash2)
 		// we updated state as hash1 and hash2
 		colorOutput(MagentaColor, "Updated State: "+hash1+" "+hash2)
 		if trigger {
 			break // we trigerred this manually, don't want to keep doing this
 		}
+
 		time.Sleep(consts.TellerPollInterval)
 	}
 }
@@ -431,18 +436,26 @@ func readEnergyData() {
 	for {
 		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond / 2)
 		colorOutput(CyanColor, "reading energy data from file")
+		refreshLogin(loginUsername, loginPwhash)
 		err := updateEnergyData()
 		if err != nil {
 			colorOutput(RedColor, "error while reading energy data: ", err)
-			continue
+			err := updateEnergyData()
+			if err != nil {
+				continue
+			}
 		}
 
 		// need to update remote with the energy data
 		colorOutput(CyanColor, "storing energy data on opensolar")
+		refreshLogin(loginUsername, loginPwhash)
 		data, err := putEnergy(EnergyValue)
 		if err != nil {
 			colorOutput(RedColor, err)
-			continue
+			data, err = putEnergy(EnergyValue)
+			if err != nil {
+				continue
+			}
 		}
 		colorOutput(CyanColor, string(data))
 	}
