@@ -214,7 +214,7 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 		return -1, errors.Wrap(err, "Unable to retrieve issuer seed")
 	}
 
-	monthlyBill := oracle.MonthlyBill() * float64(recipient.TellerEnergy)
+	monthlyBill := oracle.MonthlyBill() * float64(recipient.TellerEnergy) / 1000000
 	if err != nil {
 		return -1, errors.Wrap(err, "Unable to fetch oracle price, exiting")
 	}
@@ -306,7 +306,8 @@ func MunibondPayback(issuerPath string, recpIndex int, amount float64, recipient
 	ownershipAmt := amount - monthlyBill
 	ownershipPct := ownershipAmt / totalValue
 
-	recipient.NextPaymentInterval = utils.IntToHumanTime(utils.Unix() + 2419200)
+	recipient.NextPaymentInterval = utils.Unix() + 2419200
+	recipient.TellerEnergy = 0
 	err = recipient.Save()
 	if err != nil {
 		log.Println(err)

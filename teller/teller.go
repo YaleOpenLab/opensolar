@@ -286,10 +286,14 @@ func main() {
 	colorOutput(MagentaColor, "USD BALANCE: ", usdBalance)
 	colorOutput(MagentaColor, "START HASH: ", StartHash)
 
-	// run goroutines in the background to routinely check for payback, state updates and stuff
-	// go checkPayback()
-	// time.Sleep(15 * time.Second) // need delay to prevent horizon from broadcasting 2 simultaneous txs
-	// go updateState(true)
+	go func() {
+		// run goroutines in the background to routinely check for payback, state updates and stuff
+		readEnergyData()
+		time.Sleep(15 * time.Second)
+		checkPayback()
+		time.Sleep(15 * time.Second)
+		updateState(true)
+	}()
 
 	if opts.Daemon {
 		colorOutput(CyanColor, "Running teller in daemon mode")
@@ -332,7 +336,6 @@ func main() {
 	defer rl.Close()
 
 	for {
-		// setup readultier with max 4K input chars
 		msg, err := rl.Readline()
 		if err != nil {
 			err := endHandler() // error, user wants to quit

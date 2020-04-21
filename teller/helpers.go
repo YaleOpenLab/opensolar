@@ -26,7 +26,7 @@ import (
 func refreshLogin(username string, pwhash string) error {
 	var err error
 	for {
-		time.Sleep(consts.TellerPollInterval)
+		time.Sleep(consts.LoginRefreshInterval)
 		err = login(username, pwhash)
 		if err != nil {
 			colorOutput(CyanColor, err)
@@ -429,7 +429,7 @@ func updateEnergyData() error {
 // readEnergyData reads energy data from a local file and stores it in the remote opensolar instance
 func readEnergyData() {
 	for {
-		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond)
+		time.Sleep(LocalProject.PaybackPeriod * consts.OneWeekInSecond / 2)
 		colorOutput(CyanColor, "reading energy data from file")
 		err := updateEnergyData()
 		if err != nil {
