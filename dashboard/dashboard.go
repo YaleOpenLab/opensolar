@@ -39,7 +39,6 @@ type Content struct {
 	PBBalance       LinkFormat
 	AccountBalance1 LinkFormat
 	AccountBalance2 LinkFormat
-	Fruit           [3]string
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -164,7 +163,6 @@ func frontend() {
 		var x Content
 
 		x.Title = "Opensolar status dashboard"
-		x.Fruit = [3]string{"Apple", "Lemon", "Orange"}
 		x.Name = "John"
 
 		x.OpensStatus.Text = "Opensolar is Down"
@@ -287,7 +285,10 @@ func frontend() {
 		}
 
 		x.AccountBalance1.Text = "XLM: " + pnbS + " STABLEUSD: " + pubS
+		x.AccountBalance1.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 		x.AccountBalance2.Text = "XLM: " + snbS + " STABLEUSD: " + subS
+		x.AccountBalance2.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
+
 		templates.Lookup("doc").Execute(w, x)
 	})
 }
