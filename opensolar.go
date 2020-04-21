@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -202,7 +203,7 @@ func main() {
 	}
 
 	project.DateInitiated = utils.IntToHumanTime(1586021403)
-	project.PaybackPeriod = 4
+	project.PaybackPeriod = time.Duration(time.Duration(4*consts.OneWeek) * time.Second)
 	err = project.Save()
 	if err != nil {
 		log.Fatal(err)
