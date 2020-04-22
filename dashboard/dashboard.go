@@ -149,6 +149,10 @@ func getProject(index int) error {
 	return json.Unmarshal(data, &Project)
 }
 
+func serveStatic() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+}
+
 func frontend() {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Add("Content Type", "text/html")
@@ -315,6 +319,7 @@ func renderHTML() (string, error) {
 func StartServer(portx int, insecure bool) {
 	xlm.SetConsts(0, false)
 	frontend()
+	serveStatic()
 
 	port, err := utils.ToString(portx)
 	if err != nil {
