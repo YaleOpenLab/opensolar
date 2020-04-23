@@ -15,12 +15,17 @@ import (
 func setupAdminHandlers() {
 	flagProject()
 	getallProjectsAdmin()
+	retrieveRecpAdmin()
+	retrieveInvAdmin()
+	retrieveEntityAdmin()
 }
 
 // AdminRPC is a list of all the endpoints that can be called by admins
 var AdminRPC = map[int][]string{
-	1: []string{"/admin/flag", "GET", "projIndex"}, // GET
-	2: []string{"/admin/getallprojects", "GET"},    // GET
+	1: []string{"/admin/flag", "GET", "projIndex"},     // GET
+	2: []string{"/admin/getallprojects", "GET"},        // GET
+	3: []string{"/admin/getrecipient", "GET", "index"}, // GET
+	4: []string{"/admin/getinvestor", "GET", "index"},  // GET
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool
@@ -85,6 +90,87 @@ func getallProjectsAdmin() {
 
 		var x getProjectsAdmin
 		x.Length = len(projects)
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
+func retrieveRecpAdmin() {
+	http.HandleFunc(AdminRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[3][2:], AdminRPC[3][1])
+		if !adminBool {
+			return
+		}
+
+		indexS := r.URL.Query()["index"][0]
+
+		index, err := utils.ToInt(indexS)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		x, err := core.RetrieveRecipient(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
+func retrieveInvAdmin() {
+	http.HandleFunc(AdminRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[4][2:], AdminRPC[4][1])
+		if !adminBool {
+			return
+		}
+
+		indexS := r.URL.Query()["index"][0]
+
+		index, err := utils.ToInt(indexS)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		x, err := core.RetrieveInvestor(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
+func retrieveEntityAdmin() {
+	http.HandleFunc(AdminRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[5][2:], AdminRPC[5][1])
+		if !adminBool {
+			return
+		}
+
+		indexS := r.URL.Query()["index"][0]
+
+		index, err := utils.ToInt(indexS)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		x, err := core.RetrieveEntity(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
 
 		erpc.MarshalSend(w, x)
 	})

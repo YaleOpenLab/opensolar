@@ -47,6 +47,8 @@ type Content struct {
 	AccountBalance2 LinkFormat
 	EscrowBalance   LinkFormat
 	Recipient       PersonFormat
+	ProjCount       int
+	UserCount       int
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -158,6 +160,10 @@ func getProject(index int) error {
 
 func serveStatic() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+}
+
+type length struct {
+	Length int
 }
 
 func frontend() {
@@ -317,6 +323,34 @@ func frontend() {
 		x.Recipient.Username = Recipient.U.Username
 		x.Recipient.Name = Recipient.U.Name
 		x.Recipient.Email = Recipient.U.Email
+
+		var projCount length
+
+		data, err := erpc.GetRequest("https://api2.openx.solar/admin/getallprojects?username=admin&token=pmkjMEnyeUpdTyhdHElkBExEKeLIlYft")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &projCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.ProjCount = projCount.Length
+
+		var userCount length
+
+		data, err = erpc.GetRequest("https://api2.openx.solar/admin/getallusers?username=admin&token=pmkjMEnyeUpdTyhdHElkBExEKeLIlYft")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.UserCount = userCount.Length
 
 		templates.Lookup("doc").Execute(w, x)
 	})
