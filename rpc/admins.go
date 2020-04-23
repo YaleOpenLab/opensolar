@@ -26,6 +26,7 @@ var AdminRPC = map[int][]string{
 	2: []string{"/admin/getallprojects", "GET"},        // GET
 	3: []string{"/admin/getrecipient", "GET", "index"}, // GET
 	4: []string{"/admin/getinvestor", "GET", "index"},  // GET
+	5: []string{"/admin/getentity", "GET", "index"},    // GET
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool
