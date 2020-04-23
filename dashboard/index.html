@@ -31,7 +31,7 @@
     <aside class="aside">
       <nav>
         <ul>
-          <li><a href="#">
+          <li><a href="https://openx.solar" target=_blank>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                 <path fill="currentColor"
                   d="M570.69 236.28L512 184.45V48a16 16 0 0 0-16-16h-64a16 16 0 0 0-16 16v51.69L314.75 10.31a39.85 39.85 0 0 0-53.45 0l-256 226a16 16 0 0 0-1.21 22.6L25.5 282.7a16 16 0 0 0 22.6 1.21L277.42 81.63a16 16 0 0 1 21.17 0L527.91 283.9a16 16 0 0 0 22.6-1.21l21.4-23.82a16 16 0 0 0-1.22-22.59zM288 115L69.47 307.71c-1.62 1.46-3.69 2.14-5.47 3.35V496a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V368a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v128a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V311.1c-1.7-1.16-3.72-1.82-5.26-3.2z">
@@ -144,9 +144,9 @@
           </tr>
           <tr>
             <td rowspan="1" colspan="1">Investor</td>
-            <td rowspan="1" colspan="1">mitdciHnudo</td>
-            <td rowspan="1" colspan="1">MIT Digital Currency Initiative</td>
-            <td rowspan="1" colspan="1">varunramganesh@gmail.com</td>
+            <td rowspan="1" colspan="1">{{.Investor.Username}}</td>
+            <td rowspan="1" colspan="1">{{.Investor.Name}}</td>
+            <td rowspan="1" colspan="1">{{.Investor.Email}}</td>
             <td rowspan="1" colspan="1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                 <path fill="currentColor"
@@ -180,9 +180,9 @@
           </tr>
           <tr>
             <td rowspan="1" colspan="1">Developer</td>
-            <td rowspan="1" colspan="1">inversolHnudo</td>
-            <td rowspan="1" colspan="1">Inversol Inc.</td>
-            <td rowspan="1" colspan="1">varunramganesh@gmail.com</td>
+            <td rowspan="1" colspan="1">{{.Developer.Username}}</td>
+            <td rowspan="1" colspan="1">{{.Developer.Name}}</td>
+            <td rowspan="1" colspan="1">{{.Developer.Email}}</td>
             <td rowspan="1" colspan="1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                 <path fill="currentColor"
@@ -199,7 +199,7 @@
         </tbody>
       </table>
     </article>
-    <article class="article article--2"><strong class="article__title"><span>Recipient Status</span><span></span></strong>
+    <article class="article article--2"><strong class="article__title"><span><a href="{{.Validate.Link}}">Recipient Status</a></span><span></span></strong>
       <nav class="article__list">
         <ul>
           <li><a class="is-active" href="#">{{.DateLastPaid.Text}}</a></li>
@@ -218,7 +218,7 @@
         </ul>
       </nav>
     </article>
-        <article class="article article--2"><strong class="article__title"><span>Blockchain Status</span><span></span></strong>
+        <article class="article article--2"><strong class="article__title"><span><a href="{{.DABalance.Link}}">Blockchain Status</a></span><span></span></strong>
       <nav class="article__list">
         <ul>
           <li><a class="is-active" href="#">Debt Asset Balance: {{.DABalance.Text}}</a></li>
