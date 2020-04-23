@@ -24,6 +24,12 @@ type LinkFormat struct {
 	Text string
 }
 
+type PersonFormat struct {
+	Name     string
+	Username string
+	Email    string
+}
+
 type Content struct {
 	Title           string
 	Name            string
@@ -40,6 +46,7 @@ type Content struct {
 	AccountBalance1 LinkFormat
 	AccountBalance2 LinkFormat
 	EscrowBalance   LinkFormat
+	Recipient       PersonFormat
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -306,6 +313,10 @@ func frontend() {
 
 		x.EscrowBalance.Text = escrowBalanceS
 		x.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
+
+		x.Recipient.Username = Recipient.U.Username
+		x.Recipient.Name = Recipient.U.Name
+		x.Recipient.Email = Recipient.U.Email
 
 		templates.Lookup("doc").Execute(w, x)
 	})

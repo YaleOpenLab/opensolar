@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	"github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
@@ -197,17 +195,5 @@ func main() {
 		`)
 	fmt.Println(`Starting Opensolar`)
 
-	project, err := core.RetrieveProject(1)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	project.DateInitiated = utils.IntToHumanTime(1586021403)
-	project.PaybackPeriod = time.Duration(time.Duration(4*consts.OneWeek) * time.Second)
-	err = project.Save()
-	if err != nil {
-		log.Fatal(err)
-	}
-	go core.MonitorPaybacks(330, 1) // montior test project payback
 	rpc.StartServer(port, insecure)
 }

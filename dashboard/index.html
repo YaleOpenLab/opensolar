@@ -162,9 +162,9 @@
           </tr>
           <tr>
             <td rowspan="1" colspan="1">Recipient</td>
-            <td rowspan="1" colspan="1">fabideasHnudo</td>
-            <td rowspan="1" colspan="1">FabIDEAS Coop</td>
-            <td rowspan="1" colspan="1">varunramganesh@gmail.com</td>
+            <td rowspan="1" colspan="1">{{.Recipient.Username}}</td>
+            <td rowspan="1" colspan="1">{{.Recipient.Name}}</td>
+            <td rowspan="1" colspan="1">{{.Recipient.Email}}</td>
             <td rowspan="1" colspan="1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                 <path fill="currentColor"
@@ -208,8 +208,6 @@
           <li><a class="is-active" href="#">Secondary Wallet Balance (USD): {{.AccountBalance2.Text}}</a></li>
         </ul>
       </nav>
-      <p class="article__text">Lorem ipsum dolor sit amet, consectetur magna adipiscing elit, sed do eiusmod tempor
-        incididunt ut labore et dolore eiusmod magna aliqua.</p>
     </article>
         <article class="article article--2"><strong class="article__title"><span>Teller Status</span><span></span></strong>
       <nav class="article__list">
@@ -219,8 +217,6 @@
           <li><a class="is-active" href="#">{{.TellerEnergy.Text}}</a></li>
         </ul>
       </nav>
-      <p class="article__text">Lorem ipsum dolor sit amet, consectetur magna adipiscing elit, sed do eiusmod tempor
-        incididunt ut labore et dolore eiusmod magna aliqua.</p>
     </article>
         <article class="article article--2"><strong class="article__title"><span>Blockchain Status</span><span></span></strong>
       <nav class="article__list">
@@ -230,8 +226,10 @@
           <li><a class="is-active" href="#">Escrow Asset Balance: {{.EscrowBalance.Text}}</a></li>
         </ul>
       </nav>
-      <p class="article__text">Lorem ipsum dolor sit amet, consectetur magna adipiscing elit, sed do eiusmod tempor
+      <!--
+        <p class="article__text">Lorem ipsum dolor sit amet, consectetur magna adipiscing elit, sed do eiusmod tempor
         incididunt ut labore et dolore eiusmod magna aliqua.</p>
+      -->
     </article>
 
     <!--

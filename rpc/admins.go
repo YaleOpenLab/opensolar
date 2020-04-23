@@ -5,57 +5,46 @@ import (
 	"net/http"
 
 	"github.com/YaleOpenLab/opensolar/messages"
-	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
 	core "github.com/YaleOpenLab/opensolar/core"
-	openx "github.com/YaleOpenLab/openx/database"
+	"github.com/YaleOpenLab/openx/database"
 )
 
 func setupAdminHandlers() {
 	flagProject()
+	getallProjectsAdmin()
 }
 
 // AdminRPC is a list of all the endpoints that can be called by admins
 var AdminRPC = map[int][]string{
 	1: []string{"/admin/flag", "GET", "projIndex"}, // GET
+	2: []string{"/admin/getallprojects", "GET"},    // GET
 }
 
-// adminValidateHelper is a helper that validates if the caller is an admin, and returns the user struct if so
-func adminValidateHelper(w http.ResponseWriter, r *http.Request) (openx.User, error) {
-	var user openx.User
-
-	username := r.URL.Query()["username"][0]
-	token := r.URL.Query()["token"][0]
-
-	user, err := core.ValidateUser(username, token)
+// validateAdmin validates whether a given user is an admin and returns a bool
+func validateAdmin(w http.ResponseWriter, r *http.Request, options []string, method string) (database.User, bool) {
+	prepUser, err := userValidateHelper(w, r, options, method)
 	if err != nil {
 		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.NotAdminError)
-		return user, err
+		return prepUser, false
 	}
 
-	if !user.Admin {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotAdminError)
-		return user, errors.New("unauthorized")
+	if !prepUser.Admin {
+		erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		return prepUser, false
 	}
 
-	return user, nil
+	return prepUser, true
 }
 
 // flagProject flags a project. Flagging a project stops automated signing by the platform.
 func flagProject() {
 	http.HandleFunc(AdminRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
-		err := checkReqdParams(w, r, AdminRPC[1][2:], AdminRPC[1][1])
-		if err != nil {
+		user, admin := validateAdmin(w, r, AdminRPC[1][2:], AdminRPC[1][1])
+		if !admin {
 			return
-		}
-
-		user, err := adminValidateHelper(w, r)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotAdminError)
 		}
 
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
@@ -73,5 +62,30 @@ func flagProject() {
 		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+type getProjectsAdmin struct {
+	Length int
+}
+
+func getallProjectsAdmin() {
+	http.HandleFunc(AdminRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[2][2:], AdminRPC[2][1])
+		if !adminBool {
+			return
+		}
+
+		projects, err := core.RetrieveAllProjects()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		var x getProjectsAdmin
+		x.Length = len(projects)
+
+		erpc.MarshalSend(w, x)
 	})
 }

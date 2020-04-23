@@ -9,6 +9,10 @@ body {
   letter-spacing: 0.04rem;
   color: rgba(255,255,255,0.7);
 }
+a {
+  color: inherit;
+}
+
 .main {
   min-height: 100vh;
   position: relative;
