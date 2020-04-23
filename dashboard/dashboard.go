@@ -47,6 +47,8 @@ type Content struct {
 	AccountBalance2 LinkFormat
 	EscrowBalance   LinkFormat
 	Recipient       PersonFormat
+	Investor        PersonFormat
+	Developer       PersonFormat
 	ProjCount       int
 	UserCount       int
 }
@@ -351,6 +353,62 @@ func frontend() {
 		}
 
 		x.UserCount = userCount.Length
+
+		projIndex, err := utils.ToString(Recipient.ReceivedSolarProjectIndices[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err = erpc.GetRequest("https://api2.openx.solar/project/get?index=" + projIndex)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var project core.Project
+		err = json.Unmarshal(data, &project)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		invIndex, err := utils.ToString(project.InvestorIndices[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err = erpc.GetRequest("https://api2.openx.solar/admin/getinvestor?username=admin&token=pmkjMEnyeUpdTyhdHElkBExEKeLIlYft&index=" + invIndex)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var investor core.Investor
+		err = json.Unmarshal(data, &investor)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.Investor.Name = investor.U.Name
+		x.Investor.Username = investor.U.Username
+		x.Investor.Email = investor.U.Email
+
+		devIndex, err := utils.ToString(project.DeveloperIndices[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err = erpc.GetRequest("https://api2.openx.solar/admin/getentity?username=admin&token=pmkjMEnyeUpdTyhdHElkBExEKeLIlYft&index=" + devIndex)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var developer core.Entity
+		err = json.Unmarshal(data, &developer)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		x.Developer.Name = developer.U.Name
+		x.Developer.Username = developer.U.Username
+		x.Developer.Email = developer.U.Email
 
 		templates.Lookup("doc").Execute(w, x)
 	})
