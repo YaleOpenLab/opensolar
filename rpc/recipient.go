@@ -530,8 +530,7 @@ func calculateTrustLimit() {
 	})
 }
 
-// storeStateHash stores the start time of the remote device installed as part of an invested project.
-// Called by the teller
+// storeStateHash stores the state hashes of the teller
 func storeStateHash() {
 	http.HandleFunc(RecpRPC[16][0], func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
