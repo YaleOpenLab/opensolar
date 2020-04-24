@@ -9,6 +9,7 @@ import (
 	"os"
 	"sync"
 	"text/template"
+	"time"
 
 	tickers "github.com/Varunram/essentials/exchangetickers"
 	"github.com/Varunram/essentials/xlm"
@@ -32,26 +33,36 @@ type PersonFormat struct {
 }
 
 type Content struct {
-	Title           string
-	Name            string
-	OpensStatus     LinkFormat
-	OpenxStatus     LinkFormat
-	Validate        LinkFormat
-	NextInterval    LinkFormat
-	TellerEnergy    LinkFormat
-	DateLastPaid    LinkFormat
-	DateLastStart   LinkFormat
-	DeviceID        LinkFormat
-	DABalance       LinkFormat
-	PBBalance       LinkFormat
-	AccountBalance1 LinkFormat
-	AccountBalance2 LinkFormat
-	EscrowBalance   LinkFormat
-	Recipient       PersonFormat
-	Investor        PersonFormat
-	Developer       PersonFormat
-	ProjCount       int
-	UserCount       int
+	Title            string
+	Name             string
+	OpensStatus      LinkFormat
+	OpenxStatus      LinkFormat
+	Validate         LinkFormat
+	NextInterval     LinkFormat
+	TellerEnergy     LinkFormat
+	DateLastPaid     LinkFormat
+	DateLastStart    LinkFormat
+	DeviceID         LinkFormat
+	DABalance        LinkFormat
+	PBBalance        LinkFormat
+	AccountBalance1  LinkFormat
+	AccountBalance2  LinkFormat
+	EscrowBalance    LinkFormat
+	Recipient        PersonFormat
+	Investor         PersonFormat
+	Developer        PersonFormat
+	PastEnergyValues []uint32
+	DeviceLocation   string
+	StateHashes      []string
+	PaybackPeriod    time.Duration
+	BalanceLeft      float64
+	OwnershipShift   float64
+	DateInitiated    string
+	Stage            int
+	DateFunded       string
+	InvAssetCode     string
+	ProjCount        int
+	UserCount        int
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -426,6 +437,11 @@ func frontend() {
 
 		Return.DeviceID.Text = Recipient.DeviceId
 
+		Return.PastEnergyValues = Recipient.PastTellerEnergy
+		Return.DeviceLocation = Recipient.DeviceLocation
+		Return.DeviceLocation = Recipient.DeviceLocation
+		Return.StateHashes = Recipient.StateHashes
+
 		Return.DABalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 		Return.PBBalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 
@@ -438,6 +454,14 @@ func frontend() {
 		Return.Recipient.Username = Recipient.U.Username
 		Return.Recipient.Name = Recipient.U.Name
 		Return.Recipient.Email = Recipient.U.Email
+
+		Return.PaybackPeriod = Project.PaybackPeriod
+		Return.BalanceLeft = Project.BalLeft
+		Return.OwnershipShift = Project.OwnershipShift
+		Return.DateInitiated = Project.DateInitiated
+		Return.Stage = Project.Stage
+		Return.DateFunded = Project.DateFunded
+		Return.InvAssetCode = Project.InvestorAssetCode
 
 		templates.Lookup("doc").Execute(w, Return)
 	})
