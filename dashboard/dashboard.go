@@ -57,6 +57,10 @@ type Content struct {
 var platformURL = "https://api2.openx.solar"
 var AdminToken string
 var Token string
+var Pnb string
+var Pub string
+var Snb string
+var Sub string
 var XlmUSD float64
 var Project core.Project
 var Recipient core.Recipient
@@ -263,10 +267,8 @@ func frontend() {
 		go getInvestor(&wg2, AdminToken, invIndex)
 		wg2.Add(1)
 		go getDeveloper(&wg2, AdminToken, devIndex)
-		wg2.Wait()
 
-		var wg4 sync.WaitGroup
-		wg4.Add(1)
+		wg2.Add(1)
 		go func(wg *sync.WaitGroup) {
 			defer wg.Done()
 			escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
@@ -281,85 +283,13 @@ func frontend() {
 
 			Return.EscrowBalance.Text = escrowBalanceS
 			Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
-		}(&wg4)
+		}(&wg2)
 
-		wg4.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
-			if primNativeBalance < 0 {
-				primNativeBalance = 0
-			}
-
-			pnbS, err := utils.ToString(primNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
-
-			pubS, err := utils.ToString(primUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.AccountBalance1.Text = "XLM: " + pnbS + " STABLEUSD: " + pubS
-			Return.AccountBalance1.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
-		}(&wg4)
-
-		wg4.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
-			if secNativeBalance < 0 {
-				secNativeBalance = 0
-			}
-
-			snbS, err := utils.ToString(secNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
-			if secUsdBalance < 0 {
-				secUsdBalance = 0
-			}
-
-			subS, err := utils.ToString(secUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.AccountBalance2.Text = "XLM: " + snbS + " STABLEUSD: " + subS
-			Return.AccountBalance2.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
-		}(&wg4)
-
-		wg4.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg4)
-
-		wg4.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg4)
-
-		wg4.Add(1)
+		wg2.Add(1)
 		go func(wg *sync.WaitGroup) {
 			defer wg.Done()
 			var projCount length
-			data, err := erpc.GetRequest("https://api2.openx.solar/admin/getallprojects?username=admin&token=" + AdminToken)
+			data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -370,13 +300,13 @@ func frontend() {
 			}
 
 			Return.ProjCount = projCount.Length
-		}(&wg4)
+		}(&wg2)
 
-		wg4.Add(1)
+		wg2.Add(1)
 		go func(wg *sync.WaitGroup) {
 			defer wg.Done()
 			var userCount length
-			data, err := erpc.GetRequest("https://api2.openx.solar/admin/getallusers?username=admin&token=" + AdminToken)
+			data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -387,9 +317,90 @@ func frontend() {
 			}
 
 			Return.UserCount = userCount.Length
-		}(&wg4)
+		}(&wg2)
 
-		wg4.Wait()
+		wg2.Wait()
+
+		var wg3 sync.WaitGroup
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+
+			var err error
+			Pnb, err = utils.ToString(primNativeBalance)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
+			if primUsdBalance < 0 {
+				primUsdBalance = 0
+			}
+
+			var err error
+			Pub, err = utils.ToString(primUsdBalance)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+
+			var err error
+			Snb, err = utils.ToString(secNativeBalance)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
+			if secUsdBalance < 0 {
+				secUsdBalance = 0
+			}
+
+			var err error
+			Sub, err = utils.ToString(secUsdBalance)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(&wg3)
+
+		wg3.Wait()
 
 		if Project.DateLastPaid == 0 {
 			Return.DateLastPaid.Text = "Date Last Paid: First Payment not yet made"
@@ -418,6 +429,12 @@ func frontend() {
 		Return.DABalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 		Return.PBBalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 
+		Return.AccountBalance1.Text = "XLM: " + Pnb + " STABLEUSD: " + Pub
+		Return.AccountBalance1.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
+
+		Return.AccountBalance2.Text = "XLM: " + Snb + " STABLEUSD: " + Sub
+		Return.AccountBalance2.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
+
 		Return.Recipient.Username = Recipient.U.Username
 		Return.Recipient.Name = Recipient.U.Name
 		Return.Recipient.Email = Recipient.U.Email
@@ -428,7 +445,7 @@ func frontend() {
 
 func getInvestor(wg *sync.WaitGroup, AdminToken string, invIndex string) {
 	defer wg.Done()
-	data, err := erpc.GetRequest("https://api2.openx.solar/admin/getinvestor?username=admin&token=" +
+	data, err := erpc.GetRequest(platformURL + "/admin/getinvestor?username=admin&token=" +
 		AdminToken + "&index=" + invIndex)
 	if err != nil {
 		log.Fatal(err)
@@ -447,7 +464,7 @@ func getInvestor(wg *sync.WaitGroup, AdminToken string, invIndex string) {
 
 func getDeveloper(wg *sync.WaitGroup, AdminToken string, devIndex string) {
 	defer wg.Done()
-	data, err := erpc.GetRequest("https://api2.openx.solar/admin/getentity?username=admin&token=" +
+	data, err := erpc.GetRequest(platformURL + "/admin/getentity?username=admin&token=" +
 		AdminToken + "&index=" + devIndex)
 	if err != nil {
 		log.Fatal(err)
