@@ -9,6 +9,7 @@ import (
 	"os"
 	"sync"
 	"text/template"
+	"time"
 
 	tickers "github.com/Varunram/essentials/exchangetickers"
 	"github.com/Varunram/essentials/xlm"
@@ -25,33 +26,60 @@ type LinkFormat struct {
 	Text string
 }
 
+type PingFormat struct {
+	Link string
+	Text string
+	URL  string
+}
+
 type PersonFormat struct {
 	Name     string
 	Username string
 	Email    string
 }
 
+type AdminFormat struct {
+	Username   string
+	Password   string
+	AdminToken string
+	RecpToken  string
+}
+
 type Content struct {
-	Title           string
-	Name            string
-	OpensStatus     LinkFormat
-	OpenxStatus     LinkFormat
-	Validate        LinkFormat
-	NextInterval    LinkFormat
-	TellerEnergy    LinkFormat
-	DateLastPaid    LinkFormat
-	DateLastStart   LinkFormat
-	DeviceID        LinkFormat
-	DABalance       LinkFormat
-	PBBalance       LinkFormat
-	AccountBalance1 LinkFormat
-	AccountBalance2 LinkFormat
-	EscrowBalance   LinkFormat
-	Recipient       PersonFormat
-	Investor        PersonFormat
-	Developer       PersonFormat
-	ProjCount       int
-	UserCount       int
+	Title            string
+	Name             string
+	OpensStatus      PingFormat
+	OpenxStatus      PingFormat
+	BuildsStatus     PingFormat
+	WebStatus        PingFormat
+	Validate         LinkFormat
+	NextInterval     LinkFormat
+	TellerEnergy     LinkFormat
+	DateLastPaid     LinkFormat
+	DateLastStart    LinkFormat
+	DeviceID         LinkFormat
+	DABalance        LinkFormat
+	PBBalance        LinkFormat
+	AccountBalance1  LinkFormat
+	AccountBalance2  LinkFormat
+	EscrowBalance    LinkFormat
+	Recipient        PersonFormat
+	Investor         PersonFormat
+	Developer        PersonFormat
+	PastEnergyValues []uint32
+	DeviceLocation   string
+	StateHashes      []string
+	PaybackPeriod    time.Duration
+	BalanceLeft      float64
+	OwnershipShift   float64
+	DateInitiated    string
+	Stage            int
+	DateFunded       string
+	InvAssetCode     string
+	ProjCount        LinkFormat
+	UserCount        LinkFormat
+	Admin            AdminFormat
+	Date             string
 }
 
 var platformURL = "https://api2.openx.solar"
@@ -101,6 +129,34 @@ func openxPing() bool {
 	}
 
 	return x.Code == 200
+}
+
+func buildsPing() bool {
+	data, err := erpc.GetRequest("https://builds.openx.solar/ping")
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	var x erpc.StatusResponse
+
+	err = json.Unmarshal(data, &x)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return x.Code == 200
+}
+
+func websitePing() bool {
+	data, err := erpc.GetRequest("https://openx.solar")
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return string(data)[2:14] == "doctype html"
 }
 
 func getToken(username, password string) (string, error) {
@@ -217,20 +273,55 @@ func frontend() {
 		Return.Title = "Opensolar status dashboard"
 		Return.Name = "John"
 
-		Return.OpensStatus.Text = "Opensolar is Down"
-		Return.OpensStatus.Link = platformURL + "/ping"
-		if opensPing() {
-			Return.OpensStatus.Text = "Opensolar is Up"
-		}
+		var wgPre sync.WaitGroup
 
-		Return.OpenxStatus.Text = "Openx is Down"
-		Return.OpenxStatus.Link = "https://api.openx.solar/ping"
-		if openxPing() {
-			Return.OpenxStatus.Text = "Openx is Up"
-		}
+		wgPre.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.OpensStatus.Text = "Opensolar is Down"
+			Return.OpensStatus.Link = platformURL + "/ping"
+			if opensPing() {
+				Return.OpensStatus.Text = "Opensolar is Up"
+			}
+			Return.OpensStatus.URL = "api2.openx.solar"
+		}(&wgPre)
+
+		wgPre.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.OpenxStatus.Text = "Openx is Down"
+			Return.OpenxStatus.Link = "https://api.openx.solar/ping"
+			if openxPing() {
+				Return.OpenxStatus.Text = "Openx is Up"
+			}
+			Return.OpenxStatus.URL = "api.openx.solar"
+		}(&wgPre)
+
+		wgPre.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.BuildsStatus.Text = "Builds is Down"
+			Return.BuildsStatus.Link = "https://builds.openx.solar/ping"
+			if buildsPing() {
+				Return.BuildsStatus.Text = "Builds is Up"
+			}
+			Return.BuildsStatus.URL = "builds.openx.solar"
+		}(&wgPre)
+
+		wgPre.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			Return.WebStatus.Text = "Website is Down"
+			Return.WebStatus.Link = "https://openx.solar"
+			if websitePing() {
+				Return.WebStatus.Text = "Website is Up"
+			}
+			Return.WebStatus.URL = "openx.solar"
+		}(&wgPre)
+
+		wgPre.Wait()
 
 		username := "aibonitoGsIoJ"
-		// get token
 
 		var wg1 sync.WaitGroup
 		wg1.Add(1)
@@ -299,7 +390,12 @@ func frontend() {
 				log.Fatal(err)
 			}
 
-			Return.ProjCount = projCount.Length
+			Return.ProjCount.Text, err = utils.ToString(projCount.Length)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
 		}(&wg2)
 
 		wg2.Add(1)
@@ -316,7 +412,12 @@ func frontend() {
 				log.Fatal(err)
 			}
 
-			Return.UserCount = userCount.Length
+			Return.UserCount.Text, err = utils.ToString(userCount.Length)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
 		}(&wg2)
 
 		wg2.Wait()
@@ -426,6 +527,11 @@ func frontend() {
 
 		Return.DeviceID.Text = Recipient.DeviceId
 
+		Return.PastEnergyValues = Recipient.PastTellerEnergy
+		Return.DeviceLocation = Recipient.DeviceLocation
+		Return.DeviceLocation = Recipient.DeviceLocation
+		Return.StateHashes = Recipient.StateHashes
+
 		Return.DABalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 		Return.PBBalance.Link = "https://testnet.steexp.com/account/" + Recipient.U.StellarWallet.PublicKey
 
@@ -438,6 +544,21 @@ func frontend() {
 		Return.Recipient.Username = Recipient.U.Username
 		Return.Recipient.Name = Recipient.U.Name
 		Return.Recipient.Email = Recipient.U.Email
+
+		Return.PaybackPeriod = Project.PaybackPeriod
+		Return.BalanceLeft = Project.BalLeft
+		Return.OwnershipShift = Project.OwnershipShift
+		Return.DateInitiated = Project.DateInitiated
+		Return.Stage = Project.Stage
+		Return.DateFunded = Project.DateFunded
+		Return.InvAssetCode = Project.InvestorAssetCode
+
+		Return.Admin.Username = "admin"
+		Return.Admin.Password = "password"
+		Return.Admin.AdminToken = AdminToken
+		Return.Admin.RecpToken = Token
+
+		Return.Date = utils.Timestamp()
 
 		templates.Lookup("doc").Execute(w, Return)
 	})
