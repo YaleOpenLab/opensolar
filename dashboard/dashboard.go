@@ -26,6 +26,12 @@ type LinkFormat struct {
 	Text string
 }
 
+type PingFormat struct {
+	Link string
+	Text string
+	URL  string
+}
+
 type PersonFormat struct {
 	Name     string
 	Username string
@@ -42,10 +48,10 @@ type AdminFormat struct {
 type Content struct {
 	Title            string
 	Name             string
-	OpensStatus      LinkFormat
-	OpenxStatus      LinkFormat
-	BuildsStatus     LinkFormat
-	WebStatus        LinkFormat
+	OpensStatus      PingFormat
+	OpenxStatus      PingFormat
+	BuildsStatus     PingFormat
+	WebStatus        PingFormat
 	Validate         LinkFormat
 	NextInterval     LinkFormat
 	TellerEnergy     LinkFormat
@@ -277,6 +283,7 @@ func frontend() {
 			if opensPing() {
 				Return.OpensStatus.Text = "Opensolar is Up"
 			}
+			Return.OpensStatus.URL = "api2.openx.solar"
 		}(&wgPre)
 
 		wgPre.Add(1)
@@ -287,6 +294,7 @@ func frontend() {
 			if openxPing() {
 				Return.OpenxStatus.Text = "Openx is Up"
 			}
+			Return.OpenxStatus.URL = "api.openx.solar"
 		}(&wgPre)
 
 		wgPre.Add(1)
@@ -297,6 +305,7 @@ func frontend() {
 			if buildsPing() {
 				Return.BuildsStatus.Text = "Builds is Up"
 			}
+			Return.BuildsStatus.URL = "builds.openx.solar"
 		}(&wgPre)
 
 		wgPre.Add(1)
@@ -307,6 +316,7 @@ func frontend() {
 			if websitePing() {
 				Return.WebStatus.Text = "Website is Up"
 			}
+			Return.WebStatus.URL = "openx.solar"
 		}(&wgPre)
 
 		wgPre.Wait()
