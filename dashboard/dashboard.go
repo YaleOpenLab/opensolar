@@ -293,23 +293,59 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 	wg3.Wait()
 }
 
-func getProject(wg *sync.WaitGroup, index int) error {
+func getProject(wg *sync.WaitGroup, index int) {
 	defer wg.Done()
 	indexS, err := utils.ToString(index)
 	if err != nil {
-		log.Println(err)
-		return err
+		log.Fatal(err)
 	}
 
 	body := "/project/get?index=" + indexS
 
 	data, err := erpc.GetRequest(platformURL + body)
 	if err != nil {
-		log.Println(err)
-		return err
+		log.Fatal(err)
 	}
 
-	return json.Unmarshal(data, &Project)
+	err = json.Unmarshal(data, &Project)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	invIndex, err := utils.ToString(Project.InvestorIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	devIndex, err := utils.ToString(Project.DeveloperIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var wg2 sync.WaitGroup
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
+		if escrowBalance < 0 {
+			escrowBalance = 0
+		}
+
+		escrowBalanceS, err := utils.ToString(escrowBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.EscrowBalance.Text = escrowBalanceS
+		Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
+	}(&wg2)
+
+	wg2.Add(1)
+	go getInvestor(&wg2, AdminToken, invIndex)
+	wg2.Add(1)
+	go getDeveloper(&wg2, AdminToken, devIndex)
+
+	wg2.Wait()
 }
 
 func serveStatic() {
@@ -420,44 +456,13 @@ func frontend() {
 				log.Fatal(err)
 			}
 		}(&wg1)
-		wg1.Add(1)
-		go getProject(&wg1, 1)
 		wg1.Wait()
-
-		invIndex, err := utils.ToString(Project.InvestorIndices[0])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		devIndex, err := utils.ToString(Project.DeveloperIndices[0])
-		if err != nil {
-			log.Fatal(err)
-		}
 
 		var wg2 sync.WaitGroup
 		wg2.Add(1)
+		go getProject(&wg2, 1)
+		wg2.Add(1)
 		go validateRecp(&wg2, username, Token)
-		wg2.Add(1)
-		go getInvestor(&wg2, AdminToken, invIndex)
-		wg2.Add(1)
-		go getDeveloper(&wg2, AdminToken, devIndex)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
-			if escrowBalance < 0 {
-				escrowBalance = 0
-			}
-
-			escrowBalanceS, err := utils.ToString(escrowBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.EscrowBalance.Text = escrowBalanceS
-			Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
-		}(&wg2)
 
 		wg2.Add(1)
 		go func(wg *sync.WaitGroup) {
