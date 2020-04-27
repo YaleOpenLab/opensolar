@@ -78,6 +78,8 @@ type Content struct {
 	InvAssetCode     string
 	ProjCount        LinkFormat
 	UserCount        LinkFormat
+	InvCount         LinkFormat
+	RecpCount        LinkFormat
 	Admin            AdminFormat
 	Date             string
 }
@@ -418,6 +420,50 @@ func frontend() {
 			}
 
 			Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
+		}(&wg2)
+
+		wg2.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			var userCount length
+			data, err := erpc.GetRequest(platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = json.Unmarshal(data, &userCount)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.InvCount.Text, err = utils.ToString(userCount.Length)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.InvCount.Link = platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken
+		}(&wg2)
+
+		wg2.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			var userCount length
+			data, err := erpc.GetRequest(platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = json.Unmarshal(data, &userCount)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.RecpCount.Text, err = utils.ToString(userCount.Length)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			Return.RecpCount.Link = platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken
 		}(&wg2)
 
 		wg2.Wait()
