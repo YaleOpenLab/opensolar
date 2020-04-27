@@ -18,6 +18,8 @@ func setupAdminHandlers() {
 	retrieveRecpAdmin()
 	retrieveInvAdmin()
 	retrieveEntityAdmin()
+	retrieveAllInvestors()
+	retrieveAllRecipients()
 }
 
 // AdminRPC is a list of all the endpoints that can be called by admins
@@ -27,6 +29,8 @@ var AdminRPC = map[int][]string{
 	3: []string{"/admin/getrecipient", "GET", "index"}, // GET
 	4: []string{"/admin/getinvestor", "GET", "index"},  // GET
 	5: []string{"/admin/getentity", "GET", "index"},    // GET
+	6: []string{"/admin/getallinvestors", "GET"},       // GET
+	7: []string{"/admin/getallrecipients", "GET"},      // GET
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool
@@ -172,6 +176,53 @@ func retrieveEntityAdmin() {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
 			return
 		}
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
+// LenReturn is the length return structure
+type LenReturn struct {
+	Length int
+}
+
+func retrieveAllInvestors() {
+	http.HandleFunc(AdminRPC[6][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[6][2:], AdminRPC[6][1])
+		if !adminBool {
+			return
+		}
+
+		investors, err := core.RetrieveAllInvestors()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		var x LenReturn
+		x.Length = len(investors)
+
+		erpc.MarshalSend(w, x)
+	})
+}
+
+func retrieveAllRecipients() {
+	http.HandleFunc(AdminRPC[7][0], func(w http.ResponseWriter, r *http.Request) {
+		_, adminBool := validateAdmin(w, r, AdminRPC[7][2:], AdminRPC[7][1])
+		if !adminBool {
+			return
+		}
+
+		recipients, err := core.RetrieveAllRecipients()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		var x LenReturn
+		x.Length = len(recipients)
 
 		erpc.MarshalSend(w, x)
 	})
