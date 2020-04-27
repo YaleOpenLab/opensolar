@@ -210,6 +210,87 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		Return.Validate.Text = "Could not validate Recipient"
 		Return.Validate.Link = platformURL + "/recipient/validate?username=" + username + "&token=" + Token
 	}
+
+	var wg3 sync.WaitGroup
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
+		if primNativeBalance < 0 {
+			primNativeBalance = 0
+		}
+
+		var err error
+		Pnb, err = utils.ToString(primNativeBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
+		if primUsdBalance < 0 {
+			primUsdBalance = 0
+		}
+
+		var err error
+		Pub, err = utils.ToString(primUsdBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
+		if secNativeBalance < 0 {
+			secNativeBalance = 0
+		}
+
+		var err error
+		Snb, err = utils.ToString(secNativeBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
+		if secUsdBalance < 0 {
+			secUsdBalance = 0
+		}
+
+		var err error
+		Sub, err = utils.ToString(secUsdBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg3)
+
+	wg3.Wait()
 }
 
 func getProject(wg *sync.WaitGroup, index int) error {
@@ -467,87 +548,6 @@ func frontend() {
 		}(&wg2)
 
 		wg2.Wait()
-
-		var wg3 sync.WaitGroup
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
-			if primNativeBalance < 0 {
-				primNativeBalance = 0
-			}
-
-			var err error
-			Pnb, err = utils.ToString(primNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
-
-			var err error
-			Pub, err = utils.ToString(primUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
-			if secNativeBalance < 0 {
-				secNativeBalance = 0
-			}
-
-			var err error
-			Snb, err = utils.ToString(secNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
-			if secUsdBalance < 0 {
-				secUsdBalance = 0
-			}
-
-			var err error
-			Sub, err = utils.ToString(secUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Wait()
 
 		if Project.DateLastPaid == 0 {
 			Return.DateLastPaid.Text = "Date Last Paid: First Payment not yet made"
