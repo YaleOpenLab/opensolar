@@ -78,6 +78,8 @@ type Content struct {
 	InvAssetCode     string
 	ProjCount        LinkFormat
 	UserCount        LinkFormat
+	InvCount         LinkFormat
+	RecpCount        LinkFormat
 	Admin            AdminFormat
 	Date             string
 }
@@ -208,25 +210,232 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		Return.Validate.Text = "Could not validate Recipient"
 		Return.Validate.Link = platformURL + "/recipient/validate?username=" + username + "&token=" + Token
 	}
+
+	var wg2 sync.WaitGroup
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
+		if primNativeBalance < 0 {
+			primNativeBalance = 0
+		}
+
+		var err error
+		Pnb, err = utils.ToString(primNativeBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
+		if primUsdBalance < 0 {
+			primUsdBalance = 0
+		}
+
+		var err error
+		Pub, err = utils.ToString(primUsdBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
+		if secNativeBalance < 0 {
+			secNativeBalance = 0
+		}
+
+		var err error
+		Snb, err = utils.ToString(secNativeBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
+		if secUsdBalance < 0 {
+			secUsdBalance = 0
+		}
+
+		var err error
+		Sub, err = utils.ToString(secUsdBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg2)
+
+	wg2.Wait()
 }
 
-func getProject(wg *sync.WaitGroup, index int) error {
+func adminTokenHandler(wg *sync.WaitGroup, index int) {
 	defer wg.Done()
+
+	var wg2 sync.WaitGroup
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var projCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &projCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.ProjCount.Text, err = utils.ToString(projCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.UserCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.InvCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.InvCount.Link = platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.RecpCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.RecpCount.Link = platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken
+	}(&wg2)
+
 	indexS, err := utils.ToString(index)
 	if err != nil {
-		log.Println(err)
-		return err
+		log.Fatal(err)
 	}
 
 	body := "/project/get?index=" + indexS
 
 	data, err := erpc.GetRequest(platformURL + body)
 	if err != nil {
-		log.Println(err)
-		return err
+		log.Fatal(err)
 	}
 
-	return json.Unmarshal(data, &Project)
+	err = json.Unmarshal(data, &Project)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
+		if escrowBalance < 0 {
+			escrowBalance = 0
+		}
+
+		escrowBalanceS, err := utils.ToString(escrowBalance)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.EscrowBalance.Text = escrowBalanceS
+		Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
+	}(&wg2)
+
+	invIndex, err := utils.ToString(Project.InvestorIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	devIndex, err := utils.ToString(Project.DeveloperIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	wg2.Add(1)
+	go getInvestor(&wg2, AdminToken, invIndex)
+	wg2.Add(1)
+	go getDeveloper(&wg2, AdminToken, devIndex)
+
+	wg2.Wait()
 }
 
 func serveStatic() {
@@ -245,6 +454,11 @@ func getUToken(wg *sync.WaitGroup, username string) {
 	if err != nil {
 		log.Fatal("error while fetching recipient token: ", err)
 	}
+
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	go validateRecp(&wg1, username, Token)
+	wg1.Wait()
 }
 
 func getAToken(wg *sync.WaitGroup) {
@@ -255,6 +469,11 @@ func getAToken(wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatal("error while fetching recipient token: ", err)
 	}
+
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	go adminTokenHandler(&wg1, 1)
+	wg1.Wait()
 }
 
 func frontend() {
@@ -337,171 +556,7 @@ func frontend() {
 				log.Fatal(err)
 			}
 		}(&wg1)
-		wg1.Add(1)
-		go getProject(&wg1, 1)
 		wg1.Wait()
-
-		invIndex, err := utils.ToString(Project.InvestorIndices[0])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		devIndex, err := utils.ToString(Project.DeveloperIndices[0])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var wg2 sync.WaitGroup
-		wg2.Add(1)
-		go validateRecp(&wg2, username, Token)
-		wg2.Add(1)
-		go getInvestor(&wg2, AdminToken, invIndex)
-		wg2.Add(1)
-		go getDeveloper(&wg2, AdminToken, devIndex)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			escrowBalance := xlm.GetAssetBalance(Project.EscrowPubkey, "STABLEUSD")
-			if escrowBalance < 0 {
-				escrowBalance = 0
-			}
-
-			escrowBalanceS, err := utils.ToString(escrowBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.EscrowBalance.Text = escrowBalanceS
-			Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
-		}(&wg2)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var projCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &projCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.ProjCount.Text, err = utils.ToString(projCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var userCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &userCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.UserCount.Text, err = utils.ToString(userCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Wait()
-
-		var wg3 sync.WaitGroup
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
-			if primNativeBalance < 0 {
-				primNativeBalance = 0
-			}
-
-			var err error
-			Pnb, err = utils.ToString(primNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
-
-			var err error
-			Pub, err = utils.ToString(primUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
-			if secNativeBalance < 0 {
-				secNativeBalance = 0
-			}
-
-			var err error
-			Snb, err = utils.ToString(secNativeBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
-			if secUsdBalance < 0 {
-				secUsdBalance = 0
-			}
-
-			var err error
-			Sub, err = utils.ToString(secUsdBalance)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(&wg3)
-
-		wg3.Wait()
 
 		if Project.DateLastPaid == 0 {
 			Return.DateLastPaid.Text = "Date Last Paid: First Payment not yet made"

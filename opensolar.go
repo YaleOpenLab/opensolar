@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/viper"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	"github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
@@ -202,7 +201,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	project.DateInitiated = utils.IntToHumanTime(1586021403)
 	project.PaybackPeriod = time.Duration(time.Duration(4*consts.OneWeek) * time.Second)
 	err = project.Save()
 	if err != nil {
