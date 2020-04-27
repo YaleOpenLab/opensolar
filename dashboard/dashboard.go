@@ -293,8 +293,99 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 	wg3.Wait()
 }
 
-func getProject(wg *sync.WaitGroup, index int) {
+func adminTokenHandler(wg *sync.WaitGroup, index int) {
 	defer wg.Done()
+
+	var wg2 sync.WaitGroup
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var projCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &projCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.ProjCount.Text, err = utils.ToString(projCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.UserCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.InvCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.InvCount.Link = platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken
+	}(&wg2)
+
+	wg2.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		var userCount length
+		data, err := erpc.GetRequest(platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(data, &userCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.RecpCount.Text, err = utils.ToString(userCount.Length)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Return.RecpCount.Link = platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken
+	}(&wg2)
+
 	indexS, err := utils.ToString(index)
 	if err != nil {
 		log.Fatal(err)
@@ -312,17 +403,6 @@ func getProject(wg *sync.WaitGroup, index int) {
 		log.Fatal(err)
 	}
 
-	invIndex, err := utils.ToString(Project.InvestorIndices[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	devIndex, err := utils.ToString(Project.DeveloperIndices[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var wg2 sync.WaitGroup
 	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
@@ -339,6 +419,16 @@ func getProject(wg *sync.WaitGroup, index int) {
 		Return.EscrowBalance.Text = escrowBalanceS
 		Return.EscrowBalance.Link = "https://testnet.steexp.com/account/" + Project.EscrowPubkey
 	}(&wg2)
+
+	invIndex, err := utils.ToString(Project.InvestorIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	devIndex, err := utils.ToString(Project.DeveloperIndices[0])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	wg2.Add(1)
 	go getInvestor(&wg2, AdminToken, invIndex)
@@ -364,6 +454,11 @@ func getUToken(wg *sync.WaitGroup, username string) {
 	if err != nil {
 		log.Fatal("error while fetching recipient token: ", err)
 	}
+
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	go validateRecp(&wg1, username, Token)
+	wg1.Wait()
 }
 
 func getAToken(wg *sync.WaitGroup) {
@@ -374,6 +469,11 @@ func getAToken(wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatal("error while fetching recipient token: ", err)
 	}
+
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	go adminTokenHandler(&wg1, 1)
+	wg1.Wait()
 }
 
 func frontend() {
@@ -457,102 +557,6 @@ func frontend() {
 			}
 		}(&wg1)
 		wg1.Wait()
-
-		var wg2 sync.WaitGroup
-		wg2.Add(1)
-		go getProject(&wg2, 1)
-		wg2.Add(1)
-		go validateRecp(&wg2, username, Token)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var projCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &projCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.ProjCount.Text, err = utils.ToString(projCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var userCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &userCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.UserCount.Text, err = utils.ToString(userCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var userCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &userCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.InvCount.Text, err = utils.ToString(userCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.InvCount.Link = platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Add(1)
-		go func(wg *sync.WaitGroup) {
-			defer wg.Done()
-			var userCount length
-			data, err := erpc.GetRequest(platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(data, &userCount)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.RecpCount.Text, err = utils.ToString(userCount.Length)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			Return.RecpCount.Link = platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken
-		}(&wg2)
-
-		wg2.Wait()
 
 		if Project.DateLastPaid == 0 {
 			Return.DateLastPaid.Text = "Date Last Paid: First Payment not yet made"
