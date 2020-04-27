@@ -211,8 +211,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		Return.Validate.Link = platformURL + "/recipient/validate?username=" + username + "&token=" + Token
 	}
 
-	var wg3 sync.WaitGroup
-	wg3.Add(1)
+	var wg2 sync.WaitGroup
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		primNativeBalance := xlm.GetNativeBalance(Recipient.U.StellarWallet.PublicKey) * XlmUSD
@@ -225,9 +225,9 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Add(1)
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		primUsdBalance := xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, "STABLEUSD")
@@ -240,9 +240,9 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Add(1)
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		secNativeBalance := xlm.GetNativeBalance(Recipient.U.SecondaryWallet.PublicKey) * XlmUSD
@@ -255,9 +255,9 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Add(1)
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		secUsdBalance := xlm.GetAssetBalance(Recipient.U.SecondaryWallet.PublicKey, "STABLEUSD")
@@ -270,27 +270,27 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Add(1)
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Add(1)
+	wg2.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(&wg3)
+	}(&wg2)
 
-	wg3.Wait()
+	wg2.Wait()
 }
 
 func adminTokenHandler(wg *sync.WaitGroup, index int) {
