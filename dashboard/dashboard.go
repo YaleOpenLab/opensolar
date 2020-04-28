@@ -689,7 +689,6 @@ var opts struct {
 
 func main() {
 	runtime.GOMAXPROCS(4)
-	log.Fatal(runtime.NumCPU())
 	_, err := flags.ParseArgs(&opts, os.Args)
 	if err != nil {
 		log.Fatal(err)
