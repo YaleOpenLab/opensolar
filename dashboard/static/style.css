@@ -417,45 +417,4 @@ a {
   display: inline-block;
   vertical-align: middle;
   margin: 0 0.4rem;
-}
-.theme-orange .aside {
-  background: #fd8d76;
-  background: -moz-linear-gradient(top, #fd8d76 0%, #ff4086 100%);
-  background: -webkit-linear-gradient(top, #fd8d76 0%, #ff4086 100%);
-  background: linear-gradient(to bottom, #fd8d76 0%, #ff4086 100%);
-}
-.theme-orange .notif {
-  background: #fd7686;
-}
-.theme-orange .theme-switcher-button {
-  color: #fd7686;
-}
-.theme-orange .article ul li a.is-active,
-.theme-orange .article .article__image a,
-.theme-orange .button {
-  background: #fd7686;
-}
-body.mode-light {
-  color: rgba(0,0,0,0.7);
-}
-.mode-light .main {
-  background: #f5f6fa;
-}
-.mode-light .search__text {
-  background: #fff;
-}
-.mode-light .search__button {
-  background: #fff;
-}
-.mode-light .notif__badge {
-  border-color: #f5f6fa;
-}
-.mode-light .aside {
-  box-shadow: none;
-}
-.mode-light .article {
-  background: #fff;
-}
-.mode-light .widget strong span:nth-child(2) {
-  color: rgba(0,0,0,0.9);
-}
+} 
