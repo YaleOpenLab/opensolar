@@ -661,6 +661,7 @@ func MonitorPaybacks(recpIndex int, projIndex int) {
 		}
 
 		period := project.PaybackPeriod.Seconds()
+		log.Println("Payback period: ", period)
 		if period == 0 {
 			period = 1 // for the test suite
 		}

@@ -34,11 +34,13 @@ func sandbox() error {
 	project.OriginatorIndex = -1 // replace with real indices once created
 	project.GuarantorIndex = -1  // replace with real indices once created
 	project.ContractorIndex = -1 // replace with real indices once created
-	project.PaybackPeriod = 1    // one week payback time
+	project.PaybackPeriod = time.Duration(time.Duration(consts.OneWeek) * time.Second)
 	project.DeveloperFee = []float64{3000}
 	project.Chain = "stellar"
 	project.BrokerUrl = "mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
+	project.DateInitiated = utils.Timestamp()
+	project.DateFunded = utils.Timestamp()
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
 	project.TellerUrl = ""
@@ -214,6 +216,8 @@ func sandbox() error {
 		log.Println(err)
 		return err
 	}
+
+	recp.NextPaymentInterval = utils.IntToHumanTime(utils.Unix() + 2419200)
 
 	err = core.UnlockProject(recp.U.Username, token, 1, seedpwd)
 	if err != nil {
