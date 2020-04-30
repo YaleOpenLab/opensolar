@@ -169,7 +169,7 @@ func renderHTML() (string, error) {
 	return string(doc), err
 }
 
-func StartServer(portx int, insecure bool) {
+func startServer(portx int, insecure bool) {
 	xlm.SetConsts(0, false)
 	frontend()
 	serveStatic()
@@ -200,5 +200,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	StartServer(opts.Port, opts.Insecure)
+	startServer(opts.Port, opts.Insecure)
 }

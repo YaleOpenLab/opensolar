@@ -2,51 +2,51 @@ package main
 
 import "time"
 
-type LinkFormat struct {
+type linkFormat struct {
 	Link string
 	Text string
 }
 
-type PingFormat struct {
+type pingFormat struct {
 	Link string
 	Text string
 	URL  string
 }
 
-type PersonFormat struct {
+type personFormat struct {
 	Name     string
 	Username string
 	Email    string
 }
 
-type AdminFormat struct {
+type adminFormat struct {
 	Username   string
 	Password   string
 	AdminToken string
 	RecpToken  string
 }
 
-type Content struct {
+type content struct {
 	Title            string
 	Name             string
-	OpensStatus      PingFormat
-	OpenxStatus      PingFormat
-	BuildsStatus     PingFormat
-	WebStatus        PingFormat
-	Validate         LinkFormat
-	NextInterval     LinkFormat
-	TellerEnergy     LinkFormat
-	DateLastPaid     LinkFormat
-	DateLastStart    LinkFormat
-	DeviceID         LinkFormat
-	DABalance        LinkFormat
-	PBBalance        LinkFormat
-	AccountBalance1  LinkFormat
-	AccountBalance2  LinkFormat
-	EscrowBalance    LinkFormat
-	Recipient        PersonFormat
-	Investor         PersonFormat
-	Developer        PersonFormat
+	OpensStatus      pingFormat
+	OpenxStatus      pingFormat
+	BuildsStatus     pingFormat
+	WebStatus        pingFormat
+	Validate         linkFormat
+	NextInterval     linkFormat
+	TellerEnergy     linkFormat
+	DateLastPaid     linkFormat
+	DateLastStart    linkFormat
+	DeviceID         linkFormat
+	DABalance        linkFormat
+	PBBalance        linkFormat
+	AccountBalance1  linkFormat
+	AccountBalance2  linkFormat
+	EscrowBalance    linkFormat
+	Recipient        personFormat
+	Investor         personFormat
+	Developer        personFormat
 	PastEnergyValues []uint32
 	DeviceLocation   string
 	StateHashes      []string
@@ -57,11 +57,11 @@ type Content struct {
 	Stage            int
 	DateFunded       string
 	InvAssetCode     string
-	ProjCount        LinkFormat
-	UserCount        LinkFormat
-	InvCount         LinkFormat
-	RecpCount        LinkFormat
-	Admin            AdminFormat
+	ProjCount        linkFormat
+	UserCount        linkFormat
+	InvCount         linkFormat
+	RecpCount        linkFormat
+	Admin            adminFormat
 	Date             string
 }
 
