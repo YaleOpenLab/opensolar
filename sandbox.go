@@ -34,7 +34,7 @@ func sandbox() error {
 	project.OriginatorIndex = -1 // replace with real indices once created
 	project.GuarantorIndex = -1  // replace with real indices once created
 	project.ContractorIndex = -1 // replace with real indices once created
-	project.PaybackPeriod = 4    // four weeks payback time
+	project.PaybackPeriod = 1    // one week payback time
 	project.DeveloperFee = []float64{3000}
 	project.Chain = "stellar"
 	project.BrokerUrl = "mqtt.openx.solar"

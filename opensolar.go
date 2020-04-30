@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -196,16 +195,5 @@ func main() {
 		`)
 	fmt.Println(`Starting Opensolar`)
 
-	project, err := core.RetrieveProject(1)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	project.PaybackPeriod = time.Duration(time.Duration(4*consts.OneWeek) * time.Second)
-	err = project.Save()
-	if err != nil {
-		log.Fatal(err)
-	}
-	go core.MonitorPaybacks(330, 1) // montior test project payback
 	rpc.StartServer(port, insecure)
 }
