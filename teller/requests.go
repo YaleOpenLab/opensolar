@@ -44,7 +44,8 @@ func httpsGet(request []string, xparams ...string) ([]byte, error) {
 	for _, elem := range xparams {
 		params += elem
 	}
-	return erpc.HttpsGet(client, params)
+
+	return erpc.GetRequest(params)
 }
 
 // GetLocation gets the teller's location
@@ -65,7 +66,7 @@ func getLocation(mapskey string) error {
 // ping pings the platform to see if its up
 func ping() error {
 	// make a curl request out to lcoalhost and get the ping response
-	data, err := erpc.HttpsGet(client, ApiUrl+"/ping")
+	data, err := erpc.GetRequest(ApiUrl + "/ping")
 	if err != nil {
 		return err
 	}
@@ -119,7 +120,7 @@ func login(username string, pwhash string) error {
 	postdata.Set("pwhash", pwhash)
 
 	// Read in the cert file
-	data, err := erpc.HttpsPost(client, ApiUrl+orpc.UserRPC[0][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+orpc.UserRPC[0][0], postdata)
 	if err != nil {
 		return errors.Wrap(err, "did not make request")
 	}
@@ -130,9 +131,10 @@ func login(username string, pwhash string) error {
 		return err
 	}
 
+	log.Println(ApiUrl+orpc.UserRPC[0][0], postdata)
 	// validate that the user is indeed a recipient
 	Token = LoginReturn.Token
-	data, err = erpc.HttpsGet(client, ApiUrl+rpc.RecpRPC[3][0]+"?username="+username+"&token="+LoginReturn.Token)
+	data, err = erpc.GetRequest(ApiUrl + rpc.RecpRPC[3][0] + "?username=" + username + "&token=" + LoginReturn.Token)
 	if err != nil {
 		return err
 	}
@@ -143,6 +145,7 @@ func login(username string, pwhash string) error {
 		colorOutput(RedColor, string(data), err)
 		return err
 	}
+	log.Println("FINE?", x)
 
 	if x.U.Index == 0 {
 		return errors.New("couldn't validate recipient")
@@ -174,7 +177,7 @@ func projectPayback(assetName string, amountx float64) error {
 		postdata.Set("seedpwd", LocalSeedPwd)
 		postdata.Set("amount", amount)
 
-		data, err = erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[4][0], postdata)
+		data, err = erpc.PostForm(ApiUrl+rpc.RecpRPC[4][0], postdata)
 	} else {
 		form := url.Values{}
 		form.Set("projIndex", projIndex)
@@ -214,7 +217,7 @@ func setDeviceId(username string, deviceId string) error {
 	log.Println("deviceid", deviceId)
 	postdata.Set("deviceId", deviceId)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[5][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[5][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -242,7 +245,7 @@ func storeStartTime() error {
 	postdata := basePostData()
 	postdata.Set("start", unixString)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[6][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[6][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -271,7 +274,7 @@ func storeLocation(mapskey string) error {
 	postdata := basePostData()
 	postdata.Set("location", "l"+DeviceLocation) // handle google API failures this funky way
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[7][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[7][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -397,7 +400,7 @@ func storeStateHistory(hash string) error {
 	postdata := basePostData()
 	postdata.Set("hash", hash)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[16][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[16][0], postdata)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return err
@@ -419,8 +422,8 @@ func storeStateHistory(hash string) error {
 
 // testSwytch tests whether the swytch workflow works correctly
 func testSwytch() {
-	data, err := erpc.HttpsGet(client, baseUrl("swytch/accessToken")+"&clientId="+SwytchClientid+
-		"&clientSecret="+SwytchClientSecret+"&username="+SwytchUsername+"&password="+SwytchPassword)
+	data, err := erpc.GetRequest(baseUrl("swytch/accessToken") + "&clientId=" + SwytchClientid +
+		"&clientSecret=" + SwytchClientSecret + "&username=" + SwytchUsername + "&password=" + SwytchPassword)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -436,8 +439,8 @@ func testSwytch() {
 	refreshToken := x1.Data[0].Refreshtoken
 	// we have the access token as well but need to refresh it using the refresh token, so
 	// might as well store later.
-	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&"+
-		"refreshToken="+refreshToken)
+	data, err = erpc.GetRequest(ApiUrl + "/swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&" +
+		"refreshToken=" + refreshToken)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -452,7 +455,7 @@ func testSwytch() {
 
 	accessToken := x1.Data[0].Accesstoken
 
-	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getuser?authToken="+accessToken)
+	data, err = erpc.GetRequest(ApiUrl + "/swytch/getuser?authToken=" + accessToken)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -469,7 +472,7 @@ func testSwytch() {
 	colorOutput(CyanColor, "USER ID: ", userId)
 	// we have the user id, query for assets
 
-	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getassets?authToken="+accessToken+"&userId="+userId)
+	data, err = erpc.GetRequest(ApiUrl + "/swytch/getassets?authToken=" + accessToken + "&userId=" + userId)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -485,7 +488,7 @@ func testSwytch() {
 	assetId := x4.Data[0].Id
 	colorOutput(CyanColor, "ASSETID: ", assetId)
 	// we have the asset id, try to get some info
-	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getenergy?authToken="+accessToken+"&assetId="+assetId)
+	data, err = erpc.GetRequest(ApiUrl + "/swytch/getenergy?authToken=" + accessToken + "&assetId=" + assetId)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -500,7 +503,7 @@ func testSwytch() {
 
 	colorOutput(CyanColor, "Energy data from installed asset: ", x4)
 
-	data, err = erpc.HttpsGet(client, ApiUrl+"/swytch/getattributes?authToken="+accessToken+"&assetId="+assetId)
+	data, err = erpc.GetRequest(ApiUrl + "/swytch/getattributes?authToken=" + accessToken + "&assetId=" + assetId)
 	if err != nil {
 		colorOutput(CyanColor, err)
 		return
@@ -562,6 +565,7 @@ func sendXLM(publickey string, amountx float64, memo string) (string, error) {
 }
 
 func getLatestBlockHash() (string, error) {
+	log.Println("COOL?", orpc.UserRPC[33])
 	data, err := httpsGet(orpc.UserRPC[33])
 	if err != nil {
 		colorOutput(RedColor, err)
@@ -617,7 +621,7 @@ func putIpfsData(data []byte) (string, error) {
 	postdata := basePostData()
 	postdata.Set("data", string(data))
 
-	data, err := erpc.HttpsPost(client, ApiUrl+orpc.UserRPC[34][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+orpc.UserRPC[34][0], postdata)
 	if err != nil {
 		return "", err
 	}
@@ -646,7 +650,7 @@ func putEnergy(energyx uint32) ([]byte, error) {
 	postdata := basePostData()
 	postdata.Set("energy", energy)
 
-	data, err := erpc.HttpsPost(client, ApiUrl+rpc.RecpRPC[23][0], postdata)
+	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[23][0], postdata)
 	if err != nil {
 		return nil, err
 	}
