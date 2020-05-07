@@ -74,13 +74,13 @@ func demoData() error {
 	seedpwd := "x"
 	run := utils.GetRandomString(5)
 
-	inv, err := core.NewInvestor("mitdci"+run, password, seedpwd, "dci@media.mit.edu")
+	inv, err := core.NewInvestor("mitdci"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	recp, err := core.NewRecipient("fabideas"+run, password, seedpwd, "martin.wainstein@yale.edu")
+	recp, err := core.NewRecipient("fabideas"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err

@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 
 	erpc "github.com/Varunram/essentials/rpc"
-	"github.com/Varunram/essentials/utils"
 	consts "github.com/YaleOpenLab/opensolar/consts"
 	core "github.com/YaleOpenLab/opensolar/core"
 	loader "github.com/YaleOpenLab/opensolar/loader"
@@ -196,18 +195,20 @@ func main() {
 		`)
 	fmt.Println(`Starting Opensolar`)
 
-	recp, err := core.RetrieveRecipient(7)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		recp, err := core.RetrieveRecipient(7)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	recp.NextPaymentInterval = utils.IntToHumanTime(utils.Unix() + int64(consts.OneWeek))
+		recp.NextPaymentInterval = utils.IntToHumanTime(utils.Unix() + int64(consts.OneWeek))
 
-	err = recp.Save()
-	if err != nil {
-		log.Fatal(err)
-	}
+		err = recp.Save()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	go core.MonitorPaybacks(7, 1) // montior test project payback
+		//go core.MonitorPaybacks(7, 1) // montior test project payback
+	*/
 	rpc.StartServer(port, insecure)
 }
