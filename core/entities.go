@@ -164,7 +164,10 @@ func newEntity(uname string, pwd string, seedpwd string, name string, role strin
 	}
 	if !consts.Mainnet {
 		// automatically get funds if on testnet
-		go xlm.GetXLM(user.StellarWallet.PublicKey)
+		err = xlm.GetXLM(user.StellarWallet.PublicKey)
+		if err != nil {
+			log.Println("couildn't get xlm: ", err)
+		}
 	}
 	return a, err
 }
