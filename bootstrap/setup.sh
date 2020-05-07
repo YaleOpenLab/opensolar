@@ -52,3 +52,8 @@ go get -v ./...
 mv dummyconfig.yaml config.yaml
 cd ../opensolar/
 mv dummyconfig.yaml config.yaml
+cp bootstrap/platform.sh ../openx/
+cp opensolar ../openx/
+cd ../openx/
+chmod +x platform.sh
+./openx && ./platform.sh && ./opensolar
