@@ -44,7 +44,9 @@ func GetTestStablecoin(username string, pubkey string, seedpwd string, amountx f
 		return err
 	}
 
-	body := consts.OpenxURL + "/stablecoin/get?username=" + username + "&token=" + x.Token + "&seedpwd=" + seedpwd + "&amount=" + amount
+	body := consts.OpenxURL + "/stablecoin/get?username=" +
+		username + "&token=" + x.Token + "&seedpwd=" + seedpwd + "&amount=" + amount
+
 	go erpc.GetRequest(body)
 	return nil
 }

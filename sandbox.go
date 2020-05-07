@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -112,6 +113,8 @@ func sandbox() error {
 		log.Println(err)
 		return err
 	}
+
+	log.Println("created investor")
 	// inv.U.Legal = true set this check to true in later versions if needed
 
 	invSeed, err := wallet.DecryptSeed(inv.U.StellarWallet.EncryptedSeed, seedpwd)
@@ -126,17 +129,23 @@ func sandbox() error {
 		return err
 	}
 
+	log.Println("created recipient")
+
 	guar, err := core.NewGuarantor("guarantor"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
+	log.Println("created guarantor")
+
 	dev, err := core.NewDeveloper("inversol"+run, password, seedpwd, "varunramganesh@gmail.com")
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
+	log.Println("created developer")
 
 	dev.PresentContractIndices = append(dev.PresentContractIndices, project.Index)
 
@@ -187,22 +196,38 @@ func sandbox() error {
 		return errors.New("recp account not setup")
 	}
 
-	log.Println("making developer trust the asset")
-	_, err = assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, devFee, devSeed)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var wg1 sync.WaitGroup
 
-	log.Println("loading test investor with stablecoin, pubkey: ", inv.U.StellarWallet.PublicKey)
+	wg1.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		log.Println("developer trusts stableUSD")
+		_, err = assets.TrustAsset(consts.StablecoinCode, consts.StablecoinPublicKey, devFee, devSeed)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(&wg1)
 
-	go stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, seedpwd, exchangeRate)
-	time.Sleep(35 * time.Second)
+	wg1.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		log.Println("loading test investor with stablecoin, pubkey: ", inv.U.StellarWallet.PublicKey)
+		stablecoin.GetTestStablecoin(inv.U.Username, inv.U.StellarWallet.PublicKey, seedpwd, exchangeRate)
+	}(&wg1)
 
+	wg1.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		log.Println("loading receipient with stablecoin, pubkey: ", recp.U.StellarWallet.PublicKey)
+		go stablecoin.GetTestStablecoin(recp.U.Username, recp.U.StellarWallet.PublicKey, seedpwd, exchangeRate)
+	}(&wg1)
+
+	wg1.Wait()
+
+	time.Sleep(30 * time.Second)
 	if xlm.GetAssetBalance(inv.U.StellarWallet.PublicKey, consts.StablecoinCode) < 1 {
 		return errors.New("stablecoin not present with the investor")
 	}
-
-	go stablecoin.GetTestStablecoin(recp.U.Username, recp.U.StellarWallet.PublicKey, seedpwd, exchangeRate)
 
 	err = core.Invest(project.Index, inv.U.Index, invAmount, invSeed)
 	if err != nil {
