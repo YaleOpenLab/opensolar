@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/chzyer/readline"
@@ -249,37 +250,49 @@ func main() {
 	var balance float64
 	var usdBalance float64
 
-	go func() {
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
 		StartHash, err = getLatestBlockHash()
 		if err != nil {
 			log.Fatal(err)
 		}
-	}()
+	}(&wg)
 
-	go func() {
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
 		balance, err = getNativeBalance()
 		if err != nil {
 			log.Fatal(err)
 		}
-	}()
+	}(&wg)
 
 	if consts.Mainnet {
-		go func() {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
 			usdBalance, err = getAssetBalance("USD")
 			if err != nil {
 				log.Fatal(err)
 			}
-		}()
+		}(&wg)
+
 	} else {
-		go func() {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
 			usdBalance, err = getAssetBalance("STABLEUSD")
 			if err != nil {
 				log.Fatal(err)
 			}
-		}()
+		}(&wg)
 	}
 
-	time.Sleep(3 * time.Second)
+	wg.Wait()
+
 	colorOutput(MagentaColor, "XLM BALANCE: ", balance)
 	colorOutput(MagentaColor, "USD BALANCE: ", usdBalance)
 	colorOutput(MagentaColor, "START HASH: ", StartHash)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/YaleOpenLab/opensolar/messages"
 
@@ -473,43 +474,69 @@ func invDashboard() {
 			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
 		}
 
-		primNativeBalance := xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) * xlmUSD
-		if primNativeBalance < 0 {
-			primNativeBalance = 0
-		}
+		var primNativeBalance, secNativeBalance, primUsdBalance, secUsdBalance float64
 
-		secNativeBalance := xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) * xlmUSD
-		if secNativeBalance < 0 {
-			secNativeBalance = 0
-		}
+		var wg sync.WaitGroup
+
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			primNativeBalance = xlm.GetNativeBalance(prepInvestor.U.StellarWallet.PublicKey) * xlmUSD
+			if primNativeBalance < 0 {
+				primNativeBalance = 0
+			}
+		}(&wg)
+
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			secNativeBalance = xlm.GetNativeBalance(prepInvestor.U.SecondaryWallet.PublicKey) * xlmUSD
+			if secNativeBalance < 0 {
+				secNativeBalance = 0
+			}
+		}(&wg)
 
 		if !consts.Mainnet {
-			primUsdBalance := xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.StablecoinCode)
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				primUsdBalance = xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.StablecoinCode)
+				if primUsdBalance < 0 {
+					primUsdBalance = 0
+				}
+			}(&wg)
 
-			secUsdBalance := xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.StablecoinCode)
-			if secUsdBalance < 0 {
-				secUsdBalance = 0
-			}
-
-			ret.AccountBalance1 = primNativeBalance + primUsdBalance
-			ret.AccountBalance2 = secNativeBalance + secUsdBalance
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				secUsdBalance = xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.StablecoinCode)
+				if secUsdBalance < 0 {
+					secUsdBalance = 0
+				}
+			}(&wg)
 		} else {
-			primUsdBalance := xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.AnchorUSDCode)
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
-
-			secUsdBalance := xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.AnchorUSDCode)
-			if secUsdBalance < 0 {
-				secUsdBalance = 0
-			}
-
-			ret.AccountBalance1 = primNativeBalance + primUsdBalance
-			ret.AccountBalance2 = secNativeBalance + secUsdBalance
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				primUsdBalance = xlm.GetAssetBalance(prepInvestor.U.StellarWallet.PublicKey, consts.AnchorUSDCode)
+				if primUsdBalance < 0 {
+					primUsdBalance = 0
+				}
+			}(&wg)
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				secUsdBalance = xlm.GetAssetBalance(prepInvestor.U.SecondaryWallet.PublicKey, consts.AnchorUSDCode)
+				if secUsdBalance < 0 {
+					secUsdBalance = 0
+				}
+			}(&wg)
 		}
+
+		wg.Wait()
+
+		ret.AccountBalance1 = primNativeBalance + primUsdBalance
+		ret.AccountBalance2 = secNativeBalance + secUsdBalance
 
 		if ret.AccountBalance2 < 0 {
 			ret.AccountBalance2 = 0
