@@ -3,6 +3,7 @@ package rpc
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/YaleOpenLab/opensolar/messages"
 
@@ -198,24 +199,42 @@ func developerDashboard() {
 			x.ProjectWallets.Wallets = make([][]string, 2)
 
 			var escrowBalance string
-			if consts.Mainnet {
-				escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode))
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-				ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
-			} else {
 
-				escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode))
-				if err != nil {
-					log.Println(err)
-					erpc.MarshalSend(w, erpc.StatusInternalServerError)
-					return
-				}
-				ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
+			var wg sync.WaitGroup
+
+			if consts.Mainnet {
+				wg.Add(1)
+				go func(wg *sync.WaitGroup) {
+					defer wg.Done()
+					escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode))
+					if err != nil {
+						log.Println(err)
+					}
+				}(&wg)
+
+				wg.Add(1)
+				go func(wg *sync.WaitGroup) {
+					defer wg.Done()
+					ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.AnchorUSDCode)
+				}(&wg)
+			} else {
+				wg.Add(1)
+				go func(wg *sync.WaitGroup) {
+					defer wg.Done()
+					escrowBalance, err = utils.ToString(xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode))
+					if err != nil {
+						log.Println(err)
+					}
+				}(&wg)
+
+				wg.Add(1)
+				go func(wg *sync.WaitGroup) {
+					defer wg.Done()
+					ret.YourWallet.ProjectWalletBalance += xlm.GetAssetBalance(project.EscrowPubkey, consts.StablecoinCode)
+				}(&wg)
 			}
+
+			wg.Wait()
 
 			x.ProjectWallets.Wallets[0] = []string{"Project Escrow Wallet: " + project.EscrowPubkey, escrowBalance}
 			x.ProjectWallets.Wallets[1] = []string{"Renewable Energy Certificates (****BBDJL)", "10"}

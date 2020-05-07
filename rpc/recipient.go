@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/YaleOpenLab/opensolar/messages"
@@ -870,20 +871,38 @@ func recpDashboard() {
 				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
 			}
 
-			primNativeBalance := xlm.GetNativeBalance(prepRecipient.U.StellarWallet.PublicKey) * xlmUSD
-			if primNativeBalance < 0 {
-				primNativeBalance = 0
-			}
+			var wg sync.WaitGroup
 
-			secNativeBalance := xlm.GetNativeBalance(prepRecipient.U.SecondaryWallet.PublicKey) * xlmUSD
-			if secNativeBalance < 0 {
-				secNativeBalance = 0
-			}
+			var primNativeBalance, secNativeBalance, primUsdBalance float64
 
-			primUsdBalance := xlm.GetAssetBalance(prepRecipient.U.StellarWallet.PublicKey, consts.StablecoinCode)
-			if primUsdBalance < 0 {
-				primUsdBalance = 0
-			}
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				primNativeBalance = xlm.GetNativeBalance(prepRecipient.U.StellarWallet.PublicKey) * xlmUSD
+				if primNativeBalance < 0 {
+					primNativeBalance = 0
+				}
+			}(&wg)
+
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				secNativeBalance = xlm.GetNativeBalance(prepRecipient.U.SecondaryWallet.PublicKey) * xlmUSD
+				if secNativeBalance < 0 {
+					secNativeBalance = 0
+				}
+			}(&wg)
+
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				defer wg.Done()
+				primUsdBalance = xlm.GetAssetBalance(prepRecipient.U.StellarWallet.PublicKey, consts.StablecoinCode)
+				if primUsdBalance < 0 {
+					primUsdBalance = 0
+				}
+			}(&wg)
+
+			wg.Wait()
 
 			accBal, err := utils.ToString(primUsdBalance + primNativeBalance)
 			if err != nil {
