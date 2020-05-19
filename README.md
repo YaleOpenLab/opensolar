@@ -4,11 +4,49 @@
 
 Opensolar is a platform built on openx for financing smart solar infrastructure using the Stellar blockchain. Opensolar uses IoT devices, smart meters and smart contracts to automate the end-end payments flow, making moving money cheaper and faster. Work in Progress.
 
-Download builds: [builds.openx.solar](https://builds.opens.solar/fe)  
-Openx test API: [api.openx.solar](https://api.openx.solar/ping)  
-Opensolar test API: [api2.openx.solar](https://api2.openx.solar/ping)  
-Checkout Frontend: [openx.solar](https:/www.openx.solar)  
-API docs: [apidocs.opens.solar](https://apidocs.openx.solar)  
+## Related Repositories
+
+[Openx](https://github.com/YaleOpenLab/openx)  
+[Opensolar](https://github.com/YaleOpenLab/opensolar)  
+[Opensolar Frontend](https://github.com/YaleOpenLab/openx-frontend)  
+[API Docs](https://github.com/YaleOpenLab/openx-apidocs)  
+[Wiki](https://github.com/YaleOpenLab/openxdocs)  
+[Create-openx-app](https://github.com/YaleOpenLab/create-openx-app)  
+[Openx-CLI](https://github.com/Varunram/openx-cli)
+
+## Related Websites
+
+[Demo](www.openx.solar)  
+[Openx API](api.openx.solar)  
+[Opensolar API](api2.openx.solar)  
+[API docs](apidocs.openx.solar)  
+[Wiki](api.openx.solar)  
+[Builds](builds.openx.solar)  
+[MQTT broker](mqtt.openx.solar)  
+[Pilot Dashboard](dashboard.openx.solar)
+
+## Downloads
+
+Opensolar builds are available at [builds.openx.solar](builds.openx.solar)
+
+## Building from source
+
+Requirements:
+
+1. Go 1.11 and above
+2. Standard build tools depending on architecture (build-essential for linux, brew and xcode dev tools for mac)
+
+IMPORTANT: Inline with the Golang dev team, we will not be supporting versions of go that are more than two releases old. If you have a version of Go that is older than 1.11, please upgrade to the latest version of Go before continuing.
+
+```
+go get -v github.com/YaleOpenLab/opensolar
+cd $GOPATH/src/github.com/YaleOpenLab/opensolar/
+go mod download
+go mod verify
+go build
+```
+
+Make sure you have the necessary permissions to write to `$HOME`. Start opensolar using `./opensolar`
 
 #### ABSTRACT
 
