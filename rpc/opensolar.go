@@ -23,6 +23,8 @@ func setupProjectRPCs() {
 	sendTellerFailedPaybackEmail()
 	explore()
 	projectDetail()
+	getActiveProjects()
+	getCompletedProjects()
 }
 
 // ProjectRPC contains a list of all the project related RPC endpoints
@@ -36,6 +38,8 @@ var ProjectRPC = map[int][]string{
 	8:  []string{"/project/get/dashboard", "GET", "index"},                        // GET
 	9:  []string{"/explore", "GET"},                                               // GET
 	10: []string{"/project/detail", "GET", "index"},                               // GET
+	11: []string{"/project/active", "GET"},                                        // GET
+	12: []string{"/project/complete", "GET"},                                      // GET
 }
 
 // getAllProjects gets a list of all projects
@@ -54,6 +58,46 @@ func getAllProjects() {
 			return
 		}
 		erpc.MarshalSend(w, allProjects)
+	})
+}
+
+// getActiveProjects gets a list of active projects
+func getActiveProjects() {
+	http.HandleFunc(ProjectRPC[11][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		activeProjects, err := core.RetrieveActiveProjects()
+		if err != nil {
+			log.Println("did not retrieve all projects", err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, activeProjects)
+	})
+}
+
+// getCompletedProjects gets a list of active projects
+func getCompletedProjects() {
+	http.HandleFunc(ProjectRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		activeProjects, err := core.RetrieveCompletedProjects()
+		if err != nil {
+			log.Println("did not retrieve all projects", err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.MarshalSend(w, activeProjects)
 	})
 }
 
@@ -318,6 +362,11 @@ func explore() {
 
 		var arr []ExplorePageStub
 		for _, project := range allProjects {
+
+			if project.Complete {
+				continue
+			}
+
 			var x ExplorePageStub
 
 			stageString, err := utils.ToString(project.Stage)

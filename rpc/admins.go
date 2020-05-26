@@ -20,17 +20,19 @@ func setupAdminHandlers() {
 	retrieveEntityAdmin()
 	retrieveAllInvestors()
 	retrieveAllRecipients()
+	projectComplete()
 }
 
 // AdminRPC is a list of all the endpoints that can be called by admins
 var AdminRPC = map[int][]string{
-	1: []string{"/admin/flag", "GET", "projIndex"},     // GET
-	2: []string{"/admin/getallprojects", "GET"},        // GET
-	3: []string{"/admin/getrecipient", "GET", "index"}, // GET
-	4: []string{"/admin/getinvestor", "GET", "index"},  // GET
-	5: []string{"/admin/getentity", "GET", "index"},    // GET
-	6: []string{"/admin/getallinvestors", "GET"},       // GET
-	7: []string{"/admin/getallrecipients", "GET"},      // GET
+	1: []string{"/admin/flag", "GET", "projIndex"},          // GET
+	2: []string{"/admin/getallprojects", "GET"},             // GET
+	3: []string{"/admin/getrecipient", "GET", "index"},      // GET
+	4: []string{"/admin/getinvestor", "GET", "index"},       // GET
+	5: []string{"/admin/getentity", "GET", "index"},         // GET
+	6: []string{"/admin/getallinvestors", "GET"},            // GET
+	7: []string{"/admin/getallrecipients", "GET"},           // GET
+	8: []string{"/admin/project/complete", "POST", "index"}, // POST
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool
@@ -225,5 +227,44 @@ func retrieveAllRecipients() {
 		x.Length = len(recipients)
 
 		erpc.MarshalSend(w, x)
+	})
+}
+
+// projectComplete marks a project as completed. Should be manually set by admins from the admin dashboard
+func projectComplete() {
+	http.HandleFunc(AdminRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		user, admin := validateAdmin(w, r, AdminRPC[8][2:], AdminRPC[8][1])
+		if !admin {
+			return
+		}
+
+		indexS := r.FormValue("index")
+
+		index, err := utils.ToInt(indexS)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		project, err := core.RetrieveProject(index)
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		project.Complete = true
+		project.CompleteAuth = user.Index
+		project.CompleteDate = utils.Timestamp()
+
+		err = project.Save()
+		if err != nil {
+			log.Println(err)
+			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

@@ -159,6 +159,15 @@ type Project struct {
 	// Content contains the bulk of the non smart contract data
 	Content CMS
 
+	// Complete marks a project as complete
+	Complete bool
+
+	// CompleteAuth contains the index of the admin who set the complete flag on a project
+	CompleteAuth int
+
+	// CompleteDate is hte date on which the project was marked complete
+	CompleteDate string
+
 	// below are non critical params only used on the frontend
 	Name               string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
 	City               string    `json:"City"`                 // the city in which the project is located at
