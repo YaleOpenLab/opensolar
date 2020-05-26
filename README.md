@@ -29,7 +29,7 @@ Opensolar is a platform built on openx for financing smart solar infrastructure 
 
 Opensolar builds are available at [builds.openx.solar](builds.openx.solar)
 
-Docker image available [Docker Hub](https://hub.docker.com/repository/docker/varunramg/opensolar)
+Docker image available at [Docker Hub](https://hub.docker.com/repository/docker/varunramg/opensolar)
 
 ## Building from source
 
