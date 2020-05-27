@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	erpc "github.com/Varunram/essentials/rpc"
+	"github.com/YaleOpenLab/opensolar/handle"
 )
 
 func setupSwytchApis() {
@@ -63,18 +64,14 @@ func getAccessToken() {
 		log.Println(a)
 		reqbody := strings.NewReader(a)
 		req, err := http.NewRequest("POST", url, reqbody)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		req.Header.Add("content-type", "application/json")
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -88,9 +85,7 @@ func getAccessToken() {
 
 		var x GetAccessTokenData
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -129,18 +124,14 @@ func getRefreshToken() {
 
 		reqbody := strings.NewReader(a)
 		req, err := http.NewRequest("POST", url, reqbody)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		req.Header.Add("content-type", "application/json")
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -154,9 +145,7 @@ func getRefreshToken() {
 
 		var x GetAccessTokenData
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -204,18 +193,16 @@ func getSwytchUser() {
 		authToken := r.URL.Query()["authToken"][0]
 
 		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		req.Header.Add("authorization", "Bearer "+authToken)
 		req.Header.Add("cache-control", "no-cache")
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		defer func() {
@@ -225,18 +212,16 @@ func getSwytchUser() {
 		}()
 
 		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		log.Println(res)
 
 		var x GetSwytchUserStruct
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		erpc.MarshalSend(w, x)
@@ -300,17 +285,15 @@ func getAssets() {
 		url := "https://platformapi-staging.swytch.io/v1/users/" + userId + "/assets"
 
 		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		defer func() {
@@ -320,17 +303,15 @@ func getAssets() {
 		}()
 
 		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		log.Println(string(body))
 		var x GetAssetStruct
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		erpc.MarshalSend(w, x)
@@ -405,17 +386,15 @@ func getEnergy() {
 		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/energy?limit=100&offset=0"
 
 		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		defer func() {
@@ -425,16 +404,14 @@ func getEnergy() {
 		}()
 
 		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		var x GetEnergyStruct
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		erpc.MarshalSend(w, x)
@@ -512,17 +489,14 @@ func getEnergyAttribution() {
 		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/attributions?limit=100&offset=0"
 
 		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
-
 		req.Header.Add("authorization", "Bearer "+authToken)
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		defer func() {
@@ -532,17 +506,15 @@ func getEnergyAttribution() {
 		}()
 
 		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		log.Println(string(body))
 		var x GetEnergyAttributionData
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
 		}
 
 		erpc.MarshalSend(w, x)

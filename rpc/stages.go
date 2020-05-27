@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -61,9 +62,7 @@ func returnSpecificStage() {
 		indexx := r.URL.Query()["index"][0]
 
 		index, err := utils.ToInt(indexx)
-		if err != nil {
-			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed index not an integer", messages.ConversionError) {
 			return
 		}
 
@@ -113,9 +112,7 @@ func promoteStage() {
 
 		indexx := r.URL.Query()["index"][0]
 		index, err := utils.ToInt(indexx)
-		if err != nil {
-			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed index not an integer", messages.ConversionError) {
 			return
 		}
 
@@ -168,9 +165,7 @@ func promoteStage() {
 
 		// we check whether the person is actually associated with the project in question
 		err = core.StageXtoY(index)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

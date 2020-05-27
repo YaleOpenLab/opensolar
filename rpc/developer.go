@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	"github.com/YaleOpenLab/opensolar/consts"
@@ -46,22 +47,17 @@ func withdrawdeveloper() {
 		projIndexx := r.FormValue("projIndex")
 
 		amount, err := utils.ToFloat(amountx)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		err = core.RequestWaterfallWithdrawal(prepEntity.U.Index, projIndex, amount)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -276,9 +272,7 @@ func requestWaterfall() {
 		}
 
 		err = core.RequestWaterfallWithdrawal(prepEntity.U.Index, projIndex, amount)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
