@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/pkg/errors"
 
@@ -61,8 +62,7 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 		}
 
 		err = r.ParseForm()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		if handle.RPCErr(w, err, erpc.StatusUnauthorized) {
 			return err
 		}
 

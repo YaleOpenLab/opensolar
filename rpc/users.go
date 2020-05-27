@@ -98,9 +98,7 @@ func updateUser() {
 			if err == nil {
 				investor.U = &user
 				err = investor.Save()
-				if err != nil {
-					log.Println("unable to save investor: ", err)
-					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				if handle.RPCErr(w, err, erpc.StatusInternalServerError, "unable to save investor") {
 					return
 				}
 			}
@@ -108,9 +106,7 @@ func updateUser() {
 			if err == nil {
 				recipient.U = &user
 				err = recipient.Save()
-				if err != nil {
-					log.Println("unable to save recipient: ", err)
-					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				if handle.RPCErr(w, err, erpc.StatusInternalServerError, "unable to save recipient") {
 					return
 				}
 			}
@@ -118,9 +114,7 @@ func updateUser() {
 			if err == nil {
 				entity.U = &user
 				err = entity.Save()
-				if err != nil {
-					log.Println("unable to save recipient: ", err)
-					erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+				if handle.RPCErr(w, err, erpc.StatusInternalServerError, "unable to save entity") {
 					return
 				}
 			}
@@ -218,9 +212,7 @@ func registerUser() {
 
 		// parse form the check whether required params are present
 		err = r.ParseForm()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusUnauthorized)
+		if handle.RPCErr(w, err, erpc.StatusUnauthorized) {
 			return
 		}
 
@@ -238,9 +230,7 @@ func registerUser() {
 		seedpwd := r.FormValue("seedpwd")
 
 		user, err := core.NewUser(username, pwhash, seedpwd, email)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusNotFound)
+		if handle.RPCErr(w, err, erpc.StatusNotFound, "unable to save user") {
 			return
 		}
 
