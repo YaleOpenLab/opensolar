@@ -58,8 +58,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 	var err error
 
 	err = checkReqdParams(w, r, options, method)
-	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotInvestorError)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "reqd params not present can't be empty", messages.NotInvestorError) {
 		return prepInvestor, errors.New("reqd params not present can't be empty")
 	}
 
@@ -71,9 +70,7 @@ func InvValidateHelper(w http.ResponseWriter, r *http.Request, options []string,
 	}
 
 	prepInvestor, err = core.ValidateInvestor(username, token)
-	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotInvestorError)
-		log.Println("did not validate investor", err)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "did not validate investor", messages.NotInvestorError) {
 		return prepInvestor, err
 	}
 
@@ -99,8 +96,7 @@ func registerInvestor() {
 		if core.CheckUsernameCollision(username) {
 			// user already exists, need to retrieve the user
 			user, err := core.ValidateUser(username, token) // check whether this person is a user and has params
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
+			if handle.RPCErr(w, err, erpc.StatusUnauthorized, "", messages.NotUserError) {
 				return
 			}
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
@@ -179,15 +175,12 @@ func invest() {
 		}
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "error while converting project index to int", messages.ConversionError) {
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -222,15 +215,11 @@ func voteTowardsProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		votes, err := utils.ToFloat(votesx)
-		if err != nil {
-			log.Println("votes not float, quitting")
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "votes not float", messages.ConversionError) {
 			return
 		}
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println("error while converting project index to int: ", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "error while converting project index to int", messages.ConversionError) {
 			return
 		}
 
@@ -282,8 +271,7 @@ func invAssetInv() {
 		}
 
 		amount, err := utils.ToFloat(amountx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -382,9 +370,7 @@ func invDashboard() {
 
 			var temp invDHelper
 			stageString, err := utils.ToString(project.Stage)
-			if err != nil {
-				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.ConversionError) {
 				return
 			}
 			temp.StageDescription = stageString + " | " + core.GetStageDescription(project.Stage)
@@ -445,9 +431,8 @@ func invDashboard() {
 		ret.SecondaryAddress = prepInvestor.U.SecondaryWallet.PublicKey
 
 		xlmUSD, err := tickers.BinanceTicker()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.TickerError) {
+			return
 		}
 
 		var primNativeBalance, secNativeBalance, primUsdBalance, secUsdBalance float64

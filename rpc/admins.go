@@ -61,9 +61,7 @@ func flagProject() {
 		}
 
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ParamError("projIndex"))
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ParamError("projIndex")) {
 			return
 		}
 

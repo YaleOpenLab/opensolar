@@ -113,8 +113,7 @@ func getProject() {
 		index := r.URL.Query()["index"][0]
 
 		uKey, err := utils.ToInt(index)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 		contract, err := core.RetrieveProject(uKey)
@@ -143,9 +142,7 @@ func getProjectsAtIndex() {
 		stagex := r.URL.Query()["stage"][0]
 
 		stage, err := utils.ToInt(stagex)
-		if err != nil {
-			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "Passed index not an integer, quitting", messages.ConversionError) {
 			return
 		}
 
@@ -179,9 +176,7 @@ func addContractHash() {
 		choice := r.URL.Query()["choice"][0]
 		hashString := r.URL.Query()["choicestr"][0]
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if err != nil {
-			log.Println("passed project index not int, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed project index not int, quitting", messages.ConversionError) {
 			return
 		}
 
@@ -286,8 +281,7 @@ func getProjectDashboard() {
 		}
 
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -401,9 +395,7 @@ func projectDetail() {
 		}
 
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -413,9 +405,7 @@ func projectDetail() {
 		}
 
 		stageString, err := utils.ToString(project.Stage)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.ConversionError) {
 			return
 		}
 

@@ -45,8 +45,7 @@ func entityValidateHelper(w http.ResponseWriter,
 	var prepEntity core.Entity
 
 	err := checkReqdParams(w, r, options, method)
-	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotEntityError)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "", messages.NotEntityError) {
 		return prepEntity, errors.New("reqd params not present can't be empty")
 	}
 
@@ -62,9 +61,7 @@ func entityValidateHelper(w http.ResponseWriter,
 	}
 
 	prepEntity, err = core.ValidateEntity(username, token)
-	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotEntityError)
-		log.Println("did not validate investor", err)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "did not validate investor", messages.NotEntityError) {
 		return prepEntity, err
 	}
 
@@ -158,9 +155,7 @@ func addCollateral() {
 		collateral := r.FormValue("collateral")
 
 		amount, err := utils.ToFloat(amountx)
-		if err != nil {
-			log.Println("Error while converting string to float", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "Error while converting string to float", messages.ConversionError) {
 			return
 		}
 
@@ -210,9 +205,8 @@ func proposeOpensolarProject() {
 		}
 
 		fee, err := utils.ToFloat(feex)
-		if err != nil {
-			log.Println("fee passed not integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "fee passed not integer, quitting", messages.ConversionError) {
+			return
 		}
 
 		x.TotalValue += fee
