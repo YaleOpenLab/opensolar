@@ -6,6 +6,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	core "github.com/YaleOpenLab/opensolar/core"
+	"github.com/YaleOpenLab/opensolar/handle"
 )
 
 func setupPublicRoutes() {
@@ -97,9 +98,7 @@ func getAllInvestorsPublic() {
 			return
 		}
 		investors, err := core.RetrieveAllInvestors()
-		if err != nil {
-			log.Println("did not retrieve all investors", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all investors") {
 			return
 		}
 		sInvestors := sanitizeAllInvestors(investors)
@@ -116,9 +115,7 @@ func getAllRecipientsPublic() {
 			return
 		}
 		recipients, err := core.RetrieveAllRecipients()
-		if err != nil {
-			log.Println("did not retrieve all recipients", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all recipients") {
 			return
 		}
 		sRecipients := sanitizeAllRecipients(recipients)
@@ -136,9 +133,7 @@ func getRecpTopReputationPublic() {
 			return
 		}
 		allRecps, err := core.TopReputationRecipients()
-		if err != nil {
-			log.Println("did not retrieve all top reputaiton recipients", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all top reputation recipients") {
 			return
 		}
 		sRecipients := sanitizeAllRecipients(allRecps)
@@ -156,9 +151,7 @@ func getInvTopReputationPublic() {
 			return
 		}
 		allInvs, err := core.TopReputationInvestors()
-		if err != nil {
-			log.Println("did not retrieve all top reputation investors", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all top reputation investors") {
 			return
 		}
 		sInvestors := sanitizeAllInvestors(allInvs)

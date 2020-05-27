@@ -93,9 +93,7 @@ func getStage0Contracts() {
 		}
 
 		x, err := core.RetrieveOriginatorProjects(core.Stage0.Number, prepEntity.U.Index)
-		if err != nil {
-			log.Println("Error while retrieving originator project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving originator project") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -112,9 +110,7 @@ func getStage1Contracts() {
 		}
 
 		x, err := core.RetrieveOriginatorProjects(core.Stage1.Number, prepEntity.U.Index)
-		if err != nil {
-			log.Println("Error while retrieving originator projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving originator projects") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -131,9 +127,7 @@ func getStage2Contracts() {
 		}
 
 		x, err := core.RetrieveContractorProjects(core.Stage2.Number, prepEntity.U.Index)
-		if err != nil {
-			log.Println("Error while retrieving contractor projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving contractor projects") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -171,9 +165,7 @@ func addCollateral() {
 		}
 
 		err = prepEntity.AddCollateral(amount, collateral)
-		if err != nil {
-			log.Println("Error while adding collateral", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while adding collateral") {
 			return
 		}
 
@@ -315,9 +307,9 @@ func registerEntity() {
 
 		}
 
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
-				return
-			}
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
+		}
 
 		erpc.MarshalSend(w, user)
 	})

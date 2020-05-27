@@ -53,9 +53,7 @@ func getAllProjects() {
 		}
 
 		allProjects, err := core.RetrieveAllProjects()
-		if err != nil {
-			log.Println("did not retrieve all projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 		erpc.MarshalSend(w, allProjects)
@@ -72,9 +70,7 @@ func getActiveProjects() {
 		}
 
 		activeProjects, err := core.RetrieveActiveProjects()
-		if err != nil {
-			log.Println("did not retrieve all projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 
@@ -92,9 +88,7 @@ func getCompletedProjects() {
 		}
 
 		activeProjects, err := core.RetrieveCompletedProjects()
-		if err != nil {
-			log.Println("did not retrieve all projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 
@@ -112,8 +106,7 @@ func getProject() {
 		}
 
 		err := erpc.CheckGet(w, r)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusNotFound)
+		if handle.RPCErr(w, err, erpc.StatusNotFound) {
 			return
 		}
 
@@ -193,9 +186,7 @@ func addContractHash() {
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if err != nil {
-			log.Println("couldn't retrieve prject index from database")
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "couldn't retrieve prject index from database") {
 			return
 		}
 		// there are in total 5 types of hashes: OriginatorMoUHash, ContractorContractHash,
@@ -231,9 +222,7 @@ func addContractHash() {
 		}
 
 		err = project.Save()
-		if err != nil {
-			log.Println("error while saving project to db, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "error while saving project to db, quitting!") {
 			return
 		}
 
@@ -363,9 +352,7 @@ func explore() {
 			var x ExplorePageStub
 
 			stageString, err := utils.ToString(project.Stage)
-			if err != nil {
-				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 

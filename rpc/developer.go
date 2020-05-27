@@ -57,8 +57,7 @@ func withdrawdeveloper() {
 		}
 
 		err = core.RequestWaterfallWithdrawal(prepEntity.U.Index, projIndex, amount)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

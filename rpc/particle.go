@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	erpc "github.com/Varunram/essentials/rpc"
+	"github.com/YaleOpenLab/opensolar/handle"
 )
 
 // ParticleRPC contains a list of all particle related endpoints
@@ -137,8 +138,7 @@ func listAllDevices() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[1][2:], ParticleRPC[1][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -159,8 +159,7 @@ func listProductInfo() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[2][2:], ParticleRPC[2][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -184,8 +183,7 @@ func getDeviceInfo() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[3][2:], ParticleRPC[3][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -209,8 +207,7 @@ func pingDevice() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[4][2:], ParticleRPC[4][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -235,8 +232,7 @@ func signalDevice() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[5][2:], ParticleRPC[5][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -272,8 +268,7 @@ func serialNumberInfo() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[6][2:], ParticleRPC[6][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -296,8 +291,7 @@ func getDiagnosticsLast() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[7][2:], ParticleRPC[7][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -320,8 +314,7 @@ func getAllDiagnostics() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[8][2:], ParticleRPC[8][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -343,8 +336,7 @@ func getParticleUserInfo() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[9][2:], ParticleRPC[9][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -365,8 +357,7 @@ func getAllSims() {
 		}
 
 		err = checkReqdParams(w, r, ParticleRPC[10][2:], ParticleRPC[10][1])
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 

@@ -117,9 +117,7 @@ func getAllRecipients() {
 			return
 		}
 		recipients, err := core.RetrieveAllRecipients()
-		if err != nil {
-			log.Println("did not retrieve all recipients", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all recipients") {
 			return
 		}
 		erpc.MarshalSend(w, recipients)
@@ -172,9 +170,9 @@ func registerRecipient() {
 		}
 
 		user, err := core.NewRecipient(username, pwhash, seedpwd, name)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
-				return
-			}
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
+		}
 
 		erpc.MarshalSend(w, user)
 	})
@@ -217,16 +215,12 @@ func payback() {
 		}
 
 		recipientSeed, err := wallet.DecryptSeed(prepRecipient.U.StellarWallet.EncryptedSeed, seedpwd)
-		if err != nil {
-			log.Println("did not decrypt seed", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not decrypt seed") {
 			return
 		}
 
 		err = core.Payback(recpIndex, projIndex, assetName, amount, recipientSeed)
-		if err != nil {
-			log.Println("did not payback", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not payback") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -246,9 +240,7 @@ func storeDeviceId() {
 		// we have the recipient ready. Now set the device id
 		prepRecipient.DeviceId = deviceId
 		err = prepRecipient.Save()
-		if err != nil {
-			log.Println("did not save recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -268,9 +260,7 @@ func storeStartTime() {
 
 		prepRecipient.DeviceStarts = append(prepRecipient.DeviceStarts, start)
 		err = prepRecipient.Save()
-		if err != nil {
-			log.Println("did not save recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -290,9 +280,7 @@ func storeDeviceLocation() {
 
 		prepRecipient.DeviceLocation = location
 		err = prepRecipient.Save()
-		if err != nil {
-			log.Println("did not save recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -309,23 +297,17 @@ func chooseBlindAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if err != nil {
-			log.Println("did not validate recipient projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
 		bestContract, err := core.SelectContractBlind(allContracts)
-		if err != nil {
-			log.Println("did not select contract", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if err != nil {
-			log.Println("did not set final project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -343,23 +325,17 @@ func chooseVickreyAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if err != nil {
-			log.Println("did not retrieve recipient projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
-		bestContract, err := core.SelectContractVickrey(allContracts)
-		if err != nil {
-			log.Println("did not select contract", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		bestContract, err := core.SelectContractBlind(allContracts)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if err != nil {
-			log.Println("did not set final project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -376,23 +352,17 @@ func chooseTimeAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if err != nil {
-			log.Println("did not retrieve recipient projects", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
-		bestContract, err := core.SelectContractTime(allContracts)
-		if err != nil {
-			log.Println("did not select contract", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		bestContract, err := core.SelectContractBlind(allContracts)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if err != nil {
-			log.Println("did not set final project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -420,9 +390,7 @@ func unlockOpenSolar() {
 		}
 
 		err = core.UnlockProject(recipient.U.Username, recipient.U.AccessToken, projIndex, seedpwd)
-		if err != nil {
-			log.Println("did not unlock project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not unlock project") {
 			return
 		}
 
@@ -441,9 +409,7 @@ func addEmail() {
 		email := r.FormValue("email")
 
 		err = recipient.U.AddEmail(email)
-		if err != nil {
-			log.Println("did not add email", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not add email") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -468,16 +434,12 @@ func finalizeProject() {
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if err != nil {
-			log.Println("did not retrieve project", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not retrieve project") {
 			return
 		}
 
 		err = project.SetStage(4)
-		if err != nil {
-			log.Println("did not set final project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -503,9 +465,7 @@ func originateProject() {
 		}
 
 		err = core.RecipientAuthorize(projIndex, recipient.U.Index)
-		if err != nil {
-			log.Println("did not authorize project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not authorize project") {
 			return
 		}
 
@@ -540,9 +500,7 @@ func storeStateHash() {
 
 		prepRecipient.StateHashes = append(prepRecipient.StateHashes, hash)
 		err = prepRecipient.Save()
-		if err != nil {
-			log.Println("did not save recipient", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -567,9 +525,7 @@ func setOneTimeUnlock() {
 		}
 
 		err = prepRecipient.SetOneTimeUnlock(projIndex, seedpwd)
-		if err != nil {
-			log.Println("did not set one time unlock", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set one time unlock") {
 			return
 		}
 
@@ -585,8 +541,7 @@ func storeTellerURL() {
 		}
 
 		err = r.ParseForm()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -600,8 +555,7 @@ func storeTellerURL() {
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -613,8 +567,7 @@ func storeTellerURL() {
 
 		project.TellerUrl = url
 		err = project.Save()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -631,8 +584,7 @@ func storeTellerDetails() {
 		}
 
 		err = r.ParseForm()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -653,8 +605,7 @@ func storeTellerDetails() {
 		}
 
 		err = core.AddTellerDetails(projIndex, url, brokerurl, topic)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -926,9 +877,9 @@ func setCompanyBoolRecp() {
 		}
 
 		err = prepRecipient.SetCompany()
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
-				return
-			}
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
+		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
@@ -997,9 +948,9 @@ func setCompanyRecp() {
 
 		err = prepRecipient.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 			country, city, zipCode, taxIDNumber, role)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
-				return
-			}
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
+		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
@@ -1013,8 +964,7 @@ func storeTellerEnergy() {
 		}
 
 		err = r.ParseForm()
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -1031,9 +981,9 @@ func storeTellerEnergy() {
 		recipient.PastTellerEnergy = append(recipient.PastTellerEnergy, uint32(energyInt))
 
 		err = recipient.Save()
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
-				return
-			}
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			return
+		}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
