@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -124,9 +125,7 @@ func getProject() {
 			return
 		}
 		contract, err := core.RetrieveProject(uKey)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 		erpc.MarshalSend(w, contract)
@@ -162,9 +161,7 @@ func getProjectsAtIndex() {
 		}
 
 		allProjects, err := core.RetrieveProjectsAtStage(stage)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -306,9 +303,7 @@ func getProjectDashboard() {
 		}
 
 		project, err := core.RetrieveProject(index)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -354,9 +349,7 @@ func explore() {
 		}
 
 		allProjects, err := core.RetrieveAllProjects()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -428,9 +421,7 @@ func projectDetail() {
 		}
 
 		project, err := core.RetrieveProject(index)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

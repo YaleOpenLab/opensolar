@@ -6,6 +6,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 	// core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -55,9 +56,7 @@ func depositXLMGuarantor() {
 		}
 
 		err = prepEntity.RefillEscrowXLM(projIndex, amount, seedpwd)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -95,9 +94,7 @@ func depositAssetGuarantor() {
 		}
 
 		err = prepEntity.RefillEscrowAsset(projIndex, asset, amount, seedpwd)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

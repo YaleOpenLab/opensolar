@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -81,17 +82,13 @@ func updateUser() {
 		}
 
 		data, err := erpc.PostForm(body, r.Form)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		var user openx.User
 		err = json.Unmarshal(data, &user)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -153,9 +150,7 @@ func reportProject() {
 		}
 
 		err = core.UserMarkFlagged(projIndex, user.Index)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

@@ -1,12 +1,13 @@
 package rpc
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"sync"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
+	"github.com/pkg/errors"
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
@@ -104,13 +105,11 @@ func registerInvestor() {
 			}
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			pubkey, err := wallet.ReturnPubkey(seed)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			if pubkey != user.StellarWallet.PublicKey {
@@ -120,8 +119,7 @@ func registerInvestor() {
 			var a core.Investor
 			a.U = &user
 			err = a.Save()
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			erpc.MarshalSend(w, a)
@@ -129,9 +127,7 @@ func registerInvestor() {
 		}
 
 		user, err := core.NewInvestor(username, pwhash, seedpwd, name)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -158,9 +154,7 @@ func getAllInvestors() {
 			return
 		}
 		investors, err := core.RetrieveAllInvestors()
-		if err != nil {
-			log.Println("did not retrieve all investors", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not retrieve all investors") {
 			return
 		}
 		erpc.MarshalSend(w, investors)
@@ -180,9 +174,7 @@ func invest() {
 		amountx := r.FormValue("amount")
 
 		investorSeed, err := wallet.DecryptSeed(investor.U.StellarWallet.EncryptedSeed, seedpwd)
-		if err != nil {
-			log.Println("did not decrypt seed", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not decrypt seed") {
 			return
 		}
 
@@ -200,9 +192,7 @@ func invest() {
 		}
 
 		investorPubkey, err := wallet.ReturnPubkey(investorSeed)
-		if err != nil {
-			log.Println("did not return pubkey", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not return pubkey") {
 			return
 		}
 
@@ -213,9 +203,7 @@ func invest() {
 		}
 
 		err = core.Invest(projIndex, investor.U.Index, amount, investorSeed)
-		if err != nil {
-			log.Println("did not invest in order", err)
-			erpc.ResponseHandler(w, erpc.StatusNotFound)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not invest in order") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -247,9 +235,7 @@ func voteTowardsProject() {
 		}
 
 		err = core.VoteTowardsProposedProject(investor.U.Index, votes, projIndex)
-		if err != nil {
-			log.Println("did not vote towards proposed project", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not vote towards proposed project") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -269,9 +255,7 @@ func addLocalAssetInv() {
 
 		prepInvestor.U.LocalAssets = append(prepInvestor.U.LocalAssets, assetName)
 		err = prepInvestor.Save()
-		if err != nil {
-			log.Println("did not save investor", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save investor") {
 			return
 		}
 
@@ -293,9 +277,7 @@ func invAssetInv() {
 		amountx := r.FormValue("amount")
 
 		seed, err := wallet.DecryptSeed(prepInvestor.U.StellarWallet.EncryptedSeed, seedpwd)
-		if err != nil {
-			log.Println("did not decrypt seed", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not decrypt seed") {
 			return
 		}
 
@@ -318,9 +300,7 @@ func invAssetInv() {
 		}
 
 		_, txhash, err := assets.SendAssetFromIssuer(assetName, destination, amount, seed, prepInvestor.U.StellarWallet.PublicKey)
-		if err != nil {
-			log.Println("did not send asset from issuer", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not send asset from issuer") {
 			return
 		}
 		erpc.MarshalSend(w, txhash)
@@ -339,9 +319,7 @@ func sendEmail() {
 		to := r.FormValue("to")
 
 		err = notif.SendEmail(message, to, prepInvestor.U.Name)
-		if err != nil {
-			log.Println("did not send email", err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not send email") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -398,9 +376,7 @@ func invDashboard() {
 		var ret invDashboardStruct
 		for _, index := range prepInvestor.InvestedSolarProjectsIndices {
 			project, err := core.RetrieveProject(index)
-			if err != nil {
-				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 
@@ -560,9 +536,7 @@ func setCompanyBool() {
 		}
 
 		err = prepInvestor.SetCompany()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -634,9 +608,7 @@ func setCompany() {
 
 		err = prepInvestor.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 			country, city, zipCode, taxIDNumber, role)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/YaleOpenLab/opensolar/oracle"
 
@@ -149,13 +150,11 @@ func registerRecipient() {
 
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			pubkey, err := wallet.ReturnPubkey(seed)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			if pubkey != user.StellarWallet.PublicKey {
@@ -165,8 +164,7 @@ func registerRecipient() {
 			var a core.Recipient
 			a.U = &user
 			err = a.Save()
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			erpc.MarshalSend(w, a)
@@ -174,11 +172,9 @@ func registerRecipient() {
 		}
 
 		user, err := core.NewRecipient(username, pwhash, seedpwd, name)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+				return
+			}
 
 		erpc.MarshalSend(w, user)
 	})
@@ -930,11 +926,9 @@ func setCompanyBoolRecp() {
 		}
 
 		err = prepRecipient.SetCompany()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+				return
+			}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
@@ -1003,11 +997,9 @@ func setCompanyRecp() {
 
 		err = prepRecipient.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 			country, city, zipCode, taxIDNumber, role)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+				return
+			}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
@@ -1039,11 +1031,9 @@ func storeTellerEnergy() {
 		recipient.PastTellerEnergy = append(recipient.PastTellerEnergy, uint32(energyInt))
 
 		err = recipient.Save()
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+				return
+			}
 
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})

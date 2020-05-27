@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	erpc "github.com/Varunram/essentials/rpc"
+	"github.com/YaleOpenLab/opensolar/handle"
 )
 
 func setupSwytchApis() {
@@ -63,18 +64,14 @@ func getAccessToken() {
 		log.Println(a)
 		reqbody := strings.NewReader(a)
 		req, err := http.NewRequest("POST", url, reqbody)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		req.Header.Add("content-type", "application/json")
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -88,9 +85,7 @@ func getAccessToken() {
 
 		var x GetAccessTokenData
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -129,18 +124,14 @@ func getRefreshToken() {
 
 		reqbody := strings.NewReader(a)
 		req, err := http.NewRequest("POST", url, reqbody)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		req.Header.Add("content-type", "application/json")
 
 		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -154,9 +145,7 @@ func getRefreshToken() {
 
 		var x GetAccessTokenData
 		err = json.Unmarshal(body, &x)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

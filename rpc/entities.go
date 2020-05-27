@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	"github.com/pkg/errors"
@@ -268,13 +269,11 @@ func registerEntity() {
 
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			pubkey, err := wallet.ReturnPubkey(seed)
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			if pubkey != user.StellarWallet.PublicKey {
@@ -296,8 +295,7 @@ func registerEntity() {
 
 			a.U = &user
 			err = a.Save()
-			if err != nil {
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			erpc.MarshalSend(w, a)
@@ -317,11 +315,9 @@ func registerEntity() {
 
 		}
 
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError)
-			return
-		}
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+				return
+			}
 
 		erpc.MarshalSend(w, user)
 	})
