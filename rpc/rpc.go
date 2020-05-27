@@ -105,9 +105,7 @@ func relayRequest() {
 			body := consts.OpenxURL + r.URL.String()
 			log.Println(body)
 			data, err := erpc.GetRequest(body)
-			if err != nil {
-				log.Println("could not relay get request", err)
-				erpc.ResponseHandler(w, http.StatusInternalServerError, messages.RelayError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError, "could not relay get request", messages.RelayError) {
 				return
 			}
 

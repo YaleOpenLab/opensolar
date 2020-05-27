@@ -100,9 +100,7 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	}
 
 	prepRecipient, err = core.ValidateRecipient(username, token)
-	if err != nil {
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotRecipientError)
-		log.Println("did not validate recipient", err)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "did not validate recipient", messages.NotRecipientError) {
 		return prepRecipient, err
 	}
 
@@ -204,13 +202,11 @@ func payback() {
 
 		recpIndex := prepRecipient.U.Index
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 		amount, err := utils.ToFloat(amountx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -383,9 +379,7 @@ func unlockOpenSolar() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -427,9 +421,7 @@ func finalizeProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -458,9 +450,7 @@ func originateProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println("did not parse to integer", err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -519,8 +509,7 @@ func setOneTimeUnlock() {
 		seedpwd := r.FormValue("seedpwd")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -549,8 +538,7 @@ func storeTellerURL() {
 		url := r.FormValue("url")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -594,8 +582,7 @@ func storeTellerDetails() {
 		topic := r.FormValue("topic")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -813,9 +800,8 @@ func recpDashboard() {
 			dlp = time.Unix(dlpI, 0).String()[0:10]
 
 			xlmUSD, err := tickers.BinanceTicker()
-			if err != nil {
-				log.Println(err)
-				erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.TickerError)
+			if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.TickerError) {
+				return
 			}
 
 			var wg sync.WaitGroup
@@ -971,9 +957,7 @@ func storeTellerEnergy() {
 		energy := r.FormValue("energy")
 
 		energyInt, err := utils.ToInt(energy)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusInternalServerError, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 

@@ -62,9 +62,7 @@ func returnSpecificStage() {
 		indexx := r.URL.Query()["index"][0]
 
 		index, err := utils.ToInt(indexx)
-		if err != nil {
-			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed index not an integer", messages.ConversionError) {
 			return
 		}
 
@@ -114,9 +112,7 @@ func promoteStage() {
 
 		indexx := r.URL.Query()["index"][0]
 		index, err := utils.ToInt(indexx)
-		if err != nil {
-			log.Println("Passed index not an integer, quitting!")
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed index not an integer", messages.ConversionError) {
 			return
 		}
 

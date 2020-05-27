@@ -38,9 +38,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	var user openx.User
 
 	err := checkReqdParams(w, r, options, method)
-	if err != nil {
-		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "", messages.NotUserError) {
 		return user, err
 	}
 
@@ -52,9 +50,7 @@ func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	}
 
 	user, err = core.ValidateUser(username, token)
-	if err != nil {
-		log.Println(err)
-		erpc.ResponseHandler(w, erpc.StatusUnauthorized, messages.NotUserError)
+	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "", messages.NotUserError) {
 		return user, err
 	}
 
@@ -137,9 +133,7 @@ func reportProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if err != nil {
-			log.Println(err)
-			erpc.ResponseHandler(w, erpc.StatusBadRequest, messages.ConversionError)
+		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
