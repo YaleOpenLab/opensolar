@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -61,12 +60,12 @@ func flagProject() {
 		}
 
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ParamError("projIndex")) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ParamError("projIndex")) {
 			return
 		}
 
 		err = core.MarkFlagged(projIndex, user.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -86,7 +85,7 @@ func getallProjectsAdmin() {
 		}
 
 		projects, err := core.RetrieveAllProjects()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -107,12 +106,12 @@ func retrieveRecpAdmin() {
 		indexS := r.URL.Query()["index"][0]
 
 		index, err := utils.ToInt(indexS)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		x, err := core.RetrieveRecipient(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -130,12 +129,12 @@ func retrieveInvAdmin() {
 		indexS := r.URL.Query()["index"][0]
 
 		index, err := utils.ToInt(indexS)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		x, err := core.RetrieveInvestor(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -153,12 +152,12 @@ func retrieveEntityAdmin() {
 		indexS := r.URL.Query()["index"][0]
 
 		index, err := utils.ToInt(indexS)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		x, err := core.RetrieveEntity(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -179,7 +178,7 @@ func retrieveAllInvestors() {
 		}
 
 		investors, err := core.RetrieveAllInvestors()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -198,7 +197,7 @@ func retrieveAllRecipients() {
 		}
 
 		recipients, err := core.RetrieveAllRecipients()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -220,12 +219,12 @@ func projectComplete() {
 		indexS := r.FormValue("index")
 
 		index, err := utils.ToInt(indexS)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -234,7 +233,7 @@ func projectComplete() {
 		project.CompleteDate = utils.Timestamp()
 
 		err = project.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

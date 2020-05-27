@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/YaleOpenLab/opensolar/oracle"
 
@@ -100,7 +99,7 @@ func recpValidateHelper(w http.ResponseWriter, r *http.Request, options []string
 	}
 
 	prepRecipient, err = core.ValidateRecipient(username, token)
-	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "did not validate recipient", messages.NotRecipientError) {
+	if erpc.Err(w, err, erpc.StatusUnauthorized, "did not validate recipient", messages.NotRecipientError) {
 		return prepRecipient, err
 	}
 
@@ -115,7 +114,7 @@ func getAllRecipients() {
 			return
 		}
 		recipients, err := core.RetrieveAllRecipients()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all recipients") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all recipients") {
 			return
 		}
 		erpc.MarshalSend(w, recipients)
@@ -146,11 +145,11 @@ func registerRecipient() {
 
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			pubkey, err := wallet.ReturnPubkey(seed)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			if pubkey != user.StellarWallet.PublicKey {
@@ -160,7 +159,7 @@ func registerRecipient() {
 			var a core.Recipient
 			a.U = &user
 			err = a.Save()
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			erpc.MarshalSend(w, a)
@@ -168,7 +167,7 @@ func registerRecipient() {
 		}
 
 		user, err := core.NewRecipient(username, pwhash, seedpwd, name)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -202,21 +201,21 @@ func payback() {
 
 		recpIndex := prepRecipient.U.Index
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 		amount, err := utils.ToFloat(amountx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		recipientSeed, err := wallet.DecryptSeed(prepRecipient.U.StellarWallet.EncryptedSeed, seedpwd)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not decrypt seed") {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "did not decrypt seed") {
 			return
 		}
 
 		err = core.Payback(recpIndex, projIndex, assetName, amount, recipientSeed)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not payback") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not payback") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -236,7 +235,7 @@ func storeDeviceId() {
 		// we have the recipient ready. Now set the device id
 		prepRecipient.DeviceId = deviceId
 		err = prepRecipient.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -256,7 +255,7 @@ func storeStartTime() {
 
 		prepRecipient.DeviceStarts = append(prepRecipient.DeviceStarts, start)
 		err = prepRecipient.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -276,7 +275,7 @@ func storeDeviceLocation() {
 
 		prepRecipient.DeviceLocation = location
 		err = prepRecipient.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -293,17 +292,17 @@ func chooseBlindAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
 		bestContract, err := core.SelectContractBlind(allContracts)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -321,17 +320,17 @@ func chooseVickreyAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
 		bestContract, err := core.SelectContractBlind(allContracts)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -348,17 +347,17 @@ func chooseTimeAuction() {
 		}
 
 		allContracts, err := core.RetrieveRecipientProjects(core.Stage2.Number, recipient.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve recipient projects") {
 			return
 		}
 
 		bestContract, err := core.SelectContractBlind(allContracts)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not select contract") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not select contract") {
 			return
 		}
 
 		err = bestContract.SetStage(4)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -379,12 +378,12 @@ func unlockOpenSolar() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
 		err = core.UnlockProject(recipient.U.Username, recipient.U.AccessToken, projIndex, seedpwd)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not unlock project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not unlock project") {
 			return
 		}
 
@@ -403,7 +402,7 @@ func addEmail() {
 		email := r.FormValue("email")
 
 		err = recipient.U.AddEmail(email)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not add email") {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "did not add email") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -421,17 +420,17 @@ func finalizeProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "did not retrieve project") {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "did not retrieve project") {
 			return
 		}
 
 		err = project.SetStage(4)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set final project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not set final project") {
 			return
 		}
 
@@ -450,12 +449,12 @@ func originateProject() {
 		projIndexx := r.FormValue("projIndex")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
 		err = core.RecipientAuthorize(projIndex, recipient.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not authorize project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not authorize project") {
 			return
 		}
 
@@ -490,7 +489,7 @@ func storeStateHash() {
 
 		prepRecipient.StateHashes = append(prepRecipient.StateHashes, hash)
 		err = prepRecipient.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not save recipient") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
 		}
 		erpc.ResponseHandler(w, erpc.StatusOK)
@@ -509,12 +508,12 @@ func setOneTimeUnlock() {
 		seedpwd := r.FormValue("seedpwd")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
 		err = prepRecipient.SetOneTimeUnlock(projIndex, seedpwd)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not set one time unlock") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not set one time unlock") {
 			return
 		}
 
@@ -530,7 +529,7 @@ func storeTellerURL() {
 		}
 
 		err = r.ParseForm()
-		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
+		if erpc.Err(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -538,12 +537,12 @@ func storeTellerURL() {
 		url := r.FormValue("url")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -555,7 +554,7 @@ func storeTellerURL() {
 
 		project.TellerUrl = url
 		err = project.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -572,7 +571,7 @@ func storeTellerDetails() {
 		}
 
 		err = r.ParseForm()
-		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
+		if erpc.Err(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
@@ -582,7 +581,7 @@ func storeTellerDetails() {
 		topic := r.FormValue("topic")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
@@ -592,7 +591,7 @@ func storeTellerDetails() {
 		}
 
 		err = core.AddTellerDetails(projIndex, url, brokerurl, topic)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -800,7 +799,7 @@ func recpDashboard() {
 			dlp = time.Unix(dlpI, 0).String()[0:10]
 
 			xlmUSD, err := tickers.BinanceTicker()
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.TickerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError, "", messages.TickerError) {
 				return
 			}
 
@@ -863,7 +862,7 @@ func setCompanyBoolRecp() {
 		}
 
 		err = prepRecipient.SetCompany()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -934,7 +933,7 @@ func setCompanyRecp() {
 
 		err = prepRecipient.SetCompanyDetails(companyType, name, legalName, adminEmail, phoneNumber, address,
 			country, city, zipCode, taxIDNumber, role)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -950,14 +949,14 @@ func storeTellerEnergy() {
 		}
 
 		err = r.ParseForm()
-		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
+		if erpc.Err(w, err, erpc.StatusBadRequest) {
 			return
 		}
 
 		energy := r.FormValue("energy")
 
 		energyInt, err := utils.ToInt(energy)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
@@ -965,7 +964,7 @@ func storeTellerEnergy() {
 		recipient.PastTellerEnergy = append(recipient.PastTellerEnergy, uint32(energyInt))
 
 		err = recipient.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

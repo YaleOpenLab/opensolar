@@ -7,7 +7,6 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	"github.com/YaleOpenLab/opensolar/handle"
 )
 
 // HCHeaderResponse defines the hash chain header's response
@@ -21,7 +20,7 @@ type HCHeaderResponse struct {
 func hashChainHeaderHandler() {
 	http.HandleFunc("/hash", func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest) {
+		if erpc.Err(w, err, erpc.StatusBadRequest) {
 			return
 		}
 		var x HCHeaderResponse

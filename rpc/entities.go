@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	"github.com/pkg/errors"
@@ -45,7 +44,7 @@ func entityValidateHelper(w http.ResponseWriter,
 	var prepEntity core.Entity
 
 	err := checkReqdParams(w, r, options, method)
-	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "", messages.NotEntityError) {
+	if erpc.Err(w, err, erpc.StatusUnauthorized, "", messages.NotEntityError) {
 		return prepEntity, errors.New("reqd params not present can't be empty")
 	}
 
@@ -61,7 +60,7 @@ func entityValidateHelper(w http.ResponseWriter,
 	}
 
 	prepEntity, err = core.ValidateEntity(username, token)
-	if handle.RPCErr(w, err, erpc.StatusUnauthorized, "did not validate investor", messages.NotEntityError) {
+	if erpc.Err(w, err, erpc.StatusUnauthorized, "did not validate investor", messages.NotEntityError) {
 		return prepEntity, err
 	}
 
@@ -90,7 +89,7 @@ func getStage0Contracts() {
 		}
 
 		x, err := core.RetrieveOriginatorProjects(core.Stage0.Number, prepEntity.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving originator project") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "Error while retrieving originator project") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -107,7 +106,7 @@ func getStage1Contracts() {
 		}
 
 		x, err := core.RetrieveOriginatorProjects(core.Stage1.Number, prepEntity.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving originator projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "Error while retrieving originator projects") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -124,7 +123,7 @@ func getStage2Contracts() {
 		}
 
 		x, err := core.RetrieveContractorProjects(core.Stage2.Number, prepEntity.U.Index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while retrieving contractor projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "Error while retrieving contractor projects") {
 			return
 		}
 		erpc.MarshalSend(w, x)
@@ -155,12 +154,12 @@ func addCollateral() {
 		collateral := r.FormValue("collateral")
 
 		amount, err := utils.ToFloat(amountx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "Error while converting string to float", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "Error while converting string to float", messages.ConversionError) {
 			return
 		}
 
 		err = prepEntity.AddCollateral(amount, collateral)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "Error while adding collateral") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "Error while adding collateral") {
 			return
 		}
 
@@ -205,7 +204,7 @@ func proposeOpensolarProject() {
 		}
 
 		fee, err := utils.ToFloat(feex)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "fee passed not integer, quitting", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "fee passed not integer, quitting", messages.ConversionError) {
 			return
 		}
 
@@ -255,11 +254,11 @@ func registerEntity() {
 
 			// this is the same user who wants to register as an investor now, check if encrypted seed decrypts
 			seed, err := wallet.DecryptSeed(user.StellarWallet.EncryptedSeed, seedpwd)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			pubkey, err := wallet.ReturnPubkey(seed)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			if pubkey != user.StellarWallet.PublicKey {
@@ -281,7 +280,7 @@ func registerEntity() {
 
 			a.U = &user
 			err = a.Save()
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 			erpc.MarshalSend(w, a)
@@ -301,7 +300,7 @@ func registerEntity() {
 
 		}
 
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

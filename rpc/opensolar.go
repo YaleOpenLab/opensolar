@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -53,7 +52,7 @@ func getAllProjects() {
 		}
 
 		allProjects, err := core.RetrieveAllProjects()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 		erpc.MarshalSend(w, allProjects)
@@ -70,7 +69,7 @@ func getActiveProjects() {
 		}
 
 		activeProjects, err := core.RetrieveActiveProjects()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 
@@ -88,7 +87,7 @@ func getCompletedProjects() {
 		}
 
 		activeProjects, err := core.RetrieveCompletedProjects()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
 
@@ -106,18 +105,18 @@ func getProject() {
 		}
 
 		err := erpc.CheckGet(w, r)
-		if handle.RPCErr(w, err, erpc.StatusNotFound) {
+		if erpc.Err(w, err, erpc.StatusNotFound) {
 			return
 		}
 
 		index := r.URL.Query()["index"][0]
 
 		uKey, err := utils.ToInt(index)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 		contract, err := core.RetrieveProject(uKey)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 		erpc.MarshalSend(w, contract)
@@ -142,7 +141,7 @@ func getProjectsAtIndex() {
 		stagex := r.URL.Query()["stage"][0]
 
 		stage, err := utils.ToInt(stagex)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "Passed index not an integer, quitting", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "Passed index not an integer, quitting", messages.ConversionError) {
 			return
 		}
 
@@ -151,7 +150,7 @@ func getProjectsAtIndex() {
 		}
 
 		allProjects, err := core.RetrieveProjectsAtStage(stage)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -176,12 +175,12 @@ func addContractHash() {
 		choice := r.URL.Query()["choice"][0]
 		hashString := r.URL.Query()["choicestr"][0]
 		projIndex, err := utils.ToInt(r.URL.Query()["projIndex"][0])
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "passed project index not int, quitting", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "passed project index not int, quitting", messages.ConversionError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(projIndex)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "couldn't retrieve prject index from database") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "couldn't retrieve prject index from database") {
 			return
 		}
 		// there are in total 5 types of hashes: OriginatorMoUHash, ContractorContractHash,
@@ -217,7 +216,7 @@ func addContractHash() {
 		}
 
 		err = project.Save()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "error while saving project to db, quitting!") {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "error while saving project to db, quitting!") {
 			return
 		}
 
@@ -281,12 +280,12 @@ func getProjectDashboard() {
 		}
 
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -332,7 +331,7 @@ func explore() {
 		}
 
 		allProjects, err := core.RetrieveAllProjects()
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -346,7 +345,7 @@ func explore() {
 			var x ExplorePageStub
 
 			stageString, err := utils.ToString(project.Stage)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError) {
 				return
 			}
 
@@ -395,17 +394,17 @@ func projectDetail() {
 		}
 
 		index, err := utils.ToInt(r.URL.Query()["index"][0])
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		project, err := core.RetrieveProject(index)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
 		stageString, err := utils.ToString(project.Stage)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "", messages.ConversionError) {
 			return
 		}
 

@@ -6,7 +6,7 @@ import (
 
 	erpc "github.com/Varunram/essentials/rpc"
 	utils "github.com/Varunram/essentials/utils"
-	"github.com/YaleOpenLab/opensolar/handle"
+
 	"github.com/YaleOpenLab/opensolar/messages"
 	// core "github.com/YaleOpenLab/opensolar/core"
 )
@@ -42,17 +42,17 @@ func depositXLMGuarantor() {
 		seedpwd := r.FormValue("seedpwd")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		err = prepEntity.RefillEscrowXLM(projIndex, amount, seedpwd)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 
@@ -76,17 +76,17 @@ func depositAssetGuarantor() {
 		asset := r.FormValue("assetCode")
 
 		projIndex, err := utils.ToInt(projIndexx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		amount, err := utils.ToFloat(amountx)
-		if handle.RPCErr(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
+		if erpc.Err(w, err, erpc.StatusBadRequest, "", messages.ConversionError) {
 			return
 		}
 
 		err = prepEntity.RefillEscrowAsset(projIndex, asset, amount, seedpwd)
-		if handle.RPCErr(w, err, erpc.StatusInternalServerError) {
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
 

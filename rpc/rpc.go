@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/YaleOpenLab/opensolar/handle"
 	"github.com/YaleOpenLab/opensolar/messages"
 	"github.com/pkg/errors"
 
@@ -62,7 +61,7 @@ func checkReqdParams(w http.ResponseWriter, r *http.Request, options []string, m
 		}
 
 		err = r.ParseForm()
-		if handle.RPCErr(w, err, erpc.StatusUnauthorized) {
+		if erpc.Err(w, err, erpc.StatusUnauthorized) {
 			return err
 		}
 
@@ -105,7 +104,7 @@ func relayRequest() {
 			body := consts.OpenxURL + r.URL.String()
 			log.Println(body)
 			data, err := erpc.GetRequest(body)
-			if handle.RPCErr(w, err, erpc.StatusInternalServerError, "could not relay get request", messages.RelayError) {
+			if erpc.Err(w, err, erpc.StatusInternalServerError, "could not relay get request", messages.RelayError) {
 				return
 			}
 
