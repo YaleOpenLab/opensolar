@@ -36,6 +36,7 @@ github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMx
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/Varunram/essentials v1.0.2 h1:tQyKO7gRfU86Fw7jHWVrvbyz6Yjj3Tj0sNMa7LT+j7o=
 github.com/Varunram/essentials v1.0.2/go.mod h1:zMk9fBDl4caEScH5ldr0qkWKRgdLMnVx9Noiz33PISs=
+github.com/Varunram/essentials v1.0.3/go.mod h1:zMk9fBDl4caEScH5ldr0qkWKRgdLMnVx9Noiz33PISs=
 github.com/VictoriaMetrics/fastcache v1.5.7/go.mod h1:ptDBkNMQI4RtmVo8VS/XwRY6RoTu1dAWCbrk+6WsEM8=
 github.com/YaleOpenLab/openx v1.0.2 h1:xjYbpmEn/sHqvQ3pTbdrqmlHlG3WgEEtLqym7lqueY8=
 github.com/YaleOpenLab/openx v1.0.2/go.mod h1:IY2bQ9ToRP/zWJ9IihuJamyTHG87blMNHlxtz3qwYdk=

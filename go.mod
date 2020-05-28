@@ -3,7 +3,7 @@ module github.com/YaleOpenLab/opensolar
 go 1.13
 
 require (
-	github.com/Varunram/essentials v1.0.2
+	github.com/Varunram/essentials v1.0.3
 	github.com/YaleOpenLab/openx v1.0.2
 	github.com/boltdb/bolt v1.3.1
 	github.com/chzyer/logex v1.1.10 // indirect
