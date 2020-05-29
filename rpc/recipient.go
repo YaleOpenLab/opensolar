@@ -376,13 +376,14 @@ func unlockOpenSolar() {
 
 		seedpwd := r.FormValue("seedpwd")
 		projIndexx := r.FormValue("projIndex")
+		token := r.FormValue("token")
 
 		projIndex, err := utils.ToInt(projIndexx)
 		if erpc.Err(w, err, erpc.StatusBadRequest, "could not convert to integer", messages.ConversionError) {
 			return
 		}
 
-		err = core.UnlockProject(recipient.U.Username, recipient.U.AccessToken, projIndex, seedpwd)
+		err = core.UnlockProject(recipient.U.Username, token, projIndex, seedpwd)
 		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not unlock project") {
 			return
 		}

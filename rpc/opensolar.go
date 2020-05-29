@@ -25,6 +25,7 @@ func setupProjectRPCs() {
 	projectDetail()
 	getActiveProjects()
 	getCompletedProjects()
+	getFeaturedProjects()
 }
 
 // ProjectRPC contains a list of all the project related RPC endpoints
@@ -40,6 +41,7 @@ var ProjectRPC = map[int][]string{
 	10: []string{"/project/detail", "GET", "index"},                               // GET
 	11: []string{"/project/active", "GET"},                                        // GET
 	12: []string{"/project/complete", "GET"},                                      // GET
+	13: []string{"/project/featured", "GET"},                                      // GET
 }
 
 // getAllProjects gets a list of all projects
@@ -69,24 +71,6 @@ func getActiveProjects() {
 		}
 
 		activeProjects, err := core.RetrieveActiveProjects()
-		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
-			return
-		}
-
-		erpc.MarshalSend(w, activeProjects)
-	})
-}
-
-// getCompletedProjects gets a list of active projects
-func getCompletedProjects() {
-	http.HandleFunc(ProjectRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
-		err := erpc.CheckGet(w, r)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		activeProjects, err := core.RetrieveCompletedProjects()
 		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
 			return
 		}
@@ -413,5 +397,41 @@ func projectDetail() {
 		project.Content.Details["ExploreTab"]["TotalValue"] = project.TotalValue
 
 		erpc.MarshalSend(w, project.Content.Details)
+	})
+}
+
+// getCompletedProjects gets a list of active projects
+func getCompletedProjects() {
+	http.HandleFunc(ProjectRPC[12][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		activeProjects, err := core.RetrieveCompletedProjects()
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
+			return
+		}
+
+		erpc.MarshalSend(w, activeProjects)
+	})
+}
+
+// getFeaturedProjects gets a list of featured projects
+func getFeaturedProjects() {
+	http.HandleFunc(ProjectRPC[13][0], func(w http.ResponseWriter, r *http.Request) {
+		err := erpc.CheckGet(w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		activeProjects, err := core.RetrieveFeaturedProjects()
+		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not retrieve all projects") {
+			return
+		}
+
+		erpc.MarshalSend(w, activeProjects)
 	})
 }
