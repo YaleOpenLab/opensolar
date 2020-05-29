@@ -33,6 +33,7 @@ var AdminRPC = map[int][]string{
 	6: []string{"/admin/getallinvestors", "GET"},            // GET
 	7: []string{"/admin/getallrecipients", "GET"},           // GET
 	8: []string{"/admin/project/complete", "POST", "index"}, // POST
+	9: []string{"/admin/project/featured", "POST", "index"}, // POST
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool
@@ -231,6 +232,37 @@ func projectComplete() {
 		project.Complete = true
 		project.CompleteAuth = user.Index
 		project.CompleteDate = utils.Timestamp()
+
+		err = project.Save()
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
+			return
+		}
+
+		erpc.ResponseHandler(w, erpc.StatusOK)
+	})
+}
+
+// projectFeatured sets the featured flag on a project
+func projectFeatured() {
+	http.HandleFunc(AdminRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+		_, admin := validateAdmin(w, r, AdminRPC[9][2:], AdminRPC[9][1])
+		if !admin {
+			return
+		}
+
+		indexS := r.FormValue("index")
+
+		index, err := utils.ToInt(indexS)
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
+			return
+		}
+
+		project, err := core.RetrieveProject(index)
+		if erpc.Err(w, err, erpc.StatusInternalServerError) {
+			return
+		}
+
+		project.Featured = true
 
 		err = project.Save()
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {

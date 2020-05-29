@@ -346,6 +346,28 @@ func RetrieveCompletedProjects() ([]Project, error) {
 	return projects, nil
 }
 
+// RetrieveFeaturedProjects retrieves all featured projects from the database
+func RetrieveFeaturedProjects() ([]Project, error) {
+	var projects []Project
+	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ProjectsBucket)
+	if err != nil {
+		return projects, errors.Wrap(err, "error while retrieving all keys")
+	}
+
+	for _, value := range x {
+		var temp Project
+		err = json.Unmarshal(value, &temp)
+		if err != nil {
+			return projects, errors.New("could not unmarshal json")
+		}
+		if temp.Featured {
+			projects = append(projects, temp)
+		}
+	}
+
+	return projects, nil
+}
+
 // RetrieveProjectsAtStage retrieves projects at a stage from the database
 func RetrieveProjectsAtStage(stage int) ([]Project, error) {
 	var arr []Project

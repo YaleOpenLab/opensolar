@@ -168,6 +168,9 @@ type Project struct {
 	// CompleteDate is hte date on which the project was marked complete
 	CompleteDate string
 
+	// Featured are projects that are sponsored / featured by Opensolar admins
+	Featured bool
+
 	// below are non critical params only used on the frontend
 	Name               string    `json:"Name"`                 // the name of the project / the identifier by which its referred to
 	City               string    `json:"City"`                 // the city in which the project is located at
