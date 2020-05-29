@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/Varunram/essentials v1.0.4
-	github.com/YaleOpenLab/openx v1.0.2
+	github.com/YaleOpenLab/openx v1.0.4
 	github.com/boltdb/bolt v1.3.1
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e

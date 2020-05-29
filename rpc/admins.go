@@ -21,6 +21,7 @@ func setupAdminHandlers() {
 	retrieveAllInvestors()
 	retrieveAllRecipients()
 	projectComplete()
+	projectFeatured()
 }
 
 // AdminRPC is a list of all the endpoints that can be called by admins
@@ -244,7 +245,7 @@ func projectComplete() {
 
 // projectFeatured sets the featured flag on a project
 func projectFeatured() {
-	http.HandleFunc(AdminRPC[8][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(AdminRPC[9][0], func(w http.ResponseWriter, r *http.Request) {
 		_, admin := validateAdmin(w, r, AdminRPC[9][2:], AdminRPC[9][1])
 		if !admin {
 			return

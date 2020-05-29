@@ -87,9 +87,11 @@ func updateUser() {
 			return
 		}
 
+		token := r.FormValue("token")
+
 		if user.Index != 0 {
 			// check whether given user is an investor or recipient
-			investor, err := core.ValidateInvestor(user.Username, user.AccessToken)
+			investor, err := core.ValidateInvestor(user.Username, token)
 			if err == nil {
 				investor.U = &user
 				err = investor.Save()
@@ -97,7 +99,7 @@ func updateUser() {
 					return
 				}
 			}
-			recipient, err := core.ValidateRecipient(user.Username, user.AccessToken)
+			recipient, err := core.ValidateRecipient(user.Username, token)
 			if err == nil {
 				recipient.U = &user
 				err = recipient.Save()
@@ -105,7 +107,7 @@ func updateUser() {
 					return
 				}
 			}
-			entity, err := core.ValidateEntity(user.Username, user.AccessToken)
+			entity, err := core.ValidateEntity(user.Username, token)
 			if err == nil {
 				entity.U = &user
 				err = entity.Save()
