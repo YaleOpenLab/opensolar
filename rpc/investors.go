@@ -37,17 +37,17 @@ func setupInvestorRPCs() {
 
 // InvRPC contains a list of all investor related endpoints
 var InvRPC = map[int][]string{
-	1:  []string{"/investor/register", "POST", "name", "username", "pwhash", "token", "seedpwd"},      // POST
-	2:  []string{"/investor/validate", "GET"},                                                         // GET
-	3:  []string{"/investor/all", "GET"},                                                              // GET
-	4:  []string{"/investor/invest", "POST", "seedpwd", "projIndex", "amount"},                        // POST
-	5:  []string{"/investor/vote", "POST", "votes", "projIndex"},                                      // POST
-	6:  []string{"/investor/localasset", "POST", "assetName"},                                         // POST
-	7:  []string{"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
-	8:  []string{"/investor/sendemail", "POST", "message", "to"},                                      // POST
-	9:  []string{"/investor/dashboard", "GET"},                                                        // GET
-	10: []string{"/investor/company/set", "POST"},                                                     // POST
-	11: []string{"/investor/company/details", "POST", "companytype",
+	1:  {"/investor/register", "POST", "name", "username", "pwhash", "token", "seedpwd"},      // POST
+	2:  {"/investor/validate", "GET"},                                                         // GET
+	3:  {"/investor/all", "GET"},                                                              // GET
+	4:  {"/investor/invest", "POST", "seedpwd", "projIndex", "amount"},                        // POST
+	5:  {"/investor/vote", "POST", "votes", "projIndex"},                                      // POST
+	6:  {"/investor/localasset", "POST", "assetName"},                                         // POST
+	7:  {"/investor/sendlocalasset", "POST", "assetName", "seedpwd", "destination", "amount"}, // POST
+	8:  {"/investor/sendemail", "POST", "message", "to"},                                      // POST
+	9:  {"/investor/dashboard", "GET"},                                                        // GET
+	10: {"/investor/company/set", "POST"},                                                     // POST
+	11: {"/investor/company/details", "POST", "companytype",
 		"name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
 }
 

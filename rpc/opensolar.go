@@ -30,18 +30,18 @@ func setupProjectRPCs() {
 
 // ProjectRPC contains a list of all the project related RPC endpoints
 var ProjectRPC = map[int][]string{
-	2:  []string{"/project/all", "GET"},                                           // GET
-	3:  []string{"/project/get", "GET", "index"},                                  // GET
-	4:  []string{"/projects", "GET", "stage"},                                     // GET
-	5:  []string{"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},     // GET
-	6:  []string{"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"}, // GET
-	7:  []string{"/tellerpayback", "GET", "deviceId", "projIndex"},                // GET
-	8:  []string{"/project/get/dashboard", "GET", "index"},                        // GET
-	9:  []string{"/explore", "GET"},                                               // GET
-	10: []string{"/project/detail", "GET", "index"},                               // GET
-	11: []string{"/project/active", "GET"},                                        // GET
-	12: []string{"/project/complete", "GET"},                                      // GET
-	13: []string{"/project/featured", "GET"},                                      // GET
+	2:  {"/project/all", "GET"},                                           // GET
+	3:  {"/project/get", "GET", "index"},                                  // GET
+	4:  {"/projects", "GET", "stage"},                                     // GET
+	5:  {"/utils/addhash", "GET", "projIndex", "choice", "choicestr"},     // GET
+	6:  {"/tellershutdown", "GET", "projIndex", "deviceId", "tx1", "tx2"}, // GET
+	7:  {"/tellerpayback", "GET", "deviceId", "projIndex"},                // GET
+	8:  {"/project/get/dashboard", "GET", "index"},                        // GET
+	9:  {"/explore", "GET"},                                               // GET
+	10: {"/project/detail", "GET", "index"},                               // GET
+	11: {"/project/active", "GET"},                                        // GET
+	12: {"/project/complete", "GET"},                                      // GET
+	13: {"/project/featured", "GET"},                                      // GET
 }
 
 // getAllProjects gets a list of all projects

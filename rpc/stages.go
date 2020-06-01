@@ -19,10 +19,11 @@ func setupStagesHandlers() {
 	promoteStage()
 }
 
+// StagesRPC is a list of all stage related RPC endpoints
 var StagesRPC = map[int][]string{
-	1: []string{"/stages/all", "GET"},              // GET
-	2: []string{"/stages", "GET", "index"},         // GET
-	3: []string{"/stages/promote", "GET", "index"}, // GET
+	1: {"/stages/all", "GET"},              // GET
+	2: {"/stages", "GET", "index"},         // GET
+	3: {"/stages/promote", "GET", "index"}, // GET
 }
 
 // returnAllStages returns all the defined stages for this platform.  Opensolar

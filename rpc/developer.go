@@ -23,9 +23,9 @@ func setupDeveloperRPCs() {
 
 // DevRPC contains a list of all the developer rpc endpoints
 var DevRPC = map[int][]string{
-	1: []string{"/developer/withdraw", "POST", "amount", "projIndex"}, // POST
-	2: []string{"/developer/dashboard", "GET"},                        // GET
-	3: []string{"/developer/money/request", "GET", "index", "amount"}, // GET
+	1: {"/developer/withdraw", "POST", "amount", "projIndex"}, // POST
+	2: {"/developer/dashboard", "GET"},                        // GET
+	3: {"/developer/money/request", "GET", "index", "amount"}, // GET
 }
 
 // withdrawdeveloper can be called by a developer wishing to withdraw funds from the platfomr

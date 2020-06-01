@@ -17,10 +17,10 @@ func setupPublicRoutes() {
 
 // PublicRpc contains a list of all public RPC endpoints
 var PublicRpc = map[int][]string{
-	1: []string{"/public/investor/all"},             // GET
-	2: []string{"/public/recipient/all"},            // GET
-	3: []string{"/public/recipient/reputation/top"}, // GET
-	4: []string{"/public/investor/reputation/top"},  // GET
+	1: {"/public/investor/all"},             // GET
+	2: {"/public/recipient/all"},            // GET
+	3: {"/public/recipient/reputation/top"}, // GET
+	4: {"/public/investor/reputation/top"},  // GET
 }
 
 // SnInvestor defines a sanitized investor

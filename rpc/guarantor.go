@@ -18,8 +18,8 @@ func setupGuarantorRPCs() {
 
 // GuaRPC contains a list of all guarantor related RPC endpoints
 var GuaRPC = map[int][]string{
-	1: []string{"/guarantor/deposit/xlm", "POST", "amount", "projIndex", "seedpwd"},                // POST
-	2: []string{"/guarantor/deposit/asset", "POST", "amount", "projIndex", "seedpwd", "assetCode"}, // POST
+	1: {"/guarantor/deposit/xlm", "POST", "amount", "projIndex", "seedpwd"},                // POST
+	2: {"/guarantor/deposit/asset", "POST", "amount", "projIndex", "seedpwd", "assetCode"}, // POST
 }
 
 // depositXLMGuarantor is called by a guarantor when they wish to refill

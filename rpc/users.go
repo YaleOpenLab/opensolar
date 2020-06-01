@@ -26,11 +26,11 @@ func setupUserRpcs() {
 
 // UserRPC is a collection of all user RPC endpoints and their required params
 var UserRPC = map[int][]string{
-	1: []string{"/update", "POST"},                                                  // POST
-	2: []string{"/user/report", "POST", "projIndex"},                                // POST
-	3: []string{"/user/info", "GET"},                                                // GET
-	4: []string{"/user/register", "POST", "email", "username", "pwhash", "seedpwd"}, // POST
-	5: []string{"/user/roles", "GET"},                                               // GET
+	1: {"/update", "POST"},                                                  // POST
+	2: {"/user/report", "POST", "projIndex"},                                // POST
+	3: {"/user/info", "GET"},                                                // GET
+	4: {"/user/register", "POST", "email", "username", "pwhash", "seedpwd"}, // POST
+	5: {"/user/roles", "GET"},                                               // GET
 }
 
 func userValidateHelper(w http.ResponseWriter, r *http.Request, options []string, method string) (openx.User, error) {

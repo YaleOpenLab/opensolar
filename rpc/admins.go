@@ -26,15 +26,15 @@ func setupAdminHandlers() {
 
 // AdminRPC is a list of all the endpoints that can be called by admins
 var AdminRPC = map[int][]string{
-	1: []string{"/admin/flag", "GET", "projIndex"},          // GET
-	2: []string{"/admin/getallprojects", "GET"},             // GET
-	3: []string{"/admin/getrecipient", "GET", "index"},      // GET
-	4: []string{"/admin/getinvestor", "GET", "index"},       // GET
-	5: []string{"/admin/getentity", "GET", "index"},         // GET
-	6: []string{"/admin/getallinvestors", "GET"},            // GET
-	7: []string{"/admin/getallrecipients", "GET"},           // GET
-	8: []string{"/admin/project/complete", "POST", "index"}, // POST
-	9: []string{"/admin/project/featured", "POST", "index"}, // POST
+	1: {"/admin/flag", "GET", "projIndex"},          // GET
+	2: {"/admin/getallprojects", "GET"},             // GET
+	3: {"/admin/getrecipient", "GET", "index"},      // GET
+	4: {"/admin/getinvestor", "GET", "index"},       // GET
+	5: {"/admin/getentity", "GET", "index"},         // GET
+	6: {"/admin/getallinvestors", "GET"},            // GET
+	7: {"/admin/getallrecipients", "GET"},           // GET
+	8: {"/admin/project/complete", "POST", "index"}, // POST
+	9: {"/admin/project/featured", "POST", "index"}, // POST
 }
 
 // validateAdmin validates whether a given user is an admin and returns a bool

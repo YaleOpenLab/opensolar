@@ -27,14 +27,14 @@ func setupEntityRPCs() {
 
 // EntityRPC is a list of endpoints that can be called by an entity
 var EntityRPC = map[int][]string{
-	1: []string{"/entity/validate", "GET"},                                                                  // GET
-	2: []string{"/entity/stage0", "GET"},                                                                    // GET
-	3: []string{"/entity/stage1", "GET"},                                                                    // GET
-	4: []string{"/entity/stage2", "GET"},                                                                    // GET
-	5: []string{"/entity/addcollateral", "POST", "amount", "collateral"},                                    // POST
-	6: []string{"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"},                             // POST
-	7: []string{"/entity/register", "POST", "name", "username", "pwhash", "token", "seedpwd", "entityType"}, // POST
-	8: []string{"/entity/contractor/dashboard", "GET"},                                                      // GET
+	1: {"/entity/validate", "GET"},                                                                  // GET
+	2: {"/entity/stage0", "GET"},                                                                    // GET
+	3: {"/entity/stage1", "GET"},                                                                    // GET
+	4: {"/entity/stage2", "GET"},                                                                    // GET
+	5: {"/entity/addcollateral", "POST", "amount", "collateral"},                                    // POST
+	6: {"/entity/proposeproject/opensolar", "POST", "projIndex", "fee"},                             // POST
+	7: {"/entity/register", "POST", "name", "username", "pwhash", "token", "seedpwd", "entityType"}, // POST
+	8: {"/entity/contractor/dashboard", "GET"},                                                      // GET
 }
 
 // entityValidateHelper is a helper that helps validate an entity, and returns

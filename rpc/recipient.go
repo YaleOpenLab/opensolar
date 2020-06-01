@@ -54,29 +54,29 @@ func setupRecipientRPCs() {
 
 // RecpRPC is a collection of all recipient RPC endpoints and their required params
 var RecpRPC = map[int][]string{
-	1:  []string{"/recipient/all", "GET"},                                                                                                   // GET
-	2:  []string{"/recipient/register", "POST", "name", "username", "pwhash", "seedpwd"},                                                    // POST
-	3:  []string{"/recipient/validate", "GET"},                                                                                              // GET
-	4:  []string{"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},                                               // POST
-	5:  []string{"/recipient/deviceId", "POST", "deviceId"},                                                                                 // POST
-	6:  []string{"/recipient/startdevice", "POST", "start"},                                                                                 // POST
-	7:  []string{"/recipient/storelocation", "POST", "location"},                                                                            // POST
-	8:  []string{"/recipient/auction/choose/blind", "GET"},                                                                                  // GET
-	9:  []string{"/recipient/auction/choose/vickrey", "GET"},                                                                                // GET
-	10: []string{"/recipient/auction/choose/time", "GET"},                                                                                   // GET
-	11: []string{"/recipient/unlock/opensolar", "POST", "seedpwd", "projIndex"},                                                             // POST
-	12: []string{"/recipient/addemail", "POST", "email"},                                                                                    // POST
-	13: []string{"/recipient/finalize", "POST", "projIndex"},                                                                                // POST
-	14: []string{"/recipient/originate", "POST", "projIndex"},                                                                               // POST
-	15: []string{"/recipient/trustlimit", "GET", "assetName"},                                                                               // GET
-	16: []string{"/recipient/ssh", "POST", "hash"},                                                                                          // POST
-	17: []string{"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                                                                // POST
-	18: []string{"/recipient/register/teller", "POST", "url", "projIndex"},                                                                  // POST
-	19: []string{"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"},                                             // POST
-	20: []string{"/recipient/dashboard", "GET"},                                                                                             // GET
-	21: []string{"/recipient/company/set", "POST"},                                                                                          // POST
-	22: []string{"/recipient/company/details", "POST", "companytype", "name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
-	23: []string{"/recipient/teller/energy", "POST", "energy"},                                                                              // POST
+	1:  {"/recipient/all", "GET"},                                                                                                   // GET
+	2:  {"/recipient/register", "POST", "name", "username", "pwhash", "seedpwd"},                                                    // POST
+	3:  {"/recipient/validate", "GET"},                                                                                              // GET
+	4:  {"/recipient/payback", "POST", "assetName", "amount", "seedpwd", "projIndex"},                                               // POST
+	5:  {"/recipient/deviceId", "POST", "deviceId"},                                                                                 // POST
+	6:  {"/recipient/startdevice", "POST", "start"},                                                                                 // POST
+	7:  {"/recipient/storelocation", "POST", "location"},                                                                            // POST
+	8:  {"/recipient/auction/choose/blind", "GET"},                                                                                  // GET
+	9:  {"/recipient/auction/choose/vickrey", "GET"},                                                                                // GET
+	10: {"/recipient/auction/choose/time", "GET"},                                                                                   // GET
+	11: {"/recipient/unlock/opensolar", "POST", "seedpwd", "projIndex"},                                                             // POST
+	12: {"/recipient/addemail", "POST", "email"},                                                                                    // POST
+	13: {"/recipient/finalize", "POST", "projIndex"},                                                                                // POST
+	14: {"/recipient/originate", "POST", "projIndex"},                                                                               // POST
+	15: {"/recipient/trustlimit", "GET", "assetName"},                                                                               // GET
+	16: {"/recipient/ssh", "POST", "hash"},                                                                                          // POST
+	17: {"/recipient/onetimeunlock", "POST", "projIndex", "seedpwd"},                                                                // POST
+	18: {"/recipient/register/teller", "POST", "url", "projIndex"},                                                                  // POST
+	19: {"/recipient/teller/details", "POST", "projIndex", "url", "brokerurl", "topic"},                                             // POST
+	20: {"/recipient/dashboard", "GET"},                                                                                             // GET
+	21: {"/recipient/company/set", "POST"},                                                                                          // POST
+	22: {"/recipient/company/details", "POST", "companytype", "name", "legalname", "address", "country", "city", "zipcode", "role"}, // POST
+	23: {"/recipient/teller/energy", "POST", "energy"},                                                                              // POST
 }
 
 // recpValidateHelper is a helper that helps validates recipients in routes
