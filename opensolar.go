@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/pkg/errors"
 
-	flags "github.com/jessevdk/go-flags"
 	"github.com/spf13/viper"
 
 	erpc "github.com/Varunram/essentials/rpc"
@@ -29,14 +29,11 @@ var opts struct {
 	DemoData bool   `short:"d" description:"Populate project"`
 	Sandbox  bool   `short:"s" description:"Populate sandbox"`
 	OpenxURL string `short:"o" description:"The URL of the openx instance to connect to. Default: http://localhost:8080"`
+	EnvRead  bool   `short:"e" description:"read values from env files"`
 }
 
 // parseConfig parses CLI parameters
 func parseConfig(args []string) (bool, int, error) {
-	_, err := flags.ParseArgs(&opts, args)
-	if err != nil {
-		return false, -1, err
-	}
 	port := consts.DefaultRpcPort
 	if opts.Port != 0 {
 		port = opts.Port
@@ -48,7 +45,7 @@ func parseConfig(args []string) (bool, int, error) {
 	viper.SetConfigType("yaml")
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
 		log.Println("error while reading openx access code")
 		log.Fatal(err)
@@ -62,6 +59,20 @@ func parseConfig(args []string) (bool, int, error) {
 	consts.TopSecretCode = viper.GetString("code")
 
 	return opts.Insecure, port, nil
+}
+
+func parseEnvVars() (int, string, bool, bool, bool, string) {
+	log.Println("reading")
+	viper.AutomaticEnv()
+
+	port := viper.GetInt("OPENX_PORT")
+	code := viper.GetString("OPENX_CODE")
+	populate := viper.GetBool("OPENS_POP")
+	sandbox := viper.GetBool("OPENS_SB")
+	insecure := viper.GetBool("OPENS_INSECURE")
+	openxURL := viper.GetString("OPENX_URL")
+
+	return port, code, populate, sandbox, insecure, openxURL
 }
 
 func checkViperParams(params ...string) error {
@@ -122,9 +133,22 @@ func loadOpenxConsts() error {
 func main() {
 	var err error
 	//log.Fatal(sandbox.Test())
-	insecure, port, err := parseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
+	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	var insecure bool
+	var port int
+
+	if opts.EnvRead {
+		port, consts.TopSecretCode, opts.DemoData,
+			opts.Sandbox, insecure, consts.OpenxURL = parseEnvVars()
+	} else {
+		insecure, port, err = parseConfig(os.Args) // parseconfig should be before StartPlatform to parse the mainnet bool
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	consts.Mainnet = mainnet() // make an API call to openx for the status on this
