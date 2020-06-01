@@ -65,7 +65,7 @@ func parseEnvVars() (int, string, bool, bool, bool, string) {
 	log.Println("reading")
 	viper.AutomaticEnv()
 
-	port := viper.GetInt("OPENX_PORT")
+	port := viper.GetInt("OPENS_PORT")
 	code := viper.GetString("OPENX_CODE")
 	populate := viper.GetBool("OPENS_POP")
 	sandbox := viper.GetBool("OPENS_SB")
