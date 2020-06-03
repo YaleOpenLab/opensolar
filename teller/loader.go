@@ -66,7 +66,7 @@ func StartTeller() error {
 		return errors.Wrap(err, "could not check device id")
 	}
 
-	DeviceId, err = getDeviceID() // Stores DeviceId
+	DeviceID, err = getDeviceID() // Stores DeviceID
 	if err != nil {
 		return errors.Wrap(err, "could not get device id from local storage")
 	}

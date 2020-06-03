@@ -19,8 +19,8 @@ import (
 	orpc "github.com/YaleOpenLab/openx/rpc"
 )
 
-func baseUrl(url string) string {
-	return ApiUrl + "/" + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
+func baseURL(url string) string {
+	return APIURL + "/" + url + "?username=" + LocalRecipient.U.Username + "&token=" + Token
 }
 
 func basePostData() url.Values {
@@ -40,7 +40,7 @@ func httpsGet(request []string, xparams ...string) ([]byte, error) {
 	}
 
 	var params string
-	params += baseUrl(endpoint)
+	params += baseURL(endpoint)
 	for _, elem := range xparams {
 		params += elem
 	}
@@ -66,7 +66,7 @@ func getLocation(mapskey string) error {
 // ping pings the platform to see if its up
 func ping() error {
 	// make a curl request out to lcoalhost and get the ping response
-	data, err := erpc.GetRequest(ApiUrl + "/ping")
+	data, err := erpc.GetRequest(APIURL + "/ping")
 	if err != nil {
 		return err
 	}
@@ -108,6 +108,7 @@ func getProjectIndex(assetName string) (int, error) {
 	return -1, errors.New("Not found")
 }
 
+// LoginReturn is a wrapper around the token string
 var LoginReturn struct {
 	Token string
 }
@@ -120,7 +121,7 @@ func login(username string, pwhash string) error {
 	postdata.Set("pwhash", pwhash)
 
 	// Read in the cert file
-	data, err := erpc.PostForm(ApiUrl+orpc.UserRPC[0][0], postdata)
+	data, err := erpc.PostForm(APIURL+orpc.UserRPC[0][0], postdata)
 	if err != nil {
 		return errors.Wrap(err, "did not make request")
 	}
@@ -131,10 +132,10 @@ func login(username string, pwhash string) error {
 		return err
 	}
 
-	log.Println(ApiUrl+orpc.UserRPC[0][0], postdata)
+	log.Println(APIURL+orpc.UserRPC[0][0], postdata)
 	// validate that the user is indeed a recipient
 	Token = LoginReturn.Token
-	data, err = erpc.GetRequest(ApiUrl + rpc.RecpRPC[3][0] + "?username=" + username + "&token=" + LoginReturn.Token)
+	data, err = erpc.GetRequest(APIURL + rpc.RecpRPC[3][0] + "?username=" + username + "&token=" + LoginReturn.Token)
 	if err != nil {
 		return err
 	}
@@ -170,14 +171,14 @@ func projectPayback(assetName string, amountx float64) error {
 
 	var data []byte
 	// retrieve project index
-	if strings.Contains(ApiUrl, "localhost") {
+	if strings.Contains(APIURL, "localhost") {
 		postdata := basePostData()
 		postdata.Set("projIndex", projIndex)
 		postdata.Set("assetName", assetName)
 		postdata.Set("seedpwd", LocalSeedPwd)
 		postdata.Set("amount", amount)
 
-		data, err = erpc.PostForm(ApiUrl+rpc.RecpRPC[4][0], postdata)
+		data, err = erpc.PostForm(APIURL+rpc.RecpRPC[4][0], postdata)
 	} else {
 		form := url.Values{}
 		form.Set("projIndex", projIndex)
@@ -185,7 +186,7 @@ func projectPayback(assetName string, amountx float64) error {
 		form.Set("seedpwd", LocalSeedPwd)
 		form.Set("amount", amount)
 
-		data, err = erpc.PostForm(ApiUrl+rpc.RecpRPC[4][0], form)
+		data, err = erpc.PostForm(APIURL+rpc.RecpRPC[4][0], form)
 	}
 
 	if err != nil {
@@ -207,17 +208,17 @@ func projectPayback(assetName string, amountx float64) error {
 }
 
 // SetDeviceId sets the device id of the teller
-func setDeviceId(username string, deviceId string) error {
+func setDeviceID(username string, deviceID string) error {
 
 	postdata := url.Values{}
 	log.Println(LocalRecipient.U.Username)
 	log.Println(Token)
 	postdata.Set("username", LocalRecipient.U.Username)
 	postdata.Set("token", Token)
-	log.Println("deviceid", deviceId)
-	postdata.Set("deviceId", deviceId)
+	log.Println("deviceid", deviceID)
+	postdata.Set("deviceId", deviceID)
 
-	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[5][0], postdata)
+	data, err := erpc.PostForm(APIURL+rpc.RecpRPC[5][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -245,7 +246,7 @@ func storeStartTime() error {
 	postdata := basePostData()
 	postdata.Set("start", unixString)
 
-	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[6][0], postdata)
+	data, err := erpc.PostForm(APIURL+rpc.RecpRPC[6][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -274,7 +275,7 @@ func storeLocation(mapskey string) error {
 	postdata := basePostData()
 	postdata.Set("location", "l"+DeviceLocation) // handle google API failures this funky way
 
-	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[7][0], postdata)
+	data, err := erpc.PostForm(APIURL+rpc.RecpRPC[7][0], postdata)
 	if err != nil {
 		return err
 	}
@@ -325,7 +326,7 @@ func sendDeviceShutdownEmail(tx1 string, tx2 string) error {
 	}
 
 	data, err := httpsGet(rpc.ProjectRPC[6], "&projIndex="+projIndex,
-		"&deviceId="+DeviceId, "&tx1="+tx1, "&tx2="+tx2)
+		"&deviceId="+DeviceID, "&tx1="+tx1, "&tx2="+tx2)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return err
@@ -376,7 +377,7 @@ func sendDevicePaybackFailedEmail() error {
 		return err
 	}
 
-	data, err := httpsGet(rpc.ProjectRPC[7], "&projIndex="+projIndex, "&deviceId="+DeviceId)
+	data, err := httpsGet(rpc.ProjectRPC[7], "&projIndex="+projIndex, "&deviceId="+DeviceID)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return err
@@ -400,7 +401,7 @@ func storeStateHistory(hash string) error {
 	postdata := basePostData()
 	postdata.Set("hash", hash)
 
-	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[16][0], postdata)
+	data, err := erpc.PostForm(APIURL+rpc.RecpRPC[16][0], postdata)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return err
@@ -422,7 +423,7 @@ func storeStateHistory(hash string) error {
 
 // testSwytch tests whether the swytch workflow works correctly
 func testSwytch() {
-	data, err := erpc.GetRequest(baseUrl("swytch/accessToken") + "&clientId=" + SwytchClientid +
+	data, err := erpc.GetRequest(baseURL("swytch/accessToken") + "&clientId=" + SwytchClientid +
 		"&clientSecret=" + SwytchClientSecret + "&username=" + SwytchUsername + "&password=" + SwytchPassword)
 	if err != nil {
 		colorOutput(RedColor, err)
@@ -439,7 +440,7 @@ func testSwytch() {
 	refreshToken := x1.Data[0].Refreshtoken
 	// we have the access token as well but need to refresh it using the refresh token, so
 	// might as well store later.
-	data, err = erpc.GetRequest(ApiUrl + "/swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&" +
+	data, err = erpc.GetRequest(APIURL + "/swytch/refreshToken?clientId=c0fe38566a254a3a80b2a42081b46843&clientSecret=46d10252a4954007af5e2f8941aeeb37&" +
 		"refreshToken=" + refreshToken)
 	if err != nil {
 		colorOutput(RedColor, err)
@@ -455,7 +456,7 @@ func testSwytch() {
 
 	accessToken := x1.Data[0].Accesstoken
 
-	data, err = erpc.GetRequest(ApiUrl + "/swytch/getuser?authToken=" + accessToken)
+	data, err = erpc.GetRequest(APIURL + "/swytch/getuser?authToken=" + accessToken)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -468,11 +469,11 @@ func testSwytch() {
 		return
 	}
 
-	userId := x3.Data[0].Id
-	colorOutput(CyanColor, "USER ID: ", userId)
+	userID := x3.Data[0].ID
+	colorOutput(CyanColor, "USER ID: ", userID)
 	// we have the user id, query for assets
 
-	data, err = erpc.GetRequest(ApiUrl + "/swytch/getassets?authToken=" + accessToken + "&userId=" + userId)
+	data, err = erpc.GetRequest(APIURL + "/swytch/getassets?authToken=" + accessToken + "&userId=" + userID)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -485,10 +486,10 @@ func testSwytch() {
 		return
 	}
 
-	assetId := x4.Data[0].Id
-	colorOutput(CyanColor, "ASSETID: ", assetId)
+	assetID := x4.Data[0].ID
+	colorOutput(CyanColor, "ASSETID: ", assetID)
 	// we have the asset id, try to get some info
-	data, err = erpc.GetRequest(ApiUrl + "/swytch/getenergy?authToken=" + accessToken + "&assetId=" + assetId)
+	data, err = erpc.GetRequest(APIURL + "/swytch/getenergy?authToken=" + accessToken + "&assetId=" + assetID)
 	if err != nil {
 		colorOutput(RedColor, err)
 		return
@@ -503,7 +504,7 @@ func testSwytch() {
 
 	colorOutput(CyanColor, "Energy data from installed asset: ", x4)
 
-	data, err = erpc.GetRequest(ApiUrl + "/swytch/getattributes?authToken=" + accessToken + "&assetId=" + assetId)
+	data, err = erpc.GetRequest(APIURL + "/swytch/getattributes?authToken=" + accessToken + "&assetId=" + assetID)
 	if err != nil {
 		colorOutput(CyanColor, err)
 		return
@@ -621,7 +622,7 @@ func putIpfsData(data []byte) (string, error) {
 	postdata := basePostData()
 	postdata.Set("data", string(data))
 
-	data, err := erpc.PostForm(ApiUrl+orpc.UserRPC[34][0], postdata)
+	data, err := erpc.PostForm(APIURL+orpc.UserRPC[34][0], postdata)
 	if err != nil {
 		return "", err
 	}
@@ -650,7 +651,7 @@ func putEnergy(energyx uint32) ([]byte, error) {
 	postdata := basePostData()
 	postdata.Set("energy", energy)
 
-	data, err := erpc.PostForm(ApiUrl+rpc.RecpRPC[23][0], postdata)
+	data, err := erpc.PostForm(APIURL+rpc.RecpRPC[23][0], postdata)
 	if err != nil {
 		return nil, err
 	}

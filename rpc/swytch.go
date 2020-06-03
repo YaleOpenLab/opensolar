@@ -48,14 +48,14 @@ func getAccessToken() {
 		url := "https://platformapi-staging.swytch.io/v1/oauth/token"
 		pwd := "password"
 
-		clientId := r.URL.Query()["clientId"][0]
+		clientID := r.URL.Query()["clientId"][0]
 		clientSecret := r.URL.Query()["clientSecret"][0]
 		username := r.URL.Query()["username"][0]
 		password := r.URL.Query()["password"][0]
 
 		a := `{
 			"grant_type":"` + pwd + `",
-			"client_id":"` + clientId + `",
+			"client_id":"` + clientID + `",
 			"client_secret":"` + clientSecret + `",
 			"username":"` + username + `",
 			"password":"` + password + `"
@@ -109,14 +109,14 @@ func getRefreshToken() {
 		url := "https://platformapi-staging.swytch.io/v1/oauth/token"
 		pwd := "refresh_token"
 
-		clientId := r.URL.Query()["clientId"][0]
+		clientID := r.URL.Query()["clientId"][0]
 		clientSecret := r.URL.Query()["clientSecret"][0]
 		refreshToken := r.URL.Query()["refreshToken"][0]
 
 		a := `
 		{
 			"grant_type":"` + pwd + `",
-			"client_id":"` + clientId + `",
+			"client_id":"` + clientID + `",
 			"client_secret":"` + clientSecret + `",
 			"refresh_token": "` + refreshToken + `"
 		}`
@@ -159,7 +159,7 @@ type getSwytchUserStructToken struct {
 }
 
 type getSwytchUserStructHelper struct {
-	Id           string                   `json:"id"`
+	ID           string                   `json:"id"`
 	Firstname    string                   `json:"first_name"`
 	Lastname     string                   `json:"last_name"`
 	Name         string                   `json:"name"`
@@ -233,17 +233,17 @@ type gA2Meta struct {
 	SerialNO        string  `json:"serialNO"`
 	ThingName       string  `json:"thingName"`
 	ThingArn        string  `json:"thingArn"`
-	ThingId         string  `json:"thingId"`
+	ThingID         string  `json:"thingId"`
 }
 
 type gA2Position struct {
-	Id          string    `json:"_id"`
+	ID          string    `json:"_id"`
 	Coordinates []float64 `json:"coordinates"`
 	Type        string    `json:"type"`
 }
 
 type gA2 struct {
-	Id         string      `json:"_id"`
+	ID         string      `json:"_id"`
 	UpdatedAt  string      `json:"updatedAt"`
 	CreatedAt  string      `json:"createdAt"`
 	Position   gA2Position `json:"position"`
@@ -279,9 +279,9 @@ func getAssets() {
 		}
 
 		authToken := r.URL.Query()["authToken"][0]
-		userId := r.URL.Query()["userId"][0]
+		userID := r.URL.Query()["userId"][0]
 
-		url := "https://platformapi-staging.swytch.io/v1/users/" + userId + "/assets"
+		url := "https://platformapi-staging.swytch.io/v1/users/" + userID + "/assets"
 
 		req, err := http.NewRequest("GET", url, nil)
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {
@@ -337,12 +337,12 @@ type gEMetadata struct {
 	SerialNO        string  `json:"serialNO"`
 	ThingName       string  `json:"thingName"`
 	ThingArn        string  `json:"thingArn"`
-	ThingId         string  `json:"thingId"`
+	ThingID         string  `json:"thingId"`
 	Sourcetimestamp string  `json:"source_timestamp"`
 }
 
 type getEnergyHelper struct {
-	Id              string     `json:"_id"`
+	ID              string     `json:"_id"`
 	Assetid         string     `json:"asset_id"`
 	Assettype       string     `json:"asset_type"`
 	Source          string     `json:"source"`
@@ -380,9 +380,9 @@ func getEnergy() {
 		}
 
 		authToken := r.URL.Query()["authToken"][0]
-		assetId := r.URL.Query()["assetId"][0]
+		assetID := r.URL.Query()["assetId"][0]
 
-		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/energy?limit=100&offset=0"
+		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetID + "/energy?limit=100&offset=0"
 
 		req, err := http.NewRequest("GET", url, nil)
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {
@@ -418,7 +418,7 @@ func getEnergy() {
 }
 
 type getEnergyAttributionOrigin struct {
-	Id          string    `json:"_id"`
+	ID          string    `json:"_id"`
 	Coordinates []float64 `json:"coordinates"`
 	Type        string    `json:"type"`
 }
@@ -435,7 +435,7 @@ type getEnergyAttributionInputs struct {
 }
 
 type getEnergyAttributionHelper struct {
-	Id                   string                     `json:"_id"`
+	ID                   string                     `json:"_id"`
 	Assetid              string                     `json:"asset_id"`
 	Attributionholder    string                     `json:"attribution_holder"`
 	Carbonoffset         string                     `json:"carbon_offset"`
@@ -483,9 +483,9 @@ func getEnergyAttribution() {
 		}
 
 		authToken := r.URL.Query()["authToken"][0]
-		assetId := r.URL.Query()["assetId"][0]
+		assetID := r.URL.Query()["assetId"][0]
 
-		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetId + "/attributions?limit=100&offset=0"
+		url := "https://platformapi-staging.swytch.io/v1/assets/" + assetID + "/attributions?limit=100&offset=0"
 
 		req, err := http.NewRequest("GET", url, nil)
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {

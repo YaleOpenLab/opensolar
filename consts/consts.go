@@ -83,8 +83,8 @@ var EscrowPwd = "blah"
 // Tlsport is the default SSL port on which openx starts
 var Tlsport = 443
 
-// DefaultRpcPort is the default Insecure port on which openx starts
-var DefaultRpcPort = 8081
+// DefaultRPCPort is the default Insecure port on which openx starts
+var DefaultRPCPort = 8081
 
 // LockInterval is the time a recipient is given to unlock the project and redeem investment, right now at 3 days
 var LockInterval = int64(1 * 60 * 60 * 24 * 3)

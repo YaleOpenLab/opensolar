@@ -233,6 +233,7 @@ func registerUser() {
 	})
 }
 
+// UserRoleStruct is a handler used to return /user/validate
 type UserRoleStruct struct {
 	User      openx.User
 	Investor  core.Investor

@@ -15,8 +15,8 @@ func setupPublicRoutes() {
 	getRecpTopReputationPublic()
 }
 
-// PublicRpc contains a list of all public RPC endpoints
-var PublicRpc = map[int][]string{
+// PublicRPC contains a list of all public RPC endpoints
+var PublicRPC = map[int][]string{
 	1: {"/public/investor/all"},             // GET
 	2: {"/public/recipient/all"},            // GET
 	3: {"/public/recipient/reputation/top"}, // GET

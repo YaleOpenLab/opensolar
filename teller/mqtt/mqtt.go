@@ -22,6 +22,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 )
 
+// PublishMessage is a helper used to publish a message to an MQTT broker
 func PublishMessage(mqttopts *mqtt.ClientOptions) error {
 	client := mqtt.NewClient(mqttopts)
 	token := client.Connect()
@@ -40,6 +41,7 @@ func PublishMessage(mqttopts *mqtt.ClientOptions) error {
 	return nil
 }
 
+// SubscribeMessage is a helper used to subscribe to an MQTT broker
 func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
 	receiveCount := 0
 	receiver := make(chan [2]string)
@@ -77,7 +79,7 @@ var opts struct {
 	Broker    string `long:"broker" description:"The broker url" default:"localhost:1883"`
 	Password  string `long:"password" description:"The password"`
 	User      string `long:"user" description:"the user" default:"username"`
-	Id        string `long:"id" description:"the clientid" default:"id"`
+	ID        string `long:"id" description:"the clientid" default:"id"`
 	Cleansess bool   `long:"cleansess" description:"set clean seession"`
 	Qos       int    `long:"qos" description:"quality of service"`
 	Num       int    `long:"num" description:"number of messages to subscribe to" default:"1"`
