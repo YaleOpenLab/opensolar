@@ -112,7 +112,7 @@ func main() {
 
 	log.Printf("\taction:    %s\n", opts.Action)
 	log.Printf("\tbroker:    %s\n", opts.Broker)
-	log.Printf("\tclientid:  %s\n", opts.Id)
+	log.Printf("\tclientid:  %s\n", opts.ID)
 	log.Printf("\tuser:      %s\n", opts.User)
 	log.Printf("\tpassword:  %s\n", opts.Password)
 	log.Printf("\ttopic:     %s\n", opts.Topic)
@@ -124,7 +124,7 @@ func main() {
 
 	mqttopts := mqtt.NewClientOptions()
 	mqttopts.AddBroker(opts.Broker)
-	mqttopts.SetClientID(opts.Id)
+	mqttopts.SetClientID(opts.ID)
 	mqttopts.SetUsername(opts.User)
 	mqttopts.SetPassword(opts.Password)
 	mqttopts.SetCleanSession(opts.Cleansess)
