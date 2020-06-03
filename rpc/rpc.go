@@ -127,6 +127,10 @@ func relayRequest() {
 			}
 
 			data, err := erpc.PostForm(body, r.Form)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 			var x interface{}
 			_ = json.Unmarshal(data, &x)
 			erpc.MarshalSend(w, x)

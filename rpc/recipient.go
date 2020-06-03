@@ -695,7 +695,7 @@ func recpDashboard() {
 			var data1 []byte
 
 			for i := 0; i < 7; i++ { // formatted according to the responses received from the lumen unit
-				// which is further read by mosquitto_sub
+				// which is further read by the subscriber
 				line, _, err := reader.ReadLine()
 				if err != nil {
 					break

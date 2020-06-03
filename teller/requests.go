@@ -32,7 +32,7 @@ func basePostData() url.Values {
 
 func httpsGet(request []string, xparams ...string) ([]byte, error) {
 	endpoint := request[0]
-	reqParams := request[2:len(request)]
+	reqParams := request[2:]
 
 	if len(reqParams) != len(xparams) {
 		colorOutput(CyanColor, "length of required params not equal to passed params: ", endpoint, reqParams, xparams)

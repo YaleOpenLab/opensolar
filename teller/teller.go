@@ -197,7 +197,7 @@ func parseConfig() error {
 	SwytchClientid = viper.GetString("sclientid")
 	SwytchClientSecret = viper.GetString("sclientsecret")
 
-	// parse params needed by mosquitto subscriber
+	// parse params needed by the subscriber
 	mqttopts := mqtt.NewClientOptions()
 	mqttopts.AddBroker(viper.GetString("mqttbroker"))
 	mqttopts.SetClientID(viper.GetString("mqttusername"))

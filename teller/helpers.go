@@ -209,21 +209,9 @@ func commitDataShutdown() {
 	colorOutput(CyanColor, "printing data before shutdown")
 	path := consts.TellerHomeDir + "/data.txt"
 
-	fileHash, err := storeDataInIpfs(path)
+	fileHash, err := storeDataInIpfs("TELLER SHUTDOWN + " + utils.Timestamp())
 	if err != nil {
-		colorOutput(RedColor, "Couldn't hash file: ", err)
-	}
-
-	defer func() {
-		if ferr := os.Remove(path); ferr != nil {
-			ferr = err
-		}
-	}()
-
-	_, err = os.Create(path)
-	if err != nil {
-		colorOutput(RedColor, "error while opening file", err)
-		return
+		colorOutput(RedColor, "Couldn't store data in file: ", err)
 	}
 
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -235,11 +223,7 @@ func commitDataShutdown() {
 	file.Write([]byte(fileHash))
 	err = file.Close()
 	if err != nil {
-		defer func() {
-			if ferr := os.Remove(path); ferr != nil {
-				ferr = err
-			}
-		}()
+		log.Println("error while closing file: ", err)
 	}
 
 	err = storeStateHistory(fileHash)
@@ -300,6 +284,7 @@ func getDeviceID() (string, error) {
 
 	defer func() {
 		if ferr := file.Close(); ferr != nil {
+			log.Println(ferr)
 			err = ferr
 		}
 	}()
@@ -410,7 +395,7 @@ func updateEnergyData() error {
 		var data []byte
 
 		for i := 0; i < 7; i++ { // formatted according to the responses received from the lumen unit
-			// which is further read by mosquitto_sub
+			// which is further read by the subscriber
 			line, _, err := reader.ReadLine()
 			if err != nil {
 				colorOutput(RedColor, "reached end of file")
