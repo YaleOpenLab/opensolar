@@ -304,8 +304,8 @@ func SendContractNotification(Hash1 string, Hash2 string, Hash3 string, Hash4 st
 }
 
 // SendTellerShutdownEmail sends the platform admin an email notifying that the teller has shut down
-func SendTellerShutdownEmail(from string, projIndex string, deviceId string, tx1 string, tx2 string) error {
-	body := "Greetings from the remote teller " + deviceId + " installed for: " + from + " on behalf of project: " + projIndex + "\n\n" +
+func SendTellerShutdownEmail(from string, projIndex string, deviceID string, tx1 string, tx2 string) error {
+	body := "Greetings from the remote teller " + deviceID + " installed for: " + from + " on behalf of project: " + projIndex + "\n\n" +
 		"We're writing to let you know that the teller has shut down and requires your immediate action. The proof of shutdown transactions " +
 		"are atached below:" + "\n\n" +
 		"Tx1: https://testnet.steexp.com/tx/" + tx1 + "\n\n" +
@@ -316,8 +316,8 @@ func SendTellerShutdownEmail(from string, projIndex string, deviceId string, tx1
 }
 
 // SendTellerPaymentFailedEmail is a notification ot the platform that the teller's payback routine has been disturbed
-func SendTellerPaymentFailedEmail(from string, projIndex string, deviceId string) error {
-	body := "Greetings from the remote teller " + deviceId + " installed for: " + from + " on behalf of project: " + projIndex + "\n\n" +
+func SendTellerPaymentFailedEmail(from string, projIndex string, deviceID string) error {
+	body := "Greetings from the remote teller " + deviceID + " installed for: " + from + " on behalf of project: " + projIndex + "\n\n" +
 		"We're writing to let you know that the teller encountered an error, didn't result in automatic payback and requires your immediate action. " +
 		"Please tend to this situation at the earliest." + "\n\n\n" +
 		footerString

@@ -26,12 +26,12 @@ func demoData() error {
 	project.ContractorIndex = -1 // replace with real indices once created
 	project.PaybackPeriod = 4    // four weeks payback time
 	project.Chain = "stellar"
-	project.BrokerUrl = "mqtt.openx.solar"
+	project.BrokerURL = "mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
-	project.TellerUrl = ""
-	project.BrokerUrl = "https://mqtt.openx.solar"
+	project.TellerURL = ""
+	project.BrokerURL = "https://mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
 
 	// populate the CMS

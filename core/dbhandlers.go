@@ -538,7 +538,7 @@ func UserMarkFlagged(projIndex int, userIndex int) error {
 	}
 
 	a.UserFlaggedBy = append(a.UserFlaggedBy, userIndex)
-	a.Reports += 1
+	a.Reports++
 	return a.Save()
 }
 
@@ -549,8 +549,8 @@ func AddTellerDetails(projIndex int, url string, brokerurl string, topic string)
 		return errors.Wrap(err, "couldn't retrieve project")
 	}
 
-	a.TellerUrl = url
-	a.BrokerUrl = brokerurl
+	a.TellerURL = url
+	a.BrokerURL = brokerurl
 	a.TellerPublishTopic = topic
 
 	return a.Save()

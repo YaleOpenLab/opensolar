@@ -223,10 +223,10 @@ func sendTellerShutdownEmail() {
 		}
 
 		projIndex := r.URL.Query()["projIndex"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
+		deviceID := r.URL.Query()["deviceId"][0]
 		tx1 := r.URL.Query()["tx1"][0]
 		tx2 := r.URL.Query()["tx2"][0]
-		notif.SendTellerShutdownEmail(prepUser.Email, projIndex, deviceId, tx1, tx2)
+		notif.SendTellerShutdownEmail(prepUser.Email, projIndex, deviceID, tx1, tx2)
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }
@@ -247,8 +247,8 @@ func sendTellerFailedPaybackEmail() {
 		}
 
 		projIndex := r.URL.Query()["projIndex"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
-		notif.SendTellerPaymentFailedEmail(prepUser.Email, projIndex, deviceId)
+		deviceID := r.URL.Query()["deviceId"][0]
+		notif.SendTellerPaymentFailedEmail(prepUser.Email, projIndex, deviceID)
 		erpc.ResponseHandler(w, erpc.StatusOK)
 	})
 }

@@ -10,7 +10,7 @@ import (
 	notif "github.com/YaleOpenLab/opensolar/notif"
 )
 
-const tellerUrl = "https://localhost"
+const tellerURL = "https://localhost"
 
 type statusResponse struct {
 	Code   int
@@ -19,7 +19,7 @@ type statusResponse struct {
 
 // MonitorTeller monitors a teller and checks whether its live. If not,
 // sends an email to platform admins
-func MonitorTeller(projIndex int, tellerUrl string) {
+func MonitorTeller(projIndex int, tellerURL string) {
 	// call this function only after a order has been accepted by the recipient
 	log.Println("monitoring the teller")
 	for {
@@ -29,7 +29,7 @@ func MonitorTeller(projIndex int, tellerUrl string) {
 			continue
 		}
 
-		data, err := erpc.GetRequest(tellerUrl + "/ping")
+		data, err := erpc.GetRequest(tellerURL + "/ping")
 		if err != nil {
 			log.Println("did not create new GET request", err)
 			notif.SendTellerDownEmail(project.Index, project.RecipientIndex)

@@ -125,7 +125,7 @@ func frontend() {
 		Return.DateLastStart.Text = utils.StringToHumanTime(Recipient.DeviceStarts[len(Recipient.DeviceStarts)-1])
 		Return.DateLastStart.Text = "Last Boot Time: " + Return.DateLastStart.Text
 
-		Return.DeviceID.Text = Recipient.DeviceId
+		Return.DeviceID.Text = Recipient.DeviceID
 
 		Return.PastEnergyValues = Recipient.PastTellerEnergy
 		Return.DeviceLocation = Recipient.DeviceLocation

@@ -38,14 +38,14 @@ func sandbox() error {
 	project.PaybackPeriod = time.Duration(time.Duration(consts.OneWeek) * time.Second)
 	project.DeveloperFee = []float64{3000}
 	project.Chain = "stellar"
-	project.BrokerUrl = "mqtt.openx.solar"
+	project.BrokerURL = "mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
 	project.DateInitiated = utils.Timestamp()
 	project.DateFunded = utils.Timestamp()
 	project.Metadata = "Aibonito Pilot Project"
 	project.InvestmentType = "munibond"
-	project.TellerUrl = ""
-	project.BrokerUrl = "https://mqtt.openx.solar"
+	project.TellerURL = ""
+	project.BrokerURL = "https://mqtt.openx.solar"
 	project.TellerPublishTopic = "opensolartest"
 
 	// populate the CMS

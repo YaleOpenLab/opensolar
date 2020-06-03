@@ -28,7 +28,7 @@ var opts struct {
 	Daemon     bool   `short:"d" description:"Run the teller in daemon mode"`
 	Port       int    `short:"p" description:"The port on which the teller runs on (default: 443)"`
 	TestSwytch bool   `long:"ts" description:"Test swytch API workflow"`
-	Url        string `short:"u" description:"The URL of the remote opensolar instance"`
+	URL        string `short:"u" description:"The URL of the remote opensolar instance"`
 }
 
 var (
@@ -46,15 +46,15 @@ var (
 	LocalProject solar.Project
 	// LocalSeedPwd contains the seed password of a user
 	LocalSeedPwd string
-	// ApiUrl is the API of the remote opensolar instance
-	ApiUrl string
+	// APIURL is the API of the remote opensolar instance
+	APIURL string
 	// AssetName is the asset for which this teller has been installed towards
 	AssetName string
 
 	// STATE variables
 
-	// DeviceId contains the device's id
-	DeviceId string
+	// DeviceID contains the device's id
+	DeviceID string
 	// DeviceLocation contains the device's location
 	DeviceLocation string
 	// DeviceInfo contains information on the user's device
@@ -66,7 +66,6 @@ var (
 	// HashChainHeader is the header of the ipfs hash chain
 	HashChainHeader string
 
-	// SWYTCH variables
 	// SwytchUsername is the username that the teller has on the swytch platform
 	SwytchUsername string
 	// SwytchPassword is the password that the teller has on the swytch platform
@@ -107,6 +106,7 @@ func autoComplete() readline.AutoCompleter {
 	)
 }
 
+// SubscribeMessage subscribes to a broker
 func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num int) error {
 	colorOutput(CyanColor, "starting mqtt subscriber", mqttopts)
 	receiveCount := 0
@@ -157,7 +157,7 @@ func SubscribeMessage(mqttopts *mqtt.ClientOptions, topic string, qos int, num i
 	return nil
 }
 
-func ParseConfig() error {
+func parseConfig() error {
 	var err error
 	_, err = flags.ParseArgs(&opts, os.Args)
 	if err != nil {
@@ -187,7 +187,7 @@ func ParseConfig() error {
 	loginUsername = viper.GetString("username")
 	loginPwhash = utils.SHA3hash(viper.GetString("password"))
 	loginProjIndex = viper.GetInt("projIndex")
-	ApiUrl = viper.GetString("apiurl")
+	APIURL = viper.GetString("apiurl")
 	Mapskey = viper.GetString("mapskey")
 	AssetName = viper.GetString("assetName")
 
@@ -215,8 +215,8 @@ func ParseConfig() error {
 	if opts.TestSwytch {
 		testSwytch()
 	}
-	if opts.Url != "" {
-		ApiUrl = opts.Url
+	if opts.URL != "" {
+		APIURL = opts.URL
 	}
 
 	return nil
@@ -227,7 +227,7 @@ func main() {
 	erpc.SetConsts(60) // set rpc timeout to 60s to allow for slower RPC connections
 	// this is inline with the https clisent setup for remote RPC calls
 
-	err = ParseConfig()
+	err = parseConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -240,7 +240,7 @@ func main() {
 	}
 
 	colorOutput(YellowColor, "TELLER PUBKEY: "+LocalRecipient.U.StellarWallet.PublicKey)
-	colorOutput(YellowColor, "DEVICE ID: "+DeviceId)
+	colorOutput(YellowColor, "DEVICE ID: "+DeviceID)
 
 	signalChan := make(chan os.Signal, 1)
 	cleanupDone = make(chan struct{})

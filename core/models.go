@@ -99,8 +99,8 @@ func MunibondInvest(issuerPath string, invIndex int, invSeed string, invAmount f
 
 // MunibondReceive sends Debt and Payback assets to the recipient. Sends a notification email
 // to the recipient containing the tx hashes of all transactions involved.
-func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetId string,
-	paybackAssetId string, years int, recpSeed string, totalValue float64, paybackPeriod time.Duration) error {
+func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetID string,
+	paybackAssetID string, years int, recpSeed string, totalValue float64, paybackPeriod time.Duration) error {
 
 	log.Println("Retrieving recipient")
 	recipient, err := RetrieveRecipient(recpIndex)
@@ -114,8 +114,8 @@ func MunibondReceive(issuerPath string, recpIndex int, projIndex int, debtAssetI
 		return errors.Wrap(err, "Unable to retrieve issuer seed")
 	}
 
-	DebtAsset := assets.CreateAsset(debtAssetId, issuerPubkey)
-	PaybackAsset := assets.CreateAsset(paybackAssetId, issuerPubkey)
+	DebtAsset := assets.CreateAsset(debtAssetID, issuerPubkey)
+	PaybackAsset := assets.CreateAsset(paybackAssetID, issuerPubkey)
 
 	if years == 0 {
 		years = 1
@@ -193,7 +193,7 @@ func sendPaymentNotif(recpIndex int, projIndex int, paybackPeriod time.Duration,
 		// we don't know if the user has paid, but we send an email anyway
 		notif.SendPaybackAlertEmail(projIndex, email)
 		// sleep until the next payment is due
-		paybackTimes += 1
+		paybackTimes++
 		log.Println("Sent: ", email, "a notification on payments for payment cycle: ", paybackTimes)
 		time.Sleep(paybackPeriod * consts.OneWeekInSecond)
 	}

@@ -29,8 +29,8 @@ type Recipient struct {
 	// ReceivedSolarProjectIndices stores the indices of the projects the recipient is part of
 	ReceivedSolarProjectIndices []int
 
-	// DeviceId is the device ID of the associated solar hub / IoT device
-	DeviceId string
+	// DeviceID is the device ID of the associated solar hub / IoT device
+	DeviceID string
 
 	// DeviceStarts contains the start time of the above IoT devices.
 	DeviceStarts []string

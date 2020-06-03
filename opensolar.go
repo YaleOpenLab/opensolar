@@ -34,7 +34,7 @@ var opts struct {
 
 // parseConfig parses CLI parameters
 func parseConfig(args []string) (bool, int, error) {
-	port := consts.DefaultRpcPort
+	port := consts.DefaultRPCPort
 	if opts.Port != 0 {
 		port = opts.Port
 	}

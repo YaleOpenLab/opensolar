@@ -50,7 +50,7 @@ func endHandler() error {
 	}
 
 	hashString := "Device Shutting down. Info: " + DeviceInfo + " Device Location: " + DeviceLocation +
-		" Device Unique ID: " + DeviceId + " " + "Start hash: " + StartHash + " Now hash: " + NowHash +
+		" Device Unique ID: " + DeviceID + " " + "Start hash: " + StartHash + " Now hash: " + NowHash +
 		"Ipfs HashChainHeader: " + HashChainHeader
 	// note that we don't commit the latest hash chain header's hash here because this gives us a tighter timeline
 	// to audit what really happened
@@ -134,7 +134,7 @@ func updateState(trigger bool) {
 		}
 		subcommand := string(data)
 		refreshLogin(loginUsername, loginPwhash)
-		ipfsHash, err := storeDataInIpfs("Device ID: " + DeviceId + " UPDATESTATE" + subcommand)
+		ipfsHash, err := storeDataInIpfs("Device ID: " + DeviceID + " UPDATESTATE" + subcommand)
 		if err != nil {
 			colorOutput(RedColor, "Error while fetching ipfs hash", err)
 			// time.Sleep(consts.TellerPollInterval)
@@ -180,12 +180,12 @@ func storeDataInIpfs(data string) (string, error) {
 
 	var retdata []byte
 	var err error
-	// retdata, err := erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
-	if strings.Contains(ApiUrl, "localhost") {
+	// retdata, err := erpc.PostForm(APIURL+"/ipfs/putdata", form)
+	if strings.Contains(APIURL, "localhost") {
 		// connect to openx which runs on http instead of opensolar
 		retdata, err = erpc.PostForm("http://localhost:8080/ipfs/putdata", form)
 	} else {
-		retdata, err = erpc.PostForm(ApiUrl+"/ipfs/putdata", form)
+		retdata, err = erpc.PostForm(APIURL+"/ipfs/putdata", form)
 	}
 
 	if err != nil {
@@ -272,17 +272,17 @@ func checkDeviceID() error {
 		if err != nil {
 			return errors.Wrap(err, "could not create device id file")
 		}
-		deviceId, err := generateDeviceID()
+		deviceID, err := generateDeviceID()
 		if err != nil {
 			return errors.Wrap(err, "could not generate device id")
 		}
-		colorOutput(GreenColor, "GENERATED UNIQUE DEVICE ID: "+deviceId)
-		_, err = file.Write([]byte(deviceId))
+		colorOutput(GreenColor, "GENERATED UNIQUE DEVICE ID: "+deviceID)
+		_, err = file.Write([]byte(deviceID))
 		if err != nil {
 			return errors.Wrap(err, "could not write device id to file")
 		}
 		file.Close()
-		err = setDeviceId(LocalRecipient.U.Username, deviceId)
+		err = setDeviceID(LocalRecipient.U.Username, deviceID)
 		if err != nil {
 			return errors.Wrap(err, "could not store device id in remote platform")
 		}
@@ -319,8 +319,8 @@ type energyStruct struct {
 	EnergyTimestamp string `json:"energy_timestamp"`
 	Unit            string `json:"unit"`
 	Value           uint32 `json:"value"`
-	OwnerId         string `json:"owner_id"`
-	AssetId         string `json:"asset_id"`
+	OwnerID         string `json:"owner_id"`
+	AssetID         string `json:"asset_id"`
 }
 
 func updateEnergyData() error {

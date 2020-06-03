@@ -15,8 +15,8 @@ func setupPublicRoutes() {
 	getRecpTopReputationPublic()
 }
 
-// PublicRpc contains a list of all public RPC endpoints
-var PublicRpc = map[int][]string{
+// PublicRPC contains a list of all public RPC endpoints
+var PublicRPC = map[int][]string{
 	1: {"/public/investor/all"},             // GET
 	2: {"/public/recipient/all"},            // GET
 	3: {"/public/recipient/reputation/top"}, // GET
@@ -90,7 +90,7 @@ func sanitizeAllRecipients(recipients []core.Recipient) []SnRecipient {
 
 // getAllInvestors gets a list of all investors
 func getAllInvestorsPublic() {
-	http.HandleFunc(PublicRpc[1][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRPC[1][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -107,7 +107,7 @@ func getAllInvestorsPublic() {
 
 // getAllRecipients gets a list of all investors
 func getAllRecipientsPublic() {
-	http.HandleFunc(PublicRpc[2][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRPC[2][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -125,7 +125,7 @@ func getAllRecipientsPublic() {
 // getRecpTopReputationPublic gets a list of the recipients sorted by
 // descending order of reputation
 func getRecpTopReputationPublic() {
-	http.HandleFunc(PublicRpc[3][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRPC[3][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)
@@ -143,7 +143,7 @@ func getRecpTopReputationPublic() {
 // getInvTopReputationPublic gets a list of the investors sorted by
 // descending order of reputation
 func getInvTopReputationPublic() {
-	http.HandleFunc(PublicRpc[4][0], func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(PublicRPC[4][0], func(w http.ResponseWriter, r *http.Request) {
 		err := erpc.CheckGet(w, r)
 		if err != nil {
 			log.Println(err)

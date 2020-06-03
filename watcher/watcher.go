@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
 	"log"
 	"net/smtp"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/spf13/viper"
 
@@ -35,9 +36,9 @@ func main() {
 	email1 := viper.Get("pa1").(string)              // pa = platform admin
 	email2 := viper.Get("pa2").(string)              // platform admin 2
 	accessToken := viper.Get("accessToken").(string) // the access token to access the particle io interface
-	deviceId := viper.Get("deviceId").(string)       // the device id associated with the IoT hub
+	deviceID := viper.Get("deviceId").(string)       // the device id associated with the IoT hub
 
-	body := "https://api.particle.io/v1/devices/" + deviceId + "/ping"
+	body := "https://api.particle.io/v1/devices/" + deviceID + "/ping"
 
 	for {
 		payload := strings.NewReader("access_token=" + accessToken)

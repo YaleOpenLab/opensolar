@@ -30,7 +30,7 @@ func setupRecipientRPCs() {
 	validateRecipient()
 	getAllRecipients()
 	payback()
-	storeDeviceId()
+	storeDeviceID()
 	storeStartTime()
 	storeDeviceLocation()
 	chooseBlindAuction()
@@ -222,8 +222,8 @@ func payback() {
 	})
 }
 
-// storeDeviceId stores the recipient's device id from the teller. Called by the teller
-func storeDeviceId() {
+// storeDeviceID stores the recipient's device id from the teller. Called by the teller
+func storeDeviceID() {
 	http.HandleFunc(RecpRPC[5][0], func(w http.ResponseWriter, r *http.Request) {
 		// first validate the recipient or anyone would be able to set device ids
 		prepRecipient, err := recpValidateHelper(w, r, RecpRPC[5][2:], RecpRPC[5][1])
@@ -231,9 +231,9 @@ func storeDeviceId() {
 			return
 		}
 
-		deviceId := r.FormValue("deviceId")
+		deviceID := r.FormValue("deviceId")
 		// we have the recipient ready. Now set the device id
-		prepRecipient.DeviceId = deviceId
+		prepRecipient.DeviceID = deviceID
 		err = prepRecipient.Save()
 		if erpc.Err(w, err, erpc.StatusInternalServerError, "did not save recipient") {
 			return
@@ -553,7 +553,7 @@ func storeTellerURL() {
 			return
 		}
 
-		project.TellerUrl = url
+		project.TellerURL = url
 		err = project.Save()
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
@@ -682,8 +682,8 @@ func recpDashboard() {
 			EnergyTimestamp string `json:"energy_timestamp"`
 			Unit            string `json:"unit"`
 			Value           uint32 `json:"value"`
-			OwnerId         string `json:"owner_id"`
-			AssetId         string `json:"asset_id"`
+			OwnerID         string `json:"owner_id"`
+			AssetID         string `json:"asset_id"`
 		}
 
 		var EnergyValue uint32

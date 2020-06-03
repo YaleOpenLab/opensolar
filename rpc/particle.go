@@ -40,7 +40,7 @@ func setupParticleHandlers() {
 
 // ParticleDevice is a structure to parse the returned particle.io data
 type ParticleDevice struct {
-	Id                    string `json:"id"`
+	ID                    string `json:"id"`
 	Name                  string `json:"name"`
 	LastApp               string `json:"last_app"`
 	LastIPAddress         string `json:"last_ip_address"`
@@ -58,7 +58,7 @@ type ParticleDevice struct {
 
 // ParticleProductDevice is a structure to parse returned particle.io data
 type ParticleProductDevice struct {
-	Id                             string   `json:"id"`
+	ID                             string   `json:"id"`
 	ProductID                      int      `json:"product_id"`
 	LastIPAddress                  string   `json:"last_ip_address"`
 	LastHandshakeAt                string   `json:"last_handshake_at"`
@@ -90,7 +90,7 @@ type ParticlePingResponse struct {
 
 // SignalResponse is a structure to parse returned particle.io data
 type SignalResponse struct {
-	Id        string `json:"id"`
+	ID        string `json:"id"`
 	Connected bool   `json:"connected"`
 	Signaling bool   `json:"signaling"`
 }
@@ -120,7 +120,7 @@ type ParticleUser struct {
 // ParticleEventStream is a structure to parse returned particle.io data
 type ParticleEventStream struct {
 	Data        string `json:"data"`
-	Ttl         string `json:"ttl"`
+	TTL         string `json:"ttl"`
 	PublishedAt string `json:"published_at"`
 	Coreid      string `json:"coreid"`
 }
@@ -187,9 +187,9 @@ func getDeviceInfo() {
 		}
 
 		accessToken := r.URL.Query()["accessToken"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
+		deviceID := r.URL.Query()["deviceId"][0]
 
-		body := "https://api.particle.io/v1/devices/" + deviceId + "?access_token=" + accessToken
+		body := "https://api.particle.io/v1/devices/" + deviceID + "?access_token=" + accessToken
 		var x ParticleDevice
 		erpc.GetAndSendJson(w, body, x)
 	})
@@ -211,8 +211,8 @@ func pingDevice() {
 		}
 
 		accessToken := r.URL.Query()["accessToken"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
-		body := "https://api.particle.io/v1/devices/" + deviceId + "/ping"
+		deviceID := r.URL.Query()["deviceId"][0]
+		body := "https://api.particle.io/v1/devices/" + deviceID + "/ping"
 		payload := strings.NewReader("access_token=" + accessToken)
 
 		erpc.PutAndSend(w, body, payload)
@@ -236,7 +236,7 @@ func signalDevice() {
 		}
 
 		accessToken := r.URL.Query()["accessToken"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
+		deviceID := r.URL.Query()["deviceId"][0]
 		signal := r.URL.Query()["signal"][0]
 		if signal != "on" && signal != "off" {
 			erpc.ResponseHandler(w, erpc.StatusBadRequest)
@@ -245,7 +245,7 @@ func signalDevice() {
 
 		var body string
 		var payload io.Reader
-		body = "https://api.particle.io/v1/devices/" + deviceId
+		body = "https://api.particle.io/v1/devices/" + deviceID
 		if signal == "ok" {
 			payload = strings.NewReader("signal=" + "1" + "&access_token=" + accessToken)
 			body += "?signal=" + "1" + "&accessToken=" + accessToken
@@ -295,9 +295,9 @@ func getDiagnosticsLast() {
 		}
 
 		accessToken := r.URL.Query()["accessToken"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
+		deviceID := r.URL.Query()["deviceId"][0]
 
-		body := "https://api.particle.io/v1/diagnostics/" + deviceId + "/last?access_token=" + accessToken
+		body := "https://api.particle.io/v1/diagnostics/" + deviceID + "/last?access_token=" + accessToken
 		erpc.GetAndSendByte(w, body)
 	})
 }
@@ -318,9 +318,9 @@ func getAllDiagnostics() {
 		}
 
 		accessToken := r.URL.Query()["accessToken"][0]
-		deviceId := r.URL.Query()["deviceId"][0]
+		deviceID := r.URL.Query()["deviceId"][0]
 
-		body := "https://api.particle.io/v1/diagnostics/" + deviceId + "?access_token=" + accessToken
+		body := "https://api.particle.io/v1/diagnostics/" + deviceID + "?access_token=" + accessToken
 		erpc.GetAndSendByte(w, body)
 	})
 }
