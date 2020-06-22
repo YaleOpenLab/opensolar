@@ -17,12 +17,14 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 
 	data, err := erpc.GetRequest(platformURL + body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	err = json.Unmarshal(data, &Recipient)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	if Recipient.U != nil {
@@ -47,7 +49,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		var err error
 		Pnb, err = utils.ToString(primNativeBalance)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -62,7 +65,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		var err error
 		Pub, err = utils.ToString(primUsdBalance)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -77,7 +81,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		var err error
 		Snb, err = utils.ToString(secNativeBalance)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -92,7 +97,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		var err error
 		Sub, err = utils.ToString(secUsdBalance)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -101,7 +107,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		defer wg.Done()
 		Return.DABalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.DebtAssetCode))
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -110,7 +117,8 @@ func validateRecp(wg *sync.WaitGroup, username, token string) {
 		defer wg.Done()
 		Return.PBBalance.Text, err = utils.ToString(xlm.GetAssetBalance(Recipient.U.StellarWallet.PublicKey, Project.PaybackAssetCode))
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 	}(&wg2)
 
@@ -128,17 +136,20 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 		var projCount length
 		data, err := erpc.GetRequest(platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		err = json.Unmarshal(data, &projCount)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.ProjCount.Text, err = utils.ToString(projCount.Length)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.ProjCount.Link = platformURL + "/admin/getallprojects?username=admin&token=" + AdminToken
@@ -150,17 +161,20 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 		var userCount length
 		data, err := erpc.GetRequest(platformURL + "/admin/getallusers?username=admin&token=" + AdminToken)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		err = json.Unmarshal(data, &userCount)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.UserCount.Text, err = utils.ToString(userCount.Length)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.UserCount.Link = platformURL + "/admin/getallusers?username=admin&token=" + AdminToken
@@ -172,17 +186,20 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 		var userCount length
 		data, err := erpc.GetRequest(platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		err = json.Unmarshal(data, &userCount)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.InvCount.Text, err = utils.ToString(userCount.Length)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.InvCount.Link = platformURL + "/admin/getallinvestors?username=admin&token=" + AdminToken
@@ -194,17 +211,20 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 		var userCount length
 		data, err := erpc.GetRequest(platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		err = json.Unmarshal(data, &userCount)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.RecpCount.Text, err = utils.ToString(userCount.Length)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.RecpCount.Link = platformURL + "/admin/getallrecipients?username=admin&token=" + AdminToken
@@ -212,19 +232,22 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 
 	indexS, err := utils.ToString(index)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	body := "/project/get?index=" + indexS
 
 	data, err := erpc.GetRequest(platformURL + body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	err = json.Unmarshal(data, &Project)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	wg2.Add(1)
@@ -237,7 +260,8 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 
 		escrowBalanceS, err := utils.ToString(escrowBalance)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 
 		Return.EscrowBalance.Text = escrowBalanceS
@@ -246,12 +270,14 @@ func adminTokenHandler(wg *sync.WaitGroup, index int) {
 
 	invIndex, err := utils.ToString(Project.InvestorIndices[0])
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	devIndex, err := utils.ToString(Project.DeveloperIndices[0])
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	wg2.Add(1)
@@ -267,13 +293,15 @@ func getInvestor(wg *sync.WaitGroup, AdminToken string, invIndex string) {
 	data, err := erpc.GetRequest(platformURL + "/admin/getinvestor?username=admin&token=" +
 		AdminToken + "&index=" + invIndex)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	var investor core.Investor
 	err = json.Unmarshal(data, &investor)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	Return.Investor.Name = investor.U.Name
@@ -286,13 +314,15 @@ func getDeveloper(wg *sync.WaitGroup, AdminToken string, devIndex string) {
 	data, err := erpc.GetRequest(platformURL + "/admin/getentity?username=admin&token=" +
 		AdminToken + "&index=" + devIndex)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	var developer core.Entity
 	err = json.Unmarshal(data, &developer)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	Return.Developer.Name = developer.U.Name
