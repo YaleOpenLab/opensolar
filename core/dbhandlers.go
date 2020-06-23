@@ -286,6 +286,7 @@ func RetrieveProject(key int) (Project, error) {
 func RetrieveAllProjects() ([]Project, error) {
 	var projects []Project
 	x, err := edb.RetrieveAllKeys(consts.DbDir+consts.DbName, ProjectsBucket)
+	//log.Println("Projects in the db", x)
 	if err != nil {
 		return projects, errors.Wrap(err, "error while retrieving all keys")
 	}

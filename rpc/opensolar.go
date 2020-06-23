@@ -315,6 +315,7 @@ func explore() {
 		}
 
 		allProjects, err := core.RetrieveAllProjects()
+		//log.Println("All demo projects", allProjects)
 		if erpc.Err(w, err, erpc.StatusInternalServerError) {
 			return
 		}
