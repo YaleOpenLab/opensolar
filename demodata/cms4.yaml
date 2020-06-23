@@ -1,0 +1,125 @@
+Explore Tab:
+  name: "Village Energy Collective, Rural Microgrid"
+  city: "Cyangugu"
+  state: "Rusizi District, Western Province"
+  country: "Rwanda"
+  project type: "Grant"
+  originator name: "Rusizi District Commmunity"
+  description: "This community in Rwanda has no access to electricity yet shows a growing local economy. This microgrid project, developed a collaboration with the Rwandan Green Fund (FONERWA), Yale and MIT, aims to serve 250 homes with solar electricity and electric appliances (e.g. lamps, phone chargers, radio, and battery), as well as a school, the town infirmary led by a team of doctors without borders, and the town hall. This is a community-led cooperative with international backing. 20% first loss funds secured through Rwandan Green Fund. Currently doing engineering due diligence for development quotes."
+  bullet 1: "Village Energy Collective, Off-grid Rural Microgrid, Rwanda (Theoretical)"
+  bullet 2: "Siginificantly alleviates financial pressure due to low power cost, and new investment opportunities to democratize and own the green infrastructure of tomorrow"
+  bullet 3:  "Grid-tied with REC offtaking"
+  solar: "100kW"
+  battery: "100kW"
+  return: "7.0%"
+  mainimage: "https://openx-images.s3.amazonaws.com/OpenSolarProjects/1_Rwanda/4.jpg"
+  heroimage: "https://ibb.co/mJc5FBY"
+  acquisition: "2028"
+  rating: "N/A"
+Other Details:
+  tax: "0.3 Tax Credit"
+  storage: "25kw"
+  tariff: "0.12$"
+  panel size: ""
+  capacity: "100kW"
+Terms:
+  purpose: ""
+  security note: "This project does not entail the issuance of a financial security, and is structured exclusively as a restricted research grant. The project does not entail an investment since there are no financial returns offered to donors. All funds accrued through power purchasing are donated back to the Cooperative. Learn more at <link>"
+  table:
+    columns: ["Variable", "Value", "Relevant Party", "Note", "Status", "Support Doc"]
+    rows:
+      - ["Investment Type", "Donation", "InverSOL", "Solar Equipment", "Confirmed"]
+      - ["PPA Tariff", "0.12$/KWh", "Oracle / PREPA", "Variable Anchored To Local Tariff", "Confirmed"]
+      - ["Return (TEY)", "7.0%", "Broker Dealer", "Tax-Adjusted Yield", "Signed"]
+      - ["Maturity", "+/- 2028", "Broker Dealer", "Variable Tied To Tariff", "Signed"]
+      - ["Guarantee", "50%", "Foundation X", "First-Loss Upon Breach", "Started"]
+      - ["Insurance", "Premium", "Allianz CS", "Hurricane Coverage", "Started"]
+Overview:
+  Executive Summary:
+    Investment:
+      capex: "$230000"
+      hardware: ""
+      first loss escrow: ""
+      certification costs: "N/A"
+    Financials:
+      return (TEY): "7.0%"
+      insurance: "Premium"
+      tariff (variable): "0.12 ct/kWh"
+      maturity (variable): "2028"
+    Project Size:
+      pv solar: "100 kW"
+      storage: "25kw"
+      critical: "2%"
+      inverter capacity: "3 x 30kW"
+    sustainability metrics:
+      carbon drawdown: "0.1 t/kWh"
+      community value: "7/7"
+      lca: "N/A"
+      resilience rating: "80%"
+  image link: "https://openx-images.s3.amazonaws.com/OpenSolarProjects/1_Rwanda/1.jpg"
+  opportunity:
+    description: ""
+    pilot goals:
+      - ""
+      - ""
+      - ""
+      - ""
+      - ""
+    images:
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-opportunity-1.jpg"
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-opportunity-2.jpg"
+  context: ""
+Project Details:
+  architecture:
+    map layout image: "https://goo.gl/maps/x8Cpr1C37V6ckHNLA"
+    solar output image: "https://openx-images.s3.amazonaws.com/demo/rwanda-solar-generation.png"
+    design description: ""
+    description: ""
+  layout:
+    image: "https://openx-images.s3.amazonaws.com/OpenSolarProjects/1_Rwanda/4.jpg"
+    installation archetype: ""
+    it infrastructure: ""
+    highlighted product:
+      description: ""
+      images:
+        - ""
+        - ""
+    description: "This 10 kW system was installed in a Grid-Tied design by CT solar Developers. It has a 15 kW smart solarEdge inverter, and an Itron revenue grade REC meter. The system is roof-mounted on a 55 degree angle on a SE facing view. However, its high efficient Jingko panels provide a 78% efficiency rating."
+  community engagement:
+    consultation:
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-community-1.jpg"
+      - ""
+    participation:
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-community-2.jpg"
+      - ""
+    outreach:
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-community-3.jpg"
+      - ""
+    governance:
+      - "https://openx-images.s3.amazonaws.com/demo/rwanda-community-4.jpg"
+      - ""
+    description:
+      - "Link to community impact report"
+  biz numbers:
+    description: ""
+    general payment logic: "https://i.ibb.co/8r5yz1h/Asset-10-4x-2x.png"
+    capital expenditure: ""
+    capital expenditure image: ""
+    project revenue: ""
+    project expenses: ""
+    non profit: "No net-income or profits will be generated by this project."
+    other links: "Download the full concept note and payment interaction diagram"
+Stage:
+  development stage:
+    image: ""
+    stage title: "Construction"
+    stage description: ""
+    other link: ""
+Documents:
+  description: "1"
+  legal contracts:
+    image: "1"
+    title: "1"
+    description: "1"
+  smart contracts image: "1"
+  sc review description: "1"

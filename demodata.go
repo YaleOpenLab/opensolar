@@ -23,7 +23,7 @@ func demoData() error {
 			return err
 		}
 
-		filename := "./cms/cms" + strconv.Itoa(project.Index)
+		filename := "./demodata/cms" + strconv.Itoa(project.Index)
 
 		err = parseCMS(filename, project.Index)
 		if err != nil {
@@ -270,7 +270,7 @@ func parseCMS(fileName string, projIndex int) error {
 
 func createDemoProjects() []core.Project{
 	var demoProjects []core.Project
-	var project1, project2 core.Project
+	var project1, project2, project3, project4 core.Project
 
 	project1.Index = 1
 	project1.SeedInvestmentCap = 4000
@@ -318,51 +318,51 @@ func createDemoProjects() []core.Project{
 
 	demoProjects = append(demoProjects, project2)
 
-	//project3.Index = 3
-	//project3.SeedInvestmentCap = 4000
-	//project3.Stage = 4
-	//project3.MoneyRaised = 0
-	//project3.TotalValue = 4000
-	//project3.OwnershipShift = 0
-	//project3.RecipientIndex = -1  // replace with real indices once created
-	//project3.OriginatorIndex = -1 // replace with real indices once created
-	//project3.GuarantorIndex = -1  // replace with real indices once created
-	//project3.ContractorIndex = -1 // replace with real indices once created
-	//project3.PaybackPeriod = 4    // four weeks payback time
-	//project3.Chain = "stellar"
-	//project3.BrokerURL = "mqtt.openx.solar"
-	//project3.TellerPublishTopic = "opensolartest"
-	//project3.Metadata = "Aibonito Pilot Project"
-	//project3.InvestmentType = "munibond"
-	//project3.TellerURL = ""
-	//project3.BrokerURL = "https://mqtt.openx.solar"
-	//project3.TellerPublishTopic = "opensolartest"
-	//project3.Content.Details = make(map[string]map[string]interface{})
-	//
-	//demoProjects = append(demoProjects, project3)
-	//
-	//project4.Index = 4
-	//project4.SeedInvestmentCap = 4000
-	//project4.Stage = 4
-	//project4.MoneyRaised = 0
-	//project4.TotalValue = 4000
-	//project4.OwnershipShift = 0
-	//project4.RecipientIndex = -1  // replace with real indices once created
-	//project4.OriginatorIndex = -1 // replace with real indices once created
-	//project4.GuarantorIndex = -1  // replace with real indices once created
-	//project4.ContractorIndex = -1 // replace with real indices once created
-	//project4.PaybackPeriod = 4    // four weeks payback time
-	//project4.Chain = "stellar"
-	//project4.BrokerURL = "mqtt.openx.solar"
-	//project4.TellerPublishTopic = "opensolartest"
-	//project4.Metadata = "Aibonito Pilot Project"
-	//project4.InvestmentType = "munibond"
-	//project4.TellerURL = ""
-	//project4.BrokerURL = "https://mqtt.openx.solar"
-	//project4.TellerPublishTopic = "opensolartest"
-	//project4.Content.Details = make(map[string]map[string]interface{})
-	//
-	//demoProjects = append(demoProjects, project4)
+	project3.Index = 3
+	project3.SeedInvestmentCap = 15000
+	project3.Stage = 8
+	project3.MoneyRaised = 0
+	project3.TotalValue = 30000
+	project3.OwnershipShift = 0
+	project3.RecipientIndex = -1  // replace with real indices once created
+	project3.OriginatorIndex = -1 // replace with real indices once created
+	project3.GuarantorIndex = -1  // replace with real indices once created
+	project3.ContractorIndex = -1 // replace with real indices once created
+	project3.PaybackPeriod = 4    // four weeks payback time
+	project3.Chain = "stellar"
+	project3.BrokerURL = "mqtt.openx.solar"
+	project3.TellerPublishTopic = "opensolartest"
+	project3.Metadata = "New Haven Shelter Solar 2"
+	project3.InvestmentType = "munibond"
+	project3.TellerURL = ""
+	project3.BrokerURL = "https://mqtt.openx.solar"
+	project3.TellerPublishTopic = "opensolartest"
+	project3.Content.Details = make(map[string]map[string]interface{})
+
+	demoProjects = append(demoProjects, project3)
+
+	project4.Index = 4
+	project4.SeedInvestmentCap = 230000
+	project4.Stage = 1
+	project4.MoneyRaised = 0
+	project4.TotalValue = 230000
+	project4.OwnershipShift = 0
+	project4.RecipientIndex = -1  // replace with real indices once created
+	project4.OriginatorIndex = -1 // replace with real indices once created
+	project4.GuarantorIndex = -1  // replace with real indices once created
+	project4.ContractorIndex = -1 // replace with real indices once created
+	project4.PaybackPeriod = 4    // four weeks payback time
+	project4.Chain = "stellar"
+	project4.BrokerURL = "mqtt.openx.solar"
+	project4.TellerPublishTopic = "opensolartest"
+	project4.Metadata = "Village Energy Collective, Rural Microgrid"
+	project4.InvestmentType = "munibond"
+	project4.TellerURL = ""
+	project4.BrokerURL = "https://mqtt.openx.solar"
+	project4.TellerPublishTopic = "opensolartest"
+	project4.Content.Details = make(map[string]map[string]interface{})
+
+	demoProjects = append(demoProjects, project4)
 
 	return demoProjects
 }
