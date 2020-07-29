@@ -232,7 +232,7 @@ func SendDisconnectionEmailI(projIndex int, to string) error {
 		"We're writing to let you know that electricity produced from your project numbered: " + projIndexString +
 		"\n\nHas been redirected towards the main power grid due to irregular payments by the recipient.\n\n" +
 		"We are constantly monitoring this situation and will be continuing to send you emails on the same.\n\n" +
-		"In the meantime, lease feel free to write to support with your queries."
+		"In the meantime, please feel free to write to support with your queries."
 	body := startString + "\n\n\n" + footerString
 	return SendMail(body, to)
 }
@@ -249,7 +249,7 @@ func SendSternPaybackAlertEmailI(projIndex int, to string) error {
 		"two more payment periods, we will be redirecting power towards the general grid and you would receive payments " +
 		"for all periods where they were due. \n\n" +
 		"We are constantly monitoring this situation and will be continuing to send you emails on the same.\n\n" +
-		"In the meantime, lease feel free to write to support with your queries."
+		"In the meantime, please feel free to write to support with your queries."
 	body := startString + "\n\n\n" + footerString
 	return SendMail(body, to)
 }
@@ -266,7 +266,7 @@ func SendSternPaybackAlertEmailG(projIndex int, to string) error {
 		"two more payment periods, we will be redirecting power towards the general grid and contact you for further" +
 		"information on how the guarantee towards the project would be realized to investors.\n\n" +
 		"We are constantly monitoring this situation and will be continuing to send you emails on the same.\n\n" +
-		"In the meantime, lease feel free to write to support with your queries."
+		"In the meantime, please feel free to write to support with your queries."
 	body := startString + "\n\n\n" + footerString
 	return SendMail(body, to)
 }
@@ -284,7 +284,7 @@ func SendDisconnectionEmailG(projIndex int, to string) error {
 		"project in order to safeguard investors. We will also be contacting the recipient involved to update them on the" +
 		"situation and will make efforts to alleviate this problem as soon as possible." +
 		"We are constantly monitoring this situation and will be continuing to send you emails on the same.\n\n" +
-		"In the meantime, lease feel free to write to support with your queries."
+		"In the meantime, please feel free to write to support with your queries."
 	body := startString + "\n\n\n" + footerString
 	return SendMail(body, to)
 }
