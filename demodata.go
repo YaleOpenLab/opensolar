@@ -297,7 +297,7 @@ func createDemoProjects() []core.Project{
 
 	project2.Index = 2
 	project2.SeedInvestmentCap = 4000
-	project2.Stage = 7
+	project2.Stage = 4
 	project2.MoneyRaised = 0
 	project2.TotalValue = 10000.0
 	project2.OwnershipShift = 0
@@ -320,7 +320,7 @@ func createDemoProjects() []core.Project{
 
 	project3.Index = 3
 	project3.SeedInvestmentCap = 15000
-	project3.Stage = 8
+	project3.Stage = 4
 	project3.MoneyRaised = 0
 	project3.TotalValue = 30000
 	project3.OwnershipShift = 0
@@ -343,7 +343,7 @@ func createDemoProjects() []core.Project{
 
 	project4.Index = 4
 	project4.SeedInvestmentCap = 230000
-	project4.Stage = 1
+	project4.Stage = 4
 	project4.MoneyRaised = 0
 	project4.TotalValue = 230000
 	project4.OwnershipShift = 0
