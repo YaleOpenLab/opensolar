@@ -80,7 +80,7 @@ Project Details:
     installation archetype: ""
     it infrastructure: "Each house in the village will have a micro-meter with digital ID, connected to one of the two residential 25 kW arrays. Each powermeter has a load cap and assigned wallet. Residential offtakers can load funds through their mobile sms-based banking.  The town has a radio frequency antenna installed by telecomm, so powermeters will connect through a mesh zigbee network, routing information to a receiver antenna with internet connectivity. The project will be designed and supervised by the Yale IoT lab and will receive a donated community networking service to perform remote governance decisions, messaging and file sharing."
     highlighted product:
-      description: ""
+      description: "This community of Cyangugu has no access to electricity yet shows a growing local economy. This microgrid project, developed in collaboration with Rwandan Green Fund (FONERWA), Yale and MIT, aims to serve 250 homes, including its only school, ‘Sunshine Garden,’ the town infirmary led by a team of doctors without borders, and the town hall. The school principal has taken the role of originator and convened the community in 5 occasions. The agreed form of development is through a community-owned cooperative Village Energy Collective’ which is in early stages of incorporation and listing on the Rwanda Stock Exchange. The Rwandan Green Fund has agreed to place 20% of the total investment in a first-loss escrow, they are expected to formally sign when the project achieves stage 2."
       images:
         - ""
         - ""
