@@ -112,8 +112,8 @@ Project Details:
 Stage:
   development stage:
     image: ""
-    stage title: "Construction"
-    stage description: ""
+    stage title: "Raise"
+    stage description: "The project is in stage 4, meaning all major contracts and quotes relating to total proejct cost have been processed and signed. Your investment at this stage has less risk since financial projections are more detailed than earlier stages. However, risks may occur during the construction periods and some solar contracts do not have warranties against these."
     other link: ""
 Documents:
   description: "1"
